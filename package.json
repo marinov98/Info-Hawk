@@ -16,7 +16,7 @@
     "test": "jest",
     "dev": "ts-node src/app.ts",
     "clean": "rimraf dist",
-    "format": "prettier --write \"./**/*.{ts}\""
+    "format": "prettier --config .prettierrc --write \"src/**/*.ts\""
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
