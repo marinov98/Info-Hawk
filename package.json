@@ -1,17 +1,22 @@
 {
-  "name": "Tax-holdings-app",
+  "name": "tax-holdings-app",
   "version": "1.0.0",
   "description": "holds information regarding taxes",
   "main": "app.ts",
   "repository": "git@github.com:marinov98/Tax-holdings-app.git",
   "author": "Marin Pavlinov Marinov <marin.marinov@macaulay.cuny.edu>",
   "license": "SEE LICENSE IN LICENSE.md",
+  "engines": {
+    "node": ">=14.0.0",
+    "yarn": ">= 1.22.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "dist/app.js",
     "test": "jest",
     "dev": "ts-node src/app.ts",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "format": "prettier --write \"./**/*.{ts}\""
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
