@@ -2,22 +2,40 @@
 
 <form action="/signup">
   <h2>Login</h2>
+  <div class="login error"></div>
   <label for="email">Email</label>
-  <input type="text" name="email"  />
-  <div class="email error"></div>
+  <input type="text" name="email" />
   <label for="password">Password</label>
-  <input type="password" name="password"  />
-  <div class="password error"></div>
-  <button>login</button>
+  <input type="password" name="password" />
+  <button>Login</button>
+  <a href="/register">Don't have an account? Register here</a>
 </form>
 
 <%- include('partials/footer'); -%>
 
 <script>
-    const form = document.querySelector('form')
+  const form = document.querySelector("form");
+  const loginError = document.querySelector(".login.error");
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault()
-    })
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
 
+    loginError.textContent = "";
+
+    const email = form.email.value;
+    const password = form.password.value;
+    try {
+      const { data } = await axios.post("/login", { email, password });
+      if (data.id) {
+        location.assign("/");
+      }
+    } catch (err) {
+      if (err.response && err.response.data) {
+        const { errors } = err.response.data;
+        if (errors.msg) loginError.textContent = errors.msg;
+      } else {
+        loginError.textContent = "Something went wrong try again later...";
+      }
+    }
+  });
 </script>

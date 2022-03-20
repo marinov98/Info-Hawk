@@ -6,7 +6,7 @@ type Tokens = { accessToken: string; refreshToken: string };
 
 export function createTokens(id: string): Tokens {
   return {
-    accessToken: jwt.sign({ id }, jwtSecret, { audience, issuer, expiresIn: "1h" }),
+    accessToken: jwt.sign({ id }, jwtSecret, { audience, issuer, expiresIn: "70ms" }),
     refreshToken: jwt.sign({ id }, jwtRefreshSecret, {
       audience,
       issuer,
@@ -15,7 +15,7 @@ export function createTokens(id: string): Tokens {
   };
 }
 
-export function setCookies(res: Response, { accessToken, refreshToken }: Tokens) {
+export function setCookies(res: Response, { accessToken, refreshToken }: Tokens): void {
   const options = {
     httpOnly: true,
     expires: new Date(Date.now() + 37 * 100000),

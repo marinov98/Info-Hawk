@@ -16,11 +16,11 @@ export async function register_post(req: Request, res: Response, next: NextFunct
   const errors = { msg: UNKNOWN_ERR_MSG, src: "Register Controller", status: BAD_REQUEST };
   try {
     if (await Admin.findOne({ email: req.body.email })) {
-      errors.msg = "User with this email already exists";
+      errors.msg = "User with this email already exists!";
       return res.status(BAD_REQUEST).json({ errors });
     }
     await Admin.create(req.body);
-    return res.sendStatus(CREATED);
+    return res.status(CREATED).json({ created: true });
   } catch (err) {
     if (err instanceof Error) {
       errors.msg = err.message;

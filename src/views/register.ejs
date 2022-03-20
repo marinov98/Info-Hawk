@@ -1,18 +1,48 @@
 <%- include('partials/header') -%>
-<form action="/signup">
+<form action="/register">
   <h2>Register</h2>
-  <lable for="firstName">First Name</lable>
+  <div class="register error"></div>
+  <label for="firstName">First Name</label>
   <input type="text" name="firstName" required />
   <div class="firstName error"></div>
-  <lable for="lastName">Last Name</lable>
+  <label for="lastName">Last Name</label>
   <input type="text" name="lastName" required />
   <div class="lastName error"></div>
   <label for="email">Email</label>
   <input type="text" name="email" required />
-  <div class="email error"></div>
   <label for="password">Password</label>
   <input type="password" name="password" required />
-  <div class="password error"></div>
   <button class="mdc-button">Sign up</button>
+  <a href="/login">Have an account? Login here</a>
 </form>
 <%- include('partials/footer') -%>
+
+<script>
+  const form = document.querySelector("form");
+  const registrationError = document.querySelector(".register.error");
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    registrationError.textContent = "";
+
+    const firstName = form.firstName.value;
+    const lastName = form.lastName.value;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    try {
+      const { data } = await axios.post("/register", { firstName, lastName, email, password });
+      if (data.created) {
+        location.assign("/login");
+      }
+    } catch (err) {
+      if (err.response && err.response.data) {
+        const { errors } = err.response.data;
+        if (errors.msg) registrationError.textContent = errors.msg;
+      } else {
+        registrationError.textContent = "Something went wrong try again later...";
+      }
+    }
+  });
+</script>

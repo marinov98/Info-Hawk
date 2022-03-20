@@ -13,7 +13,9 @@ import { authenticateAdmin } from "./middleware/authMiddleware";
   });
 
   app.get("/", (req: Request, res: Response) => res.render("home"));
-  app.get("/tokenCheck", authenticateAdmin, (_: Request, res: Response, __: NextFunction) => {});
+  app.get("/tokenCheck", authenticateAdmin, (_: Request, res: Response, __: NextFunction) => {
+    res.send({ authenticated: true });
+  });
 
   // Launch server
   app.listen(port, () => {
