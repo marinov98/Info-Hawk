@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { dbUrl } from "./keys";
+import { dbUrl } from "./keys.env";
 
 export default async function connectToDB(): Promise<void> {
   try {
