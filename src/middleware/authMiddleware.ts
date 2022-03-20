@@ -18,7 +18,6 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
           console.error(err.message);
           res.redirect("/");
         } else {
-          // refresh logic goes here
           const { exp } = decodedToken as DecodedToken;
           if (Date.now() >= exp * 1000) {
             refreshAdmin(req, res, next);
