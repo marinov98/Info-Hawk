@@ -1,8 +1,8 @@
-import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
-import { BAD_REQUEST, GOOD, CREATED, UNKNOWN_ERR_MSG } from "./../config/keys.error";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Admin } from "../db/models";
 import { createTokens, setCookies } from "../utils/token";
+import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
+import { BAD_REQUEST, CREATED, GOOD, UNKNOWN_ERR_MSG } from "./../config/keys.error";
 
 export function register_get(req: Request, res: Response, next: NextFunction) {
   return res.render("register");
