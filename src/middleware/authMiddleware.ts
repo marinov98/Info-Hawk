@@ -1,9 +1,9 @@
-import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { audience, issuer, jwtRefreshSecret, jwtSecret } from "../config/keys.env";
 import { DecodedToken } from "../interfaces/token";
 import { createTokens } from "../utils/token";
+import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
 
 export function authenticateAdmin(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies[JWT_COOKIE_KEY];
@@ -20,7 +20,7 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
         } else {
           const { exp } = decodedToken as DecodedToken;
           if (Date.now() >= exp * 1000) {
-            refreshAdmin(req, res, next);
+            attemptRefresh(req, res, next);
           }
         }
       }
@@ -30,7 +30,7 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
   }
 }
 
-export function refreshAdmin(req: Request, res: Response, next: NextFunction): void {
+export function attemptRefresh(req: Request, res: Response, next: NextFunction): void {
   const refreshToken = req.cookies[JWT_REFRESH_COOKIE_KEY];
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
