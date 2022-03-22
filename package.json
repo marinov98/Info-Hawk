@@ -1,7 +1,7 @@
 {
-  "name": "tax-holdings-app",
+  "name": "info-hawk",
   "version": "1.0.0",
-  "description": "holds information regarding taxes",
+  "description": "holds information",
   "main": "app.ts",
   "repository": "git@github.com:marinov98/Tax-holdings-app.git",
   "author": "Marin Pavlinov Marinov <marin.marinov@macaulay.cuny.edu>",

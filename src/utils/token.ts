@@ -1,12 +1,13 @@
-import jwt from "jsonwebtoken";
 import { Response } from "express";
+import jwt from "jsonwebtoken";
+import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "../config/keys.constants";
 import { audience, issuer, jwtRefreshSecret, jwtSecret } from "../config/keys.env";
 
 type Tokens = { accessToken: string; refreshToken: string };
 
 export function createTokens(id: string): Tokens {
   return {
-    accessToken: jwt.sign({ id }, jwtSecret, { audience, issuer, expiresIn: "70ms" }),
+    accessToken: jwt.sign({ id }, jwtSecret, { audience, issuer, expiresIn: "1h" }),
     refreshToken: jwt.sign({ id }, jwtRefreshSecret, {
       audience,
       issuer,
@@ -21,9 +22,14 @@ export function setCookies(res: Response, { accessToken, refreshToken }: Tokens)
     expires: new Date(Date.now() + 37 * 100000),
     secure: process.env.NODE_ENV === "production"
   };
-  res.cookie("jwt", accessToken, options);
+  res.cookie(JWT_COOKIE_KEY, accessToken, options);
 
   options.expires = new Date(Date.now() + 37 * 100000 * 24 * 7);
 
-  res.cookie("jwt-refresh", refreshToken, options);
+  res.cookie(JWT_REFRESH_COOKIE_KEY, refreshToken, options);
+}
+
+export function removeCookies(res: Response) {
+  res.clearCookie(JWT_COOKIE_KEY);
+  res.clearCookie(JWT_REFRESH_COOKIE_KEY);
 }

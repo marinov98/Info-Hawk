@@ -14,6 +14,6 @@ const jwtRefreshSecret: string = process.env.REFRESH_SECRET || "supersuperrefres
 const cookieSecret: string = process.env.COOKIE_SECRET || "supercookiesecret";
 const issuer: string = process.env.ISSUER || "fake issuer";
 const audience: string = process.env.AUDIENCE || "fake audience";
-const dbUrl: string = process.env.DB_URL || "mongodb://localhost:27017/tax-holdings";
+const dbUrl: string = process.env.DB_URL || "mongodb://localhost:27017/info-hawk-store";
 
 export { port, cookieSecret, jwtSecret, jwtRefreshSecret, issuer, audience, dbUrl };

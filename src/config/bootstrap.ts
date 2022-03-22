@@ -1,9 +1,10 @@
-import express from "express";
 import cookieParser from "cookie-parser";
-import { cookieSecret, port } from "./keys.env";
-import connectToDB from "./db";
-import { adminRoutes } from "./../routes/index";
+import express from "express";
 import path from "path";
+import { fillAuth } from "../middleware/authMiddleware";
+import { adminRoutes } from "./../routes/index";
+import connectToDB from "./db";
+import { cookieSecret, port } from "./keys.env";
 
 export default async function bootstrap() {
   // Initialization
@@ -23,6 +24,7 @@ export default async function bootstrap() {
   await connectToDB();
 
   // Routes
+  app.get("*", fillAuth);
   app.use(adminRoutes);
 
   return app;

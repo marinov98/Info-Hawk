@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { audience, issuer, jwtRefreshSecret, jwtSecret } from "../config/keys.env";
+import { FORBIDDEN } from "../config/keys.error";
+import { Admin } from "../db/models";
 import { DecodedToken } from "../interfaces/token";
-import { createTokens } from "../utils/token";
+import { createTokens, removeCookies } from "../utils/token";
 import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
 
 export function authenticateAdmin(req: Request, res: Response, next: NextFunction): void {
@@ -15,8 +17,8 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
       { ignoreExpiration: true, issuer, audience },
       async (err: any, decodedToken) => {
         if (err) {
-          console.error(err.message);
-          res.redirect("/");
+          removeCookies(res);
+          res.status(FORBIDDEN).redirect("/");
         } else {
           const { exp } = decodedToken as DecodedToken;
           if (Date.now() >= exp * 1000) {
@@ -26,7 +28,8 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
       }
     );
   } else {
-    res.redirect("/");
+    removeCookies(res);
+    res.status(FORBIDDEN).redirect("/");
   }
 }
 
@@ -34,10 +37,10 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
   const refreshToken = req.cookies[JWT_REFRESH_COOKIE_KEY];
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
-    verify(refreshToken, jwtRefreshSecret, { issuer, audience }, async (err: any, decodedToken) => {
+    verify(refreshToken, jwtRefreshSecret, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
-        res.redirect("/");
+        res.status(FORBIDDEN).redirect("/");
       } else {
         const { id } = decodedToken as DecodedToken;
         const { accessToken } = createTokens(id);
@@ -51,7 +54,33 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
       }
     });
   } else {
-    console.error("refresh token not found!");
-    res.redirect("/");
+    res.status(FORBIDDEN).redirect("/");
   }
+}
+
+export function fillAuth(req: Request, res: Response, next: NextFunction): void {
+  const token = req.cookies[JWT_COOKIE_KEY];
+  if (token) {
+    verify(token, jwtSecret, { issuer, audience }, async (err: any, decodedToken) => {
+      try {
+        if (err) {
+          res.locals.auth = null;
+          next();
+        } else {
+          if (!res.locals.auth) {
+            const { id } = decodedToken as DecodedToken;
+            const admin = await Admin.findById(id);
+            res.locals.auth = admin;
+            console.log(res.locals.auth);
+          }
+        }
+      } catch (err) {
+        res.locals.auth = null;
+      }
+    });
+  } else {
+    res.locals.auth = null;
+  }
+
+  next();
 }

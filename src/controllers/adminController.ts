@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Admin } from "../db/models";
-import { createTokens, setCookies } from "../utils/token";
-import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
+import { createTokens, removeCookies, setCookies } from "../utils/token";
 import { BAD_REQUEST, CREATED, GOOD, UNKNOWN_ERR_MSG } from "./../config/keys.error";
 
 export function register_get(req: Request, res: Response, next: NextFunction) {
@@ -52,7 +51,6 @@ export async function login_post(req: Request, res: Response, next: NextFunction
 }
 
 export function logout_get(req: Request, res: Response, next: NextFunction) {
-  res.clearCookie(JWT_COOKIE_KEY);
-  res.clearCookie(JWT_REFRESH_COOKIE_KEY);
+  removeCookies(res);
   res.redirect("/");
 }

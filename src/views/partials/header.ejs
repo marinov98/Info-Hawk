@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tax Holdings</title>
+    <title>Info Hawk</title>
     <link rel="stylesheet" href="/styles.css" />
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js"
@@ -19,8 +19,16 @@
   </head>
   <body>
     <nav>
-      <h1><a href="/">Tax Holdings Service</a></h1>
-      <ul></ul>
+      <h1><a href="/">Hawk services</a></h1>
+      <ul>
+        <% if (admin) { %>
+        <li>Hello, <%= auth.firstName %>!</li>
+        <li><a href="/logout">Logout</a></li>
+        <% } else { %>
+        <li><a href="/login" class="btn">Login</a></li>
+        <li><a href="/register" class="btn">Sign Up!</a></li>
+        <% } %>
+      </ul>
     </nav>
   </body>
 </html>
