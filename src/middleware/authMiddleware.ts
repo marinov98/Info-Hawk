@@ -64,14 +64,11 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
     verify(token, jwtSecret, { issuer, audience }, async (err: any, decodedToken) => {
       if (err) {
         res.app.locals.auth = null;
-        next();
-      } else {
-        if (!res.app.locals.auth) {
-          const { id } = decodedToken as DecodedToken;
-          res.app.locals.auth = await Admin.findById(id);
-        }
-        next();
+      } else if (!res.app.locals.auth) {
+        const { id } = decodedToken as DecodedToken;
+        res.app.locals.auth = await Admin.findById(id);
       }
+      next();
     });
   } else {
     res.app.locals.auth = null;
@@ -80,7 +77,7 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
 }
 
 export function maintainAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.cookies[JWT_COOKIE_KEY]) {
+  if (req.cookies[JWT_COOKIE_KEY] && req.path !== "/") {
     return res.redirect("/");
   } else {
     next();
