@@ -7,5 +7,6 @@ router.get("/register", adminController.register_get);
 router.post("/register", adminController.register_post);
 router.get("/login", adminController.login_get);
 router.post("/login", adminController.login_post);
+router.get("/logout", adminController.logout_get);
 
 export default router;

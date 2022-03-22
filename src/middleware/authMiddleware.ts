@@ -64,22 +64,20 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
     verify(token, jwtSecret, { issuer, audience }, async (err: any, decodedToken) => {
       try {
         if (err) {
-          res.locals.auth = null;
-          next();
+          res.app.locals.auth = null;
         } else {
-          if (!res.locals.auth) {
+          if (!res.app.locals.auth) {
             const { id } = decodedToken as DecodedToken;
             const admin = await Admin.findById(id);
-            res.locals.auth = admin;
-            console.log(res.locals.auth);
+            res.app.locals.auth = admin;
           }
         }
       } catch (err) {
-        res.locals.auth = null;
+        res.app.locals.auth = null;
       }
     });
   } else {
-    res.locals.auth = null;
+    res.app.locals.auth = null;
   }
 
   next();
