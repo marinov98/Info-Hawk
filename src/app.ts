@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import bootstrap from "./config/bootstrap";
 import { port } from "./config/keys.env";
 import { GOOD } from "./config/keys.error";
-import { authenticateAdmin } from "./middleware/authMiddleware";
 
 (async () => {
   const app = await bootstrap();
@@ -12,10 +11,8 @@ import { authenticateAdmin } from "./middleware/authMiddleware";
     return res.status(GOOD).send({ status: "healthy" });
   });
 
+  // home
   app.get("/", (req: Request, res: Response) => res.render("home"));
-  app.get("/tokenCheck", authenticateAdmin, (_: Request, res: Response, __: NextFunction) => {
-    res.send({ authenticated: true });
-  });
 
   // Launch server
   app.listen(port, () => {
