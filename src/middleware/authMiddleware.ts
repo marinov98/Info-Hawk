@@ -62,23 +62,27 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
   const token = req.cookies[JWT_COOKIE_KEY];
   if (token) {
     verify(token, jwtSecret, { issuer, audience }, async (err: any, decodedToken) => {
-      try {
-        if (err) {
-          res.app.locals.auth = null;
-        } else {
-          if (!res.app.locals.auth) {
-            const { id } = decodedToken as DecodedToken;
-            const admin = await Admin.findById(id);
-            res.app.locals.auth = admin;
-          }
-        }
-      } catch (err) {
+      if (err) {
         res.app.locals.auth = null;
+        next();
+      } else {
+        if (!res.app.locals.auth) {
+          const { id } = decodedToken as DecodedToken;
+          res.app.locals.auth = await Admin.findById(id);
+        }
+        next();
       }
     });
   } else {
     res.app.locals.auth = null;
   }
-
   next();
+}
+
+export function maintainAuth(req: Request, res: Response, next: NextFunction) {
+  if (req.cookies[JWT_COOKIE_KEY]) {
+    return res.redirect("/");
+  } else {
+    next();
+  }
 }

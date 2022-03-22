@@ -12,7 +12,7 @@ import { GOOD } from "./config/keys.error";
   });
 
   // home
-  app.get("/", (req: Request, res: Response) => res.render("home"));
+  app.get("/", (_: Request, res: Response, __: NextFunction) => res.render("home"));
 
   // Launch server
   app.listen(port, () => {

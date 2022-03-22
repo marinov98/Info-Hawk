@@ -52,5 +52,5 @@ export async function login_post(req: Request, res: Response, next: NextFunction
 
 export function logout_get(req: Request, res: Response, next: NextFunction) {
   removeCookies(res);
-  res.redirect("/");
+  return res.redirect("/");
 }
