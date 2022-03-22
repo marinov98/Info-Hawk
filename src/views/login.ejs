@@ -27,7 +27,11 @@
     try {
       const { data } = await axios.post("/login", { email, password });
       if (data.id) {
-        location.assign("/");
+        /* 
+        TODO: investigate this further if 
+        I assign home the auth does not get updated unless I manually refresh...
+        */
+        location.assign("/login");
       }
     } catch (err) {
       if (err.response && err.response.data) {
