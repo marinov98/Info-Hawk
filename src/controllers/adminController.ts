@@ -38,6 +38,7 @@ export async function login_post(req: Request, res: Response, next: NextFunction
     const id: string = data._id.toString();
 
     setCookies(res, createTokens(id));
+    res.app.locals.auth = data;
     return res.status(GOOD).json({ id });
   } catch (err) {
     console.error(err);
