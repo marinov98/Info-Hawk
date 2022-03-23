@@ -3,15 +3,15 @@ import { Admin } from "../db/models";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
 import { BAD_REQUEST, CREATED, GOOD, UNKNOWN_ERR_MSG } from "./../config/keys.error";
 
-export function register_get(req: Request, res: Response, next: NextFunction) {
+export function register_get(_: Request, res: Response, __: NextFunction) {
   return res.render("register");
 }
 
-export function login_get(req: Request, res: Response, next: NextFunction) {
+export function login_get(_: Request, res: Response, __: NextFunction) {
   return res.render("login");
 }
 
-export async function register_post(req: Request, res: Response, next: NextFunction) {
+export async function register_post(req: Request, res: Response, _: NextFunction) {
   const errors = { msg: UNKNOWN_ERR_MSG, src: "Register Controller", status: BAD_REQUEST };
   try {
     if (await Admin.findOne({ email: req.body.email })) {
@@ -28,7 +28,7 @@ export async function register_post(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function login_post(req: Request, res: Response, next: NextFunction) {
+export async function login_post(req: Request, res: Response, _: NextFunction) {
   try {
     const { email, password } = req.body;
     const data = await Admin.login(email, password);
@@ -38,7 +38,6 @@ export async function login_post(req: Request, res: Response, next: NextFunction
     const id: string = data._id.toString();
 
     setCookies(res, createTokens(id));
-    res.app.locals.auth = data;
     return res.status(GOOD).json({ id });
   } catch (err) {
     console.error(err);
@@ -51,7 +50,7 @@ export async function login_post(req: Request, res: Response, next: NextFunction
   }
 }
 
-export function logout_get(req: Request, res: Response, next: NextFunction) {
+export function logout_get(req: Request, res: Response, _: NextFunction) {
   removeCookies(res);
   return res.redirect("/");
 }

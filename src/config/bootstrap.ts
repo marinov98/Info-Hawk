@@ -2,7 +2,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import path from "path";
 import { fillAuth } from "../middleware/authMiddleware";
-import { adminRoutes } from "./../routes/index";
+import { adminRoutes } from "../routes";
 import connectToDB from "./db";
 import { cookieSecret, port } from "./keys.env";
 
@@ -23,7 +23,6 @@ export default async function bootstrap() {
   // Database
   await connectToDB();
 
-  // Routes
   app.get("*", fillAuth);
   app.use(adminRoutes);
 

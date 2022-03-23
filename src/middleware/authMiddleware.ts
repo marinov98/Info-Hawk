@@ -18,7 +18,7 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
       async (err: any, decodedToken) => {
         if (err) {
           removeCookies(res);
-          res.status(FORBIDDEN).redirect("/");
+          return res.status(FORBIDDEN).redirect("/login");
         } else {
           const { exp } = decodedToken as DecodedToken;
           if (Date.now() >= exp * 1000) {
@@ -29,7 +29,7 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
     );
   } else {
     removeCookies(res);
-    res.status(FORBIDDEN).redirect("/");
+    return res.status(FORBIDDEN).redirect("/login");
   }
 }
 
@@ -40,7 +40,7 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
     verify(refreshToken, jwtRefreshSecret, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
-        res.status(FORBIDDEN).redirect("/");
+        return res.status(FORBIDDEN).redirect("/login");
       } else {
         const { id } = decodedToken as DecodedToken;
         const { accessToken } = createTokens(id);
@@ -54,7 +54,7 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
       }
     });
   } else {
-    res.status(FORBIDDEN).redirect("/");
+    return res.status(FORBIDDEN).redirect("/login");
   }
 }
 
@@ -72,8 +72,8 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
     });
   } else {
     res.app.locals.auth = null;
+    next();
   }
-  next();
 }
 
 export function maintainAuth(req: Request, res: Response, next: NextFunction) {
