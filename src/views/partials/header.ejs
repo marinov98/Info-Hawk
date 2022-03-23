@@ -23,7 +23,7 @@
       <ul>
         <% if (auth) { %>
         <li>Hello, <%= auth.firstName %>!</li>
-        <li><a href="/logout">Logout</a></li>
+        <li><a id="logout-btn" href="/logout">Logout</a></li>
         <% } else { %>
         <li><a href="/login" class="btn">Login</a></li>
         <li><a href="/register" class="btn">Sign Up!</a></li>
@@ -32,3 +32,15 @@
     </nav>
   </body>
 </html>
+
+<script>
+  const logout = document.getElementById("logout-btn");
+  if (logout) {
+    logout.addEventListener("click", e => {
+      e.preventDefault();
+      if (confirm("Are you sure you want to log out?")) {
+        location.assign("/logout");
+      }
+    });
+  }
+</script>

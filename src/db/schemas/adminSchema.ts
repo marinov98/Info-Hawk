@@ -1,8 +1,8 @@
-import { Maybe } from "./../../types/errors";
-import { BAD_REQUEST, LOGIN_ERR_MSG, UNKNOWN_ERR_MSG } from "./../../config/keys.error";
-import { Schema, Document, model, Model } from "mongoose";
-import { IAdmin } from "./../../interfaces/index";
 import bcrypt from "bcrypt";
+import { Document, model, Model, Schema } from "mongoose";
+import { BAD_REQUEST, LOGIN_ERR_MSG, UNKNOWN_ERR_MSG } from "./../../config/keys.error";
+import { IAdmin } from "./../../interfaces/index";
+import { IHError, Maybe } from "./../../types/errors";
 
 interface IAdminDoc extends IAdmin, Document {}
 
@@ -44,7 +44,7 @@ AdminSchema.pre<IAdminDoc>("save", async function (next: Function): Promise<void
 AdminSchema.static("login", async function (email: string, password: string): Promise<
   Maybe<IAdminDoc>
 > {
-  const errors = { msg: UNKNOWN_ERR_MSG, src: "Login", status: BAD_REQUEST };
+  const hawkError: IHError = { msg: UNKNOWN_ERR_MSG, src: "Login", status: BAD_REQUEST };
   try {
     const admin: IAdminDoc = await this.findOne({ email });
     if (admin) {
@@ -52,14 +52,14 @@ AdminSchema.static("login", async function (email: string, password: string): Pr
         return admin;
       }
     }
-    errors.msg = LOGIN_ERR_MSG;
-    return errors;
+    hawkError.msg = LOGIN_ERR_MSG;
+    return hawkError;
   } catch (e) {
     console.error(e);
     if (e instanceof Error) {
-      errors.msg = e.message;
+      if (e.message) hawkError.msg = e.message;
     }
-    return errors;
+    return hawkError;
   }
 });
 

@@ -4,9 +4,9 @@
   <h2>Login</h2>
   <div class="login error"></div>
   <label for="email">Email</label>
-  <input type="text" name="email" />
+  <input type="text" name="email" required />
   <label for="password">Password</label>
-  <input type="password" name="password" />
+  <input type="password" name="password" required />
   <button>Login</button>
   <a href="/register">Don't have an account? Register here</a>
 </form>
@@ -31,9 +31,11 @@
       }
     } catch (err) {
       if (err.response && err.response.data) {
-        const { errors } = err.response.data;
-        if (errors.msg) loginError.textContent = errors.msg;
-      } else {
+        const { hawkError } = err.response.data;
+        if (hawkError && hawkError.msg) loginError.textContent = hawkError.msg;
+      }
+
+      if ("" === loginError.textContent) {
         loginError.textContent = "Something went wrong try again later...";
       }
     }
