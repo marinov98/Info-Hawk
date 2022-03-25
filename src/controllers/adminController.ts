@@ -38,7 +38,7 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
     const { email, password } = req.body;
     const data = await Admin.login(email, password);
     if ("src" in data) {
-      return res.status(BAD_REQUEST).json({ errors: data });
+      return res.status(BAD_REQUEST).json({ hawkError: data });
     }
     const id: string = data._id.toString();
 

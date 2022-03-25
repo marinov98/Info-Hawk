@@ -1,13 +1,22 @@
 <%- include('partials/header'); -%>
 
-<form action="/signup">
+<form action="/login">
   <h2>Login</h2>
-  <div class="login error"></div>
-  <label for="email">Email</label>
-  <input type="text" name="email" required />
-  <label for="password">Password</label>
-  <input type="password" name="password" required />
-  <button>Login</button>
+  <div
+    class="login error alert alert-danger"
+    id="login-err-msg"
+    role="alert"
+    style="visibility: hidden"
+  ></div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" placeholder="example@gmail.com" required />
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" required />
+  </div>
+  <button class="btn btn-primary">Login</button>
   <a href="/register">Don't have an account? Register here</a>
 </form>
 
@@ -16,7 +25,6 @@
 <script>
   const form = document.querySelector("form");
   const loginError = document.querySelector(".login.error");
-
   form.addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -30,6 +38,7 @@
         location.assign("/");
       }
     } catch (err) {
+      document.getElementById("login-err-msg").style.visibility = "visible";
       if (err.response && err.response.data) {
         const { hawkError } = err.response.data;
         if (hawkError && hawkError.msg) loginError.textContent = hawkError.msg;

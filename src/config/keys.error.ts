@@ -1,4 +1,4 @@
-export const LOGIN_ERR_MSG = "Incorrect username or password";
+export const LOGIN_ERR_MSG = "Incorrect email or password";
 export const UNKNOWN_ERR_MSG = "Unknown error occurred!";
 
 export const BAD_REQUEST = 400;

@@ -1,20 +1,28 @@
 <%- include('partials/header') -%>
 <form action="/register">
   <h2>Register</h2>
-  <div class="register error"></div>
-  <label for="firstName">First Name</label>
-  <input type="text" name="firstName" required />
-  <div class="firstName error"></div>
-  <label for="lastName">Last Name</label>
-  <input type="text" name="lastName" required />
-  <div class="lastName error"></div>
-  <label for="email">Email</label>
-  <input type="text" name="email" required />
-  <label for="password">Password</label>
-  <input type="password" name="password" required />
-  <label for="confirmPassword">Confirm Password</label>
-  <input type="password" name="confirmPassword" required />
-  <button class="mdc-button">Sign up</button>
+  <div class="register error alert alert-danger" role="alert"></div>
+  <div class="mb-3">
+    <label for="firstName" class="form-label">First Name</label>
+    <input type="text" name="firstName" class="form-control" placeholder="First Name" required />
+  </div>
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Last Name</label>
+    <input type="text" name="lastName" class="form-control" placeholder="Last Name" required />
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" placeholder="example@gmail.com" required />
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" name="password" required />
+  </div>
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" name="confirmPassword" required />
+  </div>
+  <button class="btn btn-primary">Sign up</button>
   <a href="/login">Have an account? Login here</a>
 </form>
 <%- include('partials/footer') -%>
