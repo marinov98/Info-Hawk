@@ -23,6 +23,8 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
           const { exp } = decodedToken as DecodedToken;
           if (Date.now() >= exp * 1000) {
             attemptRefresh(req, res, next);
+          } else {
+            next();
           }
         }
       }
