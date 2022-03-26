@@ -25,7 +25,6 @@ const transporter = nodemailer.createTransport({
   },
   secure: process.env.NODE_ENV === "production"
 });
-const url: string = process.env.URL || "http://localhost:8081/";
 
 export {
   port,
@@ -36,6 +35,5 @@ export {
   audience,
   dbUrl,
   transporter,
-  appEmail,
-  url
+  appEmail
 };
