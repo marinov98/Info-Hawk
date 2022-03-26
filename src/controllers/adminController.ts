@@ -21,7 +21,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
   try {
     if (await Admin.findOne({ email: req.body.email })) {
       hawkError.msg = "User with this email already exists!";
-      return res.status(BAD_REQUEST).json({ hawkError });
+      return res.status(hawkError.status).json({ hawkError });
     }
     await Admin.create(req.body);
     return res.status(CREATED).json({ created: true });
@@ -29,7 +29,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
     }
-    return res.status(BAD_REQUEST).json({ hawkError });
+    return res.status(hawkError.status).json({ hawkError });
   }
 }
 
@@ -38,7 +38,7 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
     const { email, password } = req.body;
     const data = await Admin.login(email, password);
     if ("src" in data) {
-      return res.status(BAD_REQUEST).json({ hawkError: data });
+      return res.status(data.status).json({ hawkError: data });
     }
     const id: string = data._id.toString();
 
@@ -55,7 +55,7 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
       if (err.message) hawkError.msg = err.message;
     }
 
-    return res.status(BAD_REQUEST).json({ hawkError });
+    return res.status(hawkError.status).json({ hawkError });
   }
 }
 

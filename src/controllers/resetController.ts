@@ -1,13 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
-import { appEmail, audience, issuer, jwtSecret, transporter, url } from "../config/keys.env";
-import { BAD_REQUEST, GOOD, UNAUTHORIZED, UNKNOWN_ERR_MSG } from "../config/keys.error";
+import { appEmail, audience, issuer, jwtSecret, transporter } from "../config/keys.env";
+import { BAD_REQUEST, GOOD, NOT_FOUND, UNAUTHORIZED, UNKNOWN_ERR_MSG } from "../config/keys.error";
 import { Admin } from "../db/models";
 import { ResetDecodedToken } from "../interfaces/token";
 import { IHError } from "../types/errors";
 
 export function reset_password_mail_get(req: Request, res: Response, next: NextFunction) {
   return res.render("passwordMail");
+}
+
+export function token_expire_get(req: Request, res: Response, next: NextFunction) {
+  return res.render("tokenExpire");
 }
 
 export function reset_password_form_get(req: Request, res: Response, next: NextFunction) {
@@ -18,14 +22,14 @@ export function reset_password_form_get(req: Request, res: Response, next: NextF
       if (err) {
         if (err.message) {
           hawkError.msg = err.message;
-          return res.status(UNAUTHORIZED).json({ hawkError });
+          return res.status(UNAUTHORIZED).redirect("tokenExpired");
         }
       }
       const { email } = decodedToken as ResetDecodedToken;
       if (await Admin.findOne({ email })) {
         return res.render("passwordReset");
       } else {
-        return res.render("tokenExpired");
+        return res.status(NOT_FOUND).redirect("tokenExpired");
       }
     });
   } catch (err) {
@@ -50,9 +54,9 @@ export async function reset_password_mail_post(req: Request, res: Response, next
     const info = await transporter.sendMail({
       from: appEmail,
       to: email,
-      subject: "Info Hawk Password reset",
+      subject: "Info Hawk Password Reset",
       text: `Please click to link below to reset your password:
-      ${url}reset/form/${accessToken}`
+      ${req.protocol}://${req.hostname}/reset/${accessToken}`
     });
     console.log(`Message sent: ${info.messageId}`);
     return res.status(GOOD).json({ msg: `A reset link was sent to your email` });
@@ -61,7 +65,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       if (err.message) hawkError.msg = err.message;
     }
     console.error(err);
-    return res.status(BAD_REQUEST).json({ hawkError });
+    return res.status(hawkError.status).json({ hawkError });
   }
 }
 
@@ -92,6 +96,6 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
       if (err.message) hawkError.msg = err.message;
     }
     console.error(err);
-    return res.status(BAD_REQUEST).json({ hawkError });
+    return res.status(hawkError.status).json({ hawkError });
   }
 }
