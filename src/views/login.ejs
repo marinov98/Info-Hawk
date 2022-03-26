@@ -2,12 +2,9 @@
 
 <form style="margin-left: 10px; margin-right: 50px" action="/login">
   <h2>Login</h2>
-  <div
-    class="login error alert alert-danger"
-    id="login-err-msg"
-    role="alert"
-    style="visibility: hidden"
-  ></div>
+  <div class="login error alert alert-info" id="login-err-msg" role="alert">
+    Please enter your information below.
+  </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
     <input type="text" name="email" class="form-control" placeholder="example@gmail.com" required />
@@ -27,11 +24,9 @@
 
 <script>
   const form = document.querySelector("form");
-  const loginError = document.querySelector(".login.error");
+  const loginError = document.getElementById("login-err-msg");
   form.addEventListener("submit", async e => {
     e.preventDefault();
-
-    loginError.textContent = "";
 
     const email = form.email.value;
     const password = form.password.value;
@@ -41,7 +36,7 @@
         location.assign("/");
       }
     } catch (err) {
-      document.getElementById("login-err-msg").style.visibility = "visible";
+      loginError.className = "login error alert alert-danger";
       if (err.response && err.response.data) {
         const { hawkError } = err.response.data;
         if (hawkError && hawkError.msg) loginError.textContent = hawkError.msg;

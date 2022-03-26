@@ -1,7 +1,9 @@
 <%- include('partials/header') -%>
 <form style="margin-left: 10px; margin-right: 50px" action="/register">
   <h2>Register</h2>
-  <div class="register error alert alert-danger" role="alert"></div>
+  <div id="register-error" class="register error alert alert-info" role="alert">
+    Please fill out the info below to sign up.
+  </div>
   <div class="mb-3">
     <label for="firstName" class="form-label">First Name</label>
     <input type="text" name="firstName" class="form-control" placeholder="First Name" required />
@@ -30,11 +32,10 @@
 <script>
   const form = document.querySelector("form");
   const registrationError = document.querySelector(".register.error");
+  const alertDiv = document.getElementById("register-error");
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
-
-    registrationError.textContent = "";
 
     const firstName = form.firstName.value;
     const lastName = form.lastName.value;
@@ -54,13 +55,14 @@
         location.assign("/login");
       }
     } catch (err) {
+      alertDiv.className = "register error alert alert-danger";
       if (err.response && err.response.data) {
         const { hawkError } = err.response.data;
-        if (hawkError && hawkError.msg) registrationError.textContent = hawkError.msg;
+        if (hawkError && hawkError.msg) alertDiv.textContent = hawkError.msg;
       }
 
       if ("" === registrationError.textContent) {
-        registrationError.textContent = "Something went wrong try again later...";
+        alertDiv.textContent = "Something went wrong try again later...";
       }
     }
   });
