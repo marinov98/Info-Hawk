@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import nodemailer from "nodemailer";
 
 if (process.env.NODE_ENV !== "production") {
   const { error } = config();
@@ -15,5 +16,26 @@ const cookieSecret: string = process.env.COOKIE_SECRET || "supercookiesecret";
 const issuer: string = process.env.ISSUER || "fake issuer";
 const audience: string = process.env.AUDIENCE || "fake audience";
 const dbUrl: string = process.env.DB_URL || "mongodb://localhost:27017/info-hawk-store";
+const appEmail = process.env.EMAIL_USERNAME || "example@gmail.com";
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: appEmail,
+    pass: process.env.EMAIL_PASS
+  },
+  secure: process.env.NODE_ENV === "production"
+});
+const url: string = process.env.URL || "http://localhost:8081/";
 
-export { port, cookieSecret, jwtSecret, jwtRefreshSecret, issuer, audience, dbUrl };
+export {
+  port,
+  cookieSecret,
+  jwtSecret,
+  jwtRefreshSecret,
+  issuer,
+  audience,
+  dbUrl,
+  transporter,
+  appEmail,
+  url
+};
