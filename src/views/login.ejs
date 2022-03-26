@@ -1,6 +1,6 @@
 <%- include('partials/header'); -%>
 
-<form action="/login">
+<form style="margin-left: 10px; margin-right: 50px" action="/login">
   <h2>Login</h2>
   <div
     class="login error alert alert-danger"
@@ -17,7 +17,9 @@
     <input type="password" name="password" class="form-control" required />
   </div>
   <button class="btn btn-primary">Login</button>
-  <a href="/register">Don't have an account? Register here</a>
+  <a style="margin-left: 5px; margin-right: 10px" href="/register"
+    >Don't have an account? Register here</a
+  >
   <a href="/passwordMail">Forgot your password?</a>
 </form>
 

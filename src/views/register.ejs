@@ -1,5 +1,5 @@
 <%- include('partials/header') -%>
-<form action="/register">
+<form style="margin-left: 10px; margin-right: 50px" action="/register">
   <h2>Register</h2>
   <div class="register error alert alert-danger" role="alert"></div>
   <div class="mb-3">
@@ -22,7 +22,7 @@
     <label for="confirmPassword" class="form-label">Confirm Password</label>
     <input type="password" class="form-control" name="confirmPassword" required />
   </div>
-  <button class="btn btn-primary">Sign up</button>
+  <button style="margin-right: 10px" class="btn btn-primary">Sign up</button>
   <a href="/login">Have an account? Login here</a>
 </form>
 <%- include('partials/footer') -%>
