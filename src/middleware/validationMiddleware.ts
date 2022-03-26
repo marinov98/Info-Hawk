@@ -1,16 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { BAD_REQUEST } from "../config/keys.error";
 import { IHError } from "../types/errors";
-import { loginSchema, registrationSchema } from "../utils/validation";
+import {
+  loginSchema,
+  registrationSchema,
+  resetMailSchema,
+  resetPassSchema
+} from "../utils/validation";
 
 export function validateInput(req: Request, res: Response, next: NextFunction) {
-  let schema = null;
-  if (req.path === "/register") {
-    schema = registrationSchema;
-  } else if (req.path === "/login") {
-    schema = loginSchema;
-  }
-
+  const schema = getSchema(req.path);
   if (!schema) {
     next();
   } else {
@@ -27,4 +26,24 @@ export function validateInput(req: Request, res: Response, next: NextFunction) {
     }
     next();
   }
+}
+
+function getSchema(path: string) {
+  if (path === "/register") {
+    return registrationSchema;
+  }
+
+  if (path === "/login") {
+    return loginSchema;
+  }
+
+  if (path === "/passwordMail") {
+    return resetMailSchema;
+  }
+
+  if (path.includes("reset")) {
+    return resetPassSchema;
+  }
+
+  return null;
 }

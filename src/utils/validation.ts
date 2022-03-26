@@ -5,7 +5,7 @@ const authObj = {
     .string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "edu"] } })
     .required(),
-  password: joi.string().min(3).max(30).required()
+  password: joi.string().min(3).max(36).required()
 };
 
 export const registrationSchema = joi
@@ -19,3 +19,10 @@ export const registrationSchema = joi
   .with("password", "confirmPassword");
 
 export const loginSchema = joi.object(authObj);
+
+export const resetPassSchema = joi.object({
+  newPassword: authObj.password,
+  confirmPassword: joi.ref("newPassword")
+});
+
+export const resetMailSchema = joi.object({ email: authObj.email });
