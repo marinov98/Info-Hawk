@@ -22,7 +22,8 @@ const AdminSchema: Schema<IAdminDoc> = new Schema<IAdminDoc>({
   email: {
     type: String,
     unique: true,
-    required: true
+    required: true,
+    index: true
   },
   password: {
     type: String,

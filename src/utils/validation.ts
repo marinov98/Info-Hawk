@@ -5,7 +5,7 @@ const authObj = {
     .string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "edu"] } })
     .required(),
-  password: joi.string().alphanum().min(3).max(36).required()
+  password: joi.string().min(3).max(30).required()
 };
 
 export const registrationSchema = joi

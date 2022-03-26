@@ -11,7 +11,7 @@ export function reset_password_mail_get(req: Request, res: Response, next: NextF
 }
 
 export function token_expire_get(req: Request, res: Response, next: NextFunction) {
-  return res.render("tokenExpire");
+  return res.render("tokenExpired");
 }
 
 export function reset_password_form_get(req: Request, res: Response, next: NextFunction) {
@@ -22,14 +22,14 @@ export function reset_password_form_get(req: Request, res: Response, next: NextF
       if (err) {
         if (err.message) {
           hawkError.msg = err.message;
-          return res.status(UNAUTHORIZED).redirect("tokenExpired");
+          return res.status(UNAUTHORIZED).redirect("/error/token");
         }
       }
       const { email } = decodedToken as ResetDecodedToken;
       if (await Admin.findOne({ email })) {
         return res.render("passwordReset");
       } else {
-        return res.status(NOT_FOUND).redirect("tokenExpired");
+        return res.status(NOT_FOUND).redirect("/error/token");
       }
     });
   } catch (err) {
@@ -44,22 +44,21 @@ export function reset_password_form_get(req: Request, res: Response, next: NextF
 export async function reset_password_mail_post(req: Request, res: Response, next: NextFunction) {
   const hawkError: IHError = { src: "resetController", msg: UNKNOWN_ERR_MSG, status: BAD_REQUEST };
   try {
-    const { email } = req.body.email;
+    const { email } = req.body;
     const user = await Admin.findOne({ email });
     if (!user) {
       hawkError.msg = "User with this email does not exist!";
       return res.status(hawkError.status).json({ hawkError });
     }
     const accessToken: string = sign({ email }, jwtSecret, { audience, issuer, expiresIn: "20m" });
-    const info = await transporter.sendMail({
+    const { messageId } = await transporter.sendMail({
       from: appEmail,
       to: email,
       subject: "Info Hawk Password Reset",
       text: `Please click to link below to reset your password:
-      ${req.protocol}://${req.hostname}/reset/${accessToken}`
+      ${req.protocol}://${req.headers.host}/passwordReset/${accessToken}`
     });
-    console.log(`Message sent: ${info.messageId}`);
-    return res.status(GOOD).json({ message: `A reset link was sent to your email` });
+    return res.status(GOOD).json({ message: `A reset link was sent to your email`, messageId });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -81,12 +80,18 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
         }
       }
       const { email } = decodedToken as ResetDecodedToken;
+      const { newPassword } = req.body;
       const admin = await Admin.findOne({ email });
       if (admin) {
-        const { newPassword } = req.body;
-        admin.update({ password: newPassword });
+        admin.password = newPassword;
         await admin.save();
-        return res.status(GOOD).json({ message: "Password reset successfully!" });
+        const { messageId } = await transporter.sendMail({
+          from: appEmail,
+          to: email,
+          subject: "Info Hawk Password Change Confirmation",
+          text: "We are sending you this email to let you know that your password was changed"
+        });
+        return res.status(GOOD).json({ message: "Password reset successfully!", messageId });
       } else {
         return res.render("tokenExpired");
       }
