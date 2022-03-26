@@ -59,7 +59,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       ${req.protocol}://${req.hostname}/reset/${accessToken}`
     });
     console.log(`Message sent: ${info.messageId}`);
-    return res.status(GOOD).json({ msg: `A reset link was sent to your email` });
+    return res.status(GOOD).json({ message: `A reset link was sent to your email` });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -86,7 +86,7 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
         const { newPassword } = req.body;
         admin.update({ password: newPassword });
         await admin.save();
-        return res.status(GOOD).json({ msg: "Password reset successfully!" });
+        return res.status(GOOD).json({ message: "Password reset successfully!" });
       } else {
         return res.render("tokenExpired");
       }
