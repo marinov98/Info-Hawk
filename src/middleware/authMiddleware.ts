@@ -79,7 +79,7 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
 }
 
 export function maintainAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.cookies[JWT_COOKIE_KEY] && req.path !== "/") {
+  if (res.app.locals.auth && req.path !== "/") {
     return res.redirect("/");
   } else {
     next();
