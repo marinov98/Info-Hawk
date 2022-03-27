@@ -1,2 +1,3 @@
-# Tax-holdings-app
-App to help accountants receive and input client information
+# Info Hawk
+
+App to meant to help transfer information between client and service providers
