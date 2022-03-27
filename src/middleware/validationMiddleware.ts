@@ -23,8 +23,8 @@ export function validateInput(req: Request, res: Response, next: NextFunction) {
       return res.status(BAD_REQUEST).json({ hawkError });
     } else {
       delete req.body.confirmPassword;
+      next();
     }
-    next();
   }
 }
 
