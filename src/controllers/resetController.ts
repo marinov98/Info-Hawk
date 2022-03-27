@@ -1,7 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 import { appEmail, audience, issuer, jwtSecret, transporter } from "../config/keys.env";
-import { BAD_REQUEST, GOOD, NOT_FOUND, UNAUTHORIZED, UNKNOWN_ERR_MSG } from "../config/keys.error";
+import {
+  BAD_REQUEST,
+  GOOD,
+  NOT_FOUND,
+  NOT_SAME_EMAIL_ERR,
+  TOKEN_RESET_ERR,
+  TOKEN_RESET_PAYLOAD_ERR,
+  UNAUTHORIZED,
+  UNKNOWN_ERR_MSG
+} from "../config/keys.error";
 import { Admin } from "../db/models";
 import { ResetDecodedToken } from "../interfaces/token";
 import { IHError } from "../types/errors";
@@ -44,7 +53,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
     const { email } = req.body;
     const user = await Admin.findOne({ email });
     if (!user) {
-      hawkError.msg = "User with this email does not exist!";
+      hawkError.msg = NOT_SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
     const accessToken: string = sign({ email }, jwtSecret, { audience, issuer, expiresIn: "20m" });
@@ -71,7 +80,7 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
     const token = req.params.token;
     verify(token, jwtSecret, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
-        hawkError.msg = "Token is invalid, request a new link";
+        hawkError.msg = TOKEN_RESET_ERR;
         hawkError.status = UNAUTHORIZED;
         return res.status(hawkError.status).json({ hawkError });
       }
@@ -89,7 +98,7 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
         });
         return res.status(GOOD).json({ message: "Password reset successfully!", messageId });
       } else {
-        hawkError.msg = "Data in token was not valid, request a new link";
+        hawkError.msg = TOKEN_RESET_PAYLOAD_ERR;
         hawkError.status = UNAUTHORIZED;
         return res.status(hawkError.status).json({ hawkError });
       }

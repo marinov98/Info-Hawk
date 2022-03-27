@@ -8,6 +8,8 @@ import {
   CREATED,
   GOOD,
   LOGIN_ERR_MSG,
+  TOKEN_RESET_ERR,
+  TOKEN_RESET_PAYLOAD_ERR,
   UNAUTHORIZED
 } from "../../src/config/keys.error";
 import dbTester from "./../db";
@@ -93,7 +95,7 @@ describe("Testing Reset Controller", () => {
     const accessToken: string = "badktoken123";
     const newPassword = "newPass123";
     const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
-    expect(body.hawkError.msg).toBe("Token is invalid, request a new link");
+    expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
   });
 
@@ -106,7 +108,7 @@ describe("Testing Reset Controller", () => {
     });
     const newPassword = "newPass123";
     const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
-    expect(body.hawkError.msg).toBe("Token is invalid, request a new link");
+    expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
   });
 
@@ -119,7 +121,7 @@ describe("Testing Reset Controller", () => {
     });
     const newPassword = "newPass123";
     const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
-    expect(body.hawkError.msg).toBe("Token is invalid, request a new link");
+    expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
   });
 
@@ -144,7 +146,7 @@ describe("Testing Reset Controller", () => {
     const {
       body: { hawkError }
     } = await request(app).put(`/reset/${accessToken2}`).send({ newPassword });
-    expect(hawkError.msg).toBe("Data in token was not valid, request a new link");
+    expect(hawkError.msg).toBe(TOKEN_RESET_PAYLOAD_ERR);
     expect(hawkError.status).toBe(UNAUTHORIZED);
   });
 });
