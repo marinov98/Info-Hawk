@@ -1,18 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Application } from "express";
 import bootstrap from "./config/bootstrap";
 import { port } from "./config/keys.env";
-import { GOOD } from "./config/keys.error";
 
 (async () => {
-  const app = await bootstrap();
-
-  // healthcheck
-  app.get("/healthcheck", (_: Request, res: Response, __: NextFunction) => {
-    return res.status(GOOD).send({ status: "healthy" });
-  });
-
-  // home
-  app.get("/", (_: Request, res: Response, __: NextFunction) => res.render("home"));
+  const app: Application = await bootstrap();
 
   // Launch server
   app.listen(port, () => {

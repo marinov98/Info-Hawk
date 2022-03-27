@@ -1,31 +1,32 @@
 import cookieParser from "cookie-parser";
-import express from "express";
+import express, { Application } from "express";
 import path from "path";
 import { fillAuth } from "../middleware/authMiddleware";
-import { adminRoutes, resetRoutes } from "../routes";
+import { adminRoutes, homeRoutes, resetRoutes } from "../routes";
 import connectToDB from "./db";
 import { cookieSecret, port } from "./keys.env";
 
-export default async function bootstrap() {
+export default async function bootstrap(): Promise<Application> {
   // Initialization
-  const app = express();
-  app.set("port", port);
+  const server: Application = express();
+  server.set("port", port);
 
   // Middleware
-  app.use(express.static(path.resolve(__dirname, "../public")));
-  app.use(express.json());
-  app.use(cookieParser(cookieSecret));
+  server.use(express.static(path.resolve(__dirname, "../public")));
+  server.use(express.json());
+  server.use(cookieParser(cookieSecret));
 
   // View Engine
-  app.set("views", path.resolve(__dirname, "../views"));
-  app.set("view engine", "ejs");
+  server.set("views", path.resolve(__dirname, "../views"));
+  server.set("view engine", "ejs");
 
   // Database
   await connectToDB();
 
-  app.get("*", fillAuth);
-  app.use(adminRoutes);
-  app.use(resetRoutes);
+  server.get("*", fillAuth);
+  server.use(homeRoutes);
+  server.use(adminRoutes);
+  server.use(resetRoutes);
 
-  return app;
+  return server;
 }
