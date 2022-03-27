@@ -10,7 +10,7 @@ import {
   LOGIN_ERR_MSG,
   UNAUTHORIZED
 } from "../../src/config/keys.error";
-import { clearDB, closeDB, connectTestDB } from "./../db";
+import dbTester from "./../db";
 import { ADMIN_MOCK } from "./adminController.mock";
 
 jest.mock("nodemailer", () => ({
@@ -26,9 +26,9 @@ jest.mock("nodemailer", () => ({
 
 describe("Testing Reset Controller", () => {
   const app: Application = bootstrap();
-
+  const db = new dbTester();
   beforeAll(async () => {
-    await connectTestDB();
+    await db.connectTestDB();
   });
 
   beforeEach(async () => {
@@ -42,11 +42,11 @@ describe("Testing Reset Controller", () => {
   });
 
   afterEach(async () => {
-    await clearDB();
+    await db.clearDB();
   });
 
   afterAll(async () => {
-    await closeDB();
+    await db.closeDB();
   });
 
   it("should send resend link successfully", async () => {

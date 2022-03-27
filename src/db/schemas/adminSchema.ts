@@ -27,7 +27,7 @@ const AdminSchema: Schema<IAdminDoc> = new Schema<IAdminDoc>({
   },
   password: {
     type: String,
-    reqired: true
+    required: true
   }
 });
 

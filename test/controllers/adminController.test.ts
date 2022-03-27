@@ -8,14 +8,15 @@ import {
   LOGIN_ERR_MSG,
   SAME_EMAIL_ERR
 } from "../../src/config/keys.error";
-import { clearDB, closeDB, connectTestDB } from "./../db";
+import dbTester from "./../db";
 import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock";
 
 describe("Testing Admin Controller", () => {
   const app: Application = bootstrap();
+  const db = new dbTester();
 
   beforeAll(async () => {
-    await connectTestDB();
+    await db.connectTestDB();
   });
 
   beforeEach(async () => {
@@ -28,11 +29,11 @@ describe("Testing Admin Controller", () => {
   });
 
   afterEach(async () => {
-    await clearDB();
+    await db.clearDB();
   });
 
   afterAll(async () => {
-    await closeDB();
+    await db.closeDB();
   });
 
   it("should register successfully", async () => {
