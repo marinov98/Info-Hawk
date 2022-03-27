@@ -27,6 +27,7 @@ jest.mock("nodemailer", () => ({
 describe("Testing Reset Controller", () => {
   const app: Application = bootstrap();
   const db = new dbTester();
+
   beforeAll(async () => {
     await db.connectTestDB();
   });
