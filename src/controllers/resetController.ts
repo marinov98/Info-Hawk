@@ -20,10 +20,7 @@ export function reset_password_form_get(req: Request, res: Response, next: NextF
     const token = req.params.token;
     verify(token, jwtSecret, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
-        if (err.message) {
-          hawkError.msg = err.message;
-          return res.status(UNAUTHORIZED).redirect("/error/token");
-        }
+        return res.status(UNAUTHORIZED).redirect("/error/token");
       }
       const { email } = decodedToken as ResetDecodedToken;
       if (await Admin.findOne({ email })) {
@@ -74,10 +71,9 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
     const token = req.params.token;
     verify(token, jwtSecret, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
-        if (err.message) {
-          hawkError.msg = err.message;
-          return res.status(UNAUTHORIZED).json({ hawkError });
-        }
+        hawkError.msg = "Token is invalid, request a new link";
+        hawkError.status = UNAUTHORIZED;
+        return res.status(hawkError.status).json({ hawkError });
       }
       const { email } = decodedToken as ResetDecodedToken;
       const { newPassword } = req.body;
@@ -93,7 +89,9 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
         });
         return res.status(GOOD).json({ message: "Password reset successfully!", messageId });
       } else {
-        return res.render("tokenExpired");
+        hawkError.msg = "Data in token was not valid, request a new link";
+        hawkError.status = UNAUTHORIZED;
+        return res.status(hawkError.status).json({ hawkError });
       }
     });
   } catch (err) {
