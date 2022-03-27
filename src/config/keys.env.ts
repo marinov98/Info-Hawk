@@ -4,8 +4,8 @@ import nodemailer from "nodemailer";
 if (process.env.NODE_ENV !== "production") {
   const { error } = config();
 
-  if (error) throw error;
-  console.log("Dotenv configured successfully");
+  if (error) console.info("Dotenv was not detected");
+  else console.info("Dotenv configured successfully");
 }
 
 const PORT_DEFAULT: number = 8081;
