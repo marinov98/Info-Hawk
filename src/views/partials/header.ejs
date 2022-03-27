@@ -23,31 +23,4 @@
       crossorigin="anonymous"
     ></script>
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand nav-link active" href="/">Hawk services</a>
-      <ul class="navbar-nav">
-        <% if (auth) { %>
-        <a class="navbar-brand"><%= auth.firstName %></a>
-        <li class="nav-item">
-          <a class="nav-link" id="logout-btn" href="/logout">Logout</a>
-        </li>
-        <% } else { %>
-        <li class="nav-item"><a href="/login" class="nav-link">Sign In</a></li>
-        <% } %>
-      </ul>
-    </nav>
-  </body>
 </html>
-
-<script>
-  const logout = document.getElementById("logout-btn");
-  if (logout) {
-    logout.addEventListener("click", e => {
-      e.preventDefault();
-      if (confirm("Are you sure you want to log out?")) {
-        location.assign("/logout");
-      }
-    });
-  }
-</script>

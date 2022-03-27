@@ -1,5 +1,6 @@
 export const LOGIN_ERR_MSG = "Incorrect email or password";
 export const UNKNOWN_ERR_MSG = "Unknown error occurred!";
+export const SAME_EMAIL_ERR = "User with this email already exists!";
 
 export const BAD_REQUEST = 400;
 export const NOT_FOUND = 404;

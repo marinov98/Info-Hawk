@@ -13,7 +13,6 @@ export async function closeDB() {
 export async function clearDB() {
   const collections = mongoose.connection.collections;
   for (const key in collections) {
-    const collection = collections[key];
-    await collection.drop();
+    await mongoose.connection.db.dropCollection(key);
   }
 }

@@ -2,7 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { Admin } from "../db/models";
 import { IHError } from "../types/errors";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
-import { BAD_REQUEST, CREATED, GOOD, UNKNOWN_ERR_MSG } from "./../config/keys.error";
+import {
+  BAD_REQUEST,
+  CREATED,
+  GOOD,
+  SAME_EMAIL_ERR,
+  UNKNOWN_ERR_MSG
+} from "./../config/keys.error";
 
 export function register_get(_: Request, res: Response, __: NextFunction) {
   return res.render("register");
@@ -20,7 +26,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
   };
   try {
     if (await Admin.findOne({ email: req.body.email })) {
-      hawkError.msg = "User with this email already exists!";
+      hawkError.msg = SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
     await Admin.create(req.body);
