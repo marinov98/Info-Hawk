@@ -1,0 +1,49 @@
+<%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
+<form style="margin-left: 10px; margin-right: 50px" action="/login">
+  <h2>Login</h2>
+  <div class="login error alert alert-info" id="login-err-msg" role="alert">
+    Please enter your information below.
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" placeholder="example@gmail.com" required />
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" required />
+  </div>
+  <button class="btn btn-primary">Login</button>
+  <a style="margin-left: 5px; margin-right: 10px" href="/register"
+    >Don't have an account? Register here</a
+  >
+  <a href="/passwordMail">Forgot your password?</a>
+</form>
+
+<%- include('partials/footer'); -%>
+
+<script>
+  const form = document.querySelector("form");
+  const loginError = document.getElementById("login-err-msg");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const email = form.email.value;
+    const password = form.password.value;
+    try {
+      const { data } = await axios.post("/login", { email, password });
+      if (data.id) {
+        location.assign("/");
+      }
+    } catch (err) {
+      loginError.className = "login error alert alert-danger";
+      if (err.response && err.response.data) {
+        const { hawkError } = err.response.data;
+        if (hawkError && hawkError.msg) loginError.textContent = hawkError.msg;
+      }
+
+      if ("" === loginError.textContent) {
+        loginError.textContent = "Something went wrong try again later...";
+      }
+    }
+  });
+</script>

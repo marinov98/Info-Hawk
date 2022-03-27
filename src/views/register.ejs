@@ -1,0 +1,69 @@
+<%- include('partials/header') -%> <%- include('partials/navbar'); -%>
+<form style="margin-left: 10px; margin-right: 50px" action="/register">
+  <h2>Register</h2>
+  <div id="register-error" class="register error alert alert-info" role="alert">
+    Please fill out the info below to sign up.
+  </div>
+  <div class="mb-3">
+    <label for="firstName" class="form-label">First Name</label>
+    <input type="text" name="firstName" class="form-control" placeholder="First Name" required />
+  </div>
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Last Name</label>
+    <input type="text" name="lastName" class="form-control" placeholder="Last Name" required />
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" placeholder="example@gmail.com" required />
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" name="password" required />
+  </div>
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" name="confirmPassword" required />
+  </div>
+  <button style="margin-right: 10px" class="btn btn-primary">Sign up</button>
+  <a href="/login">Have an account? Login here</a>
+</form>
+<%- include('partials/footer') -%>
+
+<script>
+  const form = document.querySelector("form");
+  const registrationError = document.querySelector(".register.error");
+  const alertDiv = document.getElementById("register-error");
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const firstName = form.firstName.value;
+    const lastName = form.lastName.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const confirmPassword = form.confirmPassword.value;
+
+    try {
+      const { data } = await axios.post("/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword
+      });
+      if (data.created) {
+        location.assign("/login");
+      }
+    } catch (err) {
+      alertDiv.className = "register error alert alert-danger";
+      if (err.response && err.response.data) {
+        const { hawkError } = err.response.data;
+        if (hawkError && hawkError.msg) alertDiv.textContent = hawkError.msg;
+      }
+
+      if ("" === registrationError.textContent) {
+        alertDiv.textContent = "Something went wrong try again later...";
+      }
+    }
+  });
+</script>
