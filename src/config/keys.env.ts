@@ -15,7 +15,9 @@ const jwtRefreshSecret: string = process.env.REFRESH_SECRET || "supersuperrefres
 const cookieSecret: string = process.env.COOKIE_SECRET || "supercookiesecret";
 const issuer: string = process.env.ISSUER || "fake issuer";
 const audience: string = process.env.AUDIENCE || "fake audience";
-const dbUrl: string = process.env.DB_URL || "mongodb://localhost:27017/info-hawk-store";
+const dbUrlLocal = "mongodb://localhost:27017/info-hawk-store";
+const dbUrlTest = process.env.TEST_DB_URL || "mongodb://localhost:27017/info-hawk-store-test";
+const dbUrl: string = process.env.DB_URL || dbUrlLocal;
 const appEmail = process.env.EMAIL_USERNAME || "example@gmail.com";
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -34,6 +36,7 @@ export {
   issuer,
   audience,
   dbUrl,
+  dbUrlTest,
   transporter,
   appEmail
 };

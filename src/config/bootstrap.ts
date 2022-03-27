@@ -3,10 +3,9 @@ import express, { Application } from "express";
 import path from "path";
 import { fillAuth } from "../middleware/authMiddleware";
 import { adminRoutes, homeRoutes, resetRoutes } from "../routes";
-import connectToDB from "./db";
 import { cookieSecret, port } from "./keys.env";
 
-export default async function bootstrap(): Promise<Application> {
+export default function bootstrap(): Application {
   // Initialization
   const server: Application = express();
   server.set("port", port);
@@ -19,9 +18,6 @@ export default async function bootstrap(): Promise<Application> {
   // View Engine
   server.set("views", path.resolve(__dirname, "../views"));
   server.set("view engine", "ejs");
-
-  // Database
-  await connectToDB();
 
   server.get("*", fillAuth);
   server.use(homeRoutes);

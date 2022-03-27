@@ -1,9 +1,11 @@
 import { Application } from "express";
 import bootstrap from "./config/bootstrap";
+import connectToDB from "./config/db";
 import { port } from "./config/keys.env";
 
 (async () => {
-  const app: Application = await bootstrap();
+  const app: Application = bootstrap();
+  await connectToDB();
 
   // Launch server
   app.listen(port, () => {
