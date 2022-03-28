@@ -18,6 +18,7 @@ const audience: string = process.env.AUDIENCE || "fake audience";
 const dbUrlLocal = "mongodb://localhost:27017/info-hawk-store";
 const dbUrlTest = process.env.TEST_DB_URL || "mongodb://localhost:27017/test-info-hawk";
 const dbUrl: string = process.env.DB_URL || dbUrlLocal;
+const bcryptHash: number = parseInt(process.env.HASH!) || 12;
 const appEmail = process.env.EMAIL_USERNAME || "example@gmail.com";
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -38,5 +39,6 @@ export {
   dbUrl,
   dbUrlTest,
   transporter,
-  appEmail
+  appEmail,
+  bcryptHash
 };

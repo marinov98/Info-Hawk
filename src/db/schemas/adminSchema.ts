@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { Document, model, Model, Schema } from "mongoose";
+import { bcryptHash } from "../../config/keys.env";
 import { BAD_REQUEST, LOGIN_ERR_MSG, UNKNOWN_ERR_MSG } from "./../../config/keys.error";
 import { IAdmin } from "./../../interfaces/index";
 import { IHError, Maybe } from "./../../types/errors";
@@ -34,7 +35,7 @@ const AdminSchema: Schema<IAdminDoc> = new Schema<IAdminDoc>({
 AdminSchema.pre<IAdminDoc>("save", async function (next: Function): Promise<void> {
   try {
     if (this.isModified("password")) {
-      this.password = await bcrypt.hash(this.password, 12);
+      this.password = await bcrypt.hash(this.password, bcryptHash);
     }
     next();
   } catch (err) {
