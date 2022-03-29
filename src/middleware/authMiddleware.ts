@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-import { audience, issuer, jwtRefreshSecret, jwtSecret } from "../config/keys.env";
+import { audience, issuer, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/keys.env";
 import { FORBIDDEN } from "../config/keys.error";
 import { Admin } from "../db/models";
 import { DecodedToken } from "../interfaces/token";
@@ -13,7 +13,7 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
   if (token) {
     verify(
       token,
-      jwtSecret,
+      JWT_SECRET,
       { ignoreExpiration: true, issuer, audience },
       async (err: any, decodedToken) => {
         if (err) {
@@ -39,7 +39,7 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
   const refreshToken = req.cookies[JWT_REFRESH_COOKIE_KEY];
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
-    verify(refreshToken, jwtRefreshSecret, { issuer, audience }, (err: any, decodedToken) => {
+    verify(refreshToken, JWT_REFRESH_SECRET, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
         return res.status(FORBIDDEN).redirect("/login");
@@ -63,7 +63,7 @@ export function attemptRefresh(req: Request, res: Response, next: NextFunction):
 export function fillAuth(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies[JWT_COOKIE_KEY];
   if (token) {
-    verify(token, jwtSecret, { issuer, audience }, async (err: any, decodedToken) => {
+    verify(token, JWT_SECRET, { issuer, audience }, async (err: any, decodedToken) => {
       if (err) {
         res.app.locals.auth = null;
       } else if (!res.app.locals.auth) {

@@ -2,12 +2,12 @@ import { Application } from "express";
 import { sign } from "jsonwebtoken";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
-import { audience, issuer, jwtSecret } from "../../src/config/keys.env";
+import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
-  GOOD,
   LOGIN_ERR_MSG,
+  OK,
   TOKEN_RESET_ERR,
   TOKEN_RESET_PAYLOAD_ERR,
   UNAUTHORIZED
@@ -55,7 +55,7 @@ describe("Testing Reset Controller", () => {
   it("should send resend link successfully", async () => {
     const { email } = ADMIN_MOCK;
     const { body, status } = await request(app).post("/passwordMail").send({ email });
-    expect(status).toBe(GOOD);
+    expect(status).toBe(OK);
     expect(body.message).toBe("A reset link was sent to your email");
     expect(body.messageId).toBe("123");
   });
@@ -70,10 +70,10 @@ describe("Testing Reset Controller", () => {
 
   it("should reset password successfully", async () => {
     const { email, password } = ADMIN_MOCK;
-    const accessToken: string = sign({ email }, jwtSecret, { audience, issuer, expiresIn: "2m" });
+    const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "2m" });
     const newPassword = "newPass123";
     const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
-    expect(status).toBe(GOOD);
+    expect(status).toBe(OK);
     expect(body.message).toBe("Password reset successfully!");
     expect(body.messageId).toBe("123");
 
@@ -88,7 +88,7 @@ describe("Testing Reset Controller", () => {
       .post("/login")
       .send({ email, password: newPassword });
     expect(body2).toHaveProperty("id");
-    expect(status2).toBe(GOOD);
+    expect(status2).toBe(OK);
   });
 
   it("should reset unsuccessfully bad token", async () => {
@@ -101,7 +101,7 @@ describe("Testing Reset Controller", () => {
 
   it("should reset unsuccessfully bad issuer", async () => {
     const { email } = ADMIN_MOCK;
-    const accessToken: string = sign({ email }, jwtSecret, {
+    const accessToken: string = sign({ email }, JWT_SECRET, {
       audience,
       issuer: "fake",
       expiresIn: "2m"
@@ -114,7 +114,7 @@ describe("Testing Reset Controller", () => {
 
   it("should reset unsuccessfully bad audience", async () => {
     const { email } = ADMIN_MOCK;
-    const accessToken: string = sign({ email }, jwtSecret, {
+    const accessToken: string = sign({ email }, JWT_SECRET, {
       audience: "fake",
       issuer,
       expiresIn: "2m"
@@ -128,7 +128,7 @@ describe("Testing Reset Controller", () => {
   it("should reset unsuccessfully bad payload", async () => {
     let { email } = ADMIN_MOCK;
     email = "wrongwrong@gmail.com";
-    const accessToken: string = sign({ email }, jwtSecret, {
+    const accessToken: string = sign({ email }, JWT_SECRET, {
       audience,
       issuer,
       expiresIn: "2m"
@@ -138,7 +138,7 @@ describe("Testing Reset Controller", () => {
     expect(body.hawkError.msg).toBe("Data in token was not valid, request a new link");
     expect(status).toBe(UNAUTHORIZED);
 
-    const accessToken2: string = sign({ id: email }, jwtSecret, {
+    const accessToken2: string = sign({ id: email }, JWT_SECRET, {
       audience,
       issuer,
       expiresIn: "2m"

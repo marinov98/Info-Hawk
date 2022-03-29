@@ -1,16 +1,16 @@
 import { Application } from "express";
 import bootstrap from "./config/bootstrap";
 import connectToDB from "./config/db";
-import { port } from "./config/keys.env";
+import { PORT } from "./config/keys.env";
 
 (async () => {
   const app: Application = bootstrap();
   await connectToDB();
 
   // Launch server
-  app.listen(port, () => {
+  app.listen(PORT, () => {
     if (process.env.NODE_ENV !== "production") {
-      console.log(`📡 Local server up! 📡 Listening on http://localhost:${port}`);
+      console.log(`📡 Local server up! 📡 Listening on http://localhost:${PORT}`);
     } else {
       console.log("📡📡📡 Production server up and running! 📡📡📡");
     }

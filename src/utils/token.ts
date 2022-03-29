@@ -1,14 +1,14 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "../config/keys.constants";
-import { audience, issuer, jwtRefreshSecret, jwtSecret } from "../config/keys.env";
+import { audience, issuer, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/keys.env";
 
 type Tokens = { accessToken: string; refreshToken: string };
 
 export function createTokens(id: string): Tokens {
   return {
-    accessToken: jwt.sign({ id }, jwtSecret, { audience, issuer, expiresIn: "1h" }),
-    refreshToken: jwt.sign({ id }, jwtRefreshSecret, {
+    accessToken: jwt.sign({ id }, JWT_SECRET, { audience, issuer, expiresIn: "1h" }),
+    refreshToken: jwt.sign({ id }, JWT_REFRESH_SECRET, {
       audience,
       issuer,
       expiresIn: "7 days"

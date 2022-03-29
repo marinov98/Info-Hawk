@@ -1,13 +1,21 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { dbUrlTest } from "../src/config/keys.env";
+import { DB_URL_TEST } from "../src/config/keys.env";
 
 export default class dbTester {
   mongoServer: any = null;
-  uri: string = dbUrlTest;
+  uri: string = DB_URL_TEST;
+  local: boolean;
 
-  async connectTestDB(local: boolean = false) {
-    if (!local) {
+  constructor(local: boolean = false, uri: string = DB_URL_TEST) {
+    this.local = local;
+    if (this.local) {
+      this.uri = uri;
+    }
+  }
+
+  async connectTestDB() {
+    if (!this.local) {
       this.mongoServer = await MongoMemoryServer.create();
       this.uri = this.mongoServer.getUri();
     }
@@ -17,7 +25,7 @@ export default class dbTester {
   async closeDB() {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
-    await this.mongoServer.stop();
+    if (!this.local) await this.mongoServer.stop();
   }
 
   async clearDB() {

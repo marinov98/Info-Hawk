@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
-import { appEmail, audience, issuer, jwtSecret, transporter } from "../config/keys.env";
+import { APP_EMAIL, audience, issuer, JWT_SECRET, TRANSPORTER } from "../config/keys.env";
 import {
   BAD_REQUEST,
-  GOOD,
   NOT_FOUND,
   NOT_SAME_EMAIL_ERR,
+  OK,
   TOKEN_RESET_ERR,
   TOKEN_RESET_PAYLOAD_ERR,
   UNAUTHORIZED,
@@ -27,7 +27,7 @@ export function reset_password_form_get(req: Request, res: Response, next: NextF
   const hawkError: IHError = { src: "resetController", msg: UNKNOWN_ERR_MSG, status: BAD_REQUEST };
   try {
     const token = req.params.token;
-    verify(token, jwtSecret, { issuer, audience }, async (err, decodedToken) => {
+    verify(token, JWT_SECRET, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
         return res.status(UNAUTHORIZED).redirect("/error/token");
       }
@@ -56,15 +56,15 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       hawkError.msg = NOT_SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
-    const accessToken: string = sign({ email }, jwtSecret, { audience, issuer, expiresIn: "20m" });
-    const { messageId } = await transporter.sendMail({
-      from: appEmail,
+    const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "20m" });
+    const { messageId } = await TRANSPORTER.sendMail({
+      from: APP_EMAIL,
       to: email,
       subject: "Info Hawk Password Reset",
       text: `Please click to link below to reset your password:
       ${req.protocol}://${req.headers.host}/passwordReset/${accessToken}`
     });
-    return res.status(GOOD).json({ message: `A reset link was sent to your email`, messageId });
+    return res.status(OK).json({ message: `A reset link was sent to your email`, messageId });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -78,7 +78,7 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
   const hawkError: IHError = { src: "resetController", msg: UNKNOWN_ERR_MSG, status: BAD_REQUEST };
   try {
     const token = req.params.token;
-    verify(token, jwtSecret, { issuer, audience }, async (err, decodedToken) => {
+    verify(token, JWT_SECRET, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
         hawkError.msg = TOKEN_RESET_ERR;
         hawkError.status = UNAUTHORIZED;
@@ -90,13 +90,13 @@ export function reset_password_form_put(req: Request, res: Response, next: NextF
       if (admin) {
         admin.password = newPassword;
         await admin.save();
-        const { messageId } = await transporter.sendMail({
-          from: appEmail,
+        const { messageId } = await TRANSPORTER.sendMail({
+          from: APP_EMAIL,
           to: email,
           subject: "Info Hawk Password Change Confirmation",
           text: "We are sending you this email to let you know that your password was changed"
         });
-        return res.status(GOOD).json({ message: "Password reset successfully!", messageId });
+        return res.status(OK).json({ message: "Password reset successfully!", messageId });
       } else {
         hawkError.msg = TOKEN_RESET_PAYLOAD_ERR;
         hawkError.status = UNAUTHORIZED;
