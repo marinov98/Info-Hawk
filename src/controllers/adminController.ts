@@ -2,13 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Admin } from "../db/models";
 import { IHError } from "../types/errors";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
-import {
-  BAD_REQUEST,
-  CREATED,
-  GOOD,
-  SAME_EMAIL_ERR,
-  UNKNOWN_ERR_MSG
-} from "./../config/keys.error";
+import { BAD_REQUEST, CREATED, OK, SAME_EMAIL_ERR, UNKNOWN_ERR_MSG } from "./../config/keys.error";
 
 export function register_get(_: Request, res: Response, __: NextFunction) {
   return res.render("register");
@@ -49,7 +43,7 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
     const id: string = data._id.toString();
 
     setCookies(res, createTokens(id));
-    return res.status(GOOD).json({ id });
+    return res.status(OK).json({ id });
   } catch (err) {
     console.error(err);
     const hawkError: IHError = {
