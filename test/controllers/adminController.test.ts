@@ -4,8 +4,8 @@ import bootstrap from "../../src/config/bootstrap";
 import {
   BAD_REQUEST,
   CREATED,
-  GOOD,
   LOGIN_ERR_MSG,
+  OK,
   SAME_EMAIL_ERR
 } from "../../src/config/keys.error";
 import dbTester from "./../db";
@@ -63,7 +63,7 @@ describe("Testing Admin Controller", () => {
     const { email, password } = ADMIN_MOCK;
     const { body, status } = await request(app).post("/login").send({ email, password });
     expect(body).toHaveProperty("id");
-    expect(status).toBe(GOOD);
+    expect(status).toBe(OK);
   });
 
   it("should login unsuccessfully wrong email right password", async () => {

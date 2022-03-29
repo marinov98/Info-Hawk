@@ -3,17 +3,17 @@ import express, { Application } from "express";
 import path from "path";
 import { fillAuth } from "../middleware/authMiddleware";
 import { adminRoutes, homeRoutes, resetRoutes } from "../routes";
-import { cookieSecret, port } from "./keys.env";
+import { COOKIE_SECRET, PORT } from "./keys.env";
 
 export default function bootstrap(): Application {
   // Initialization
   const server: Application = express();
-  server.set("port", port);
+  server.set("port", PORT);
 
   // Middleware
   server.use(express.static(path.resolve(__dirname, "../public")));
   server.use(express.json());
-  server.use(cookieParser(cookieSecret));
+  server.use(cookieParser(COOKIE_SECRET));
 
   // View Engine
   server.set("views", path.resolve(__dirname, "../views"));
