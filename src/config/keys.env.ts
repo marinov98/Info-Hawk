@@ -15,11 +15,11 @@ const JWT_REFRESH_SECRET: string = process.env.REFRESH_SECRET || "supersuperrefr
 const COOKIE_SECRET: string = process.env.COOKIE_SECRET || "supercookiesecret";
 const issuer: string = process.env.ISSUER || "fake issuer";
 const audience: string = process.env.AUDIENCE || "fake audience";
-const DB_URL_LOCAL = "mongodb://localhost:27017/info-hawk-store";
-const DB_URL_TEST = process.env.TEST_DB_URL || "mongodb://localhost:27017/test-info-hawk";
+const DB_URL_LOCAL: string = "mongodb://localhost:27017/info-hawk-store";
+const DB_URL_TEST: string = process.env.TEST_DB_URL || "mongodb://localhost:27017/test-info-hawk";
 const DB_URL: string = process.env.DB_URL || DB_URL_LOCAL;
 const BCRYPT_SALT: number = parseInt(process.env.HASH!) || 12;
-const APP_EMAIL = process.env.EMAIL_USERNAME || "example@gmail.com";
+const APP_EMAIL: string = process.env.EMAIL_USERNAME || "example@gmail.com";
 const TRANSPORTER = nodemailer.createTransport({
   service: "gmail",
   auth: {
