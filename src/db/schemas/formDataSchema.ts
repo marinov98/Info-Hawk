@@ -1,5 +1,5 @@
 import { Document, Model, model, Schema } from "mongoose";
-import { IFormData } from "../../interfaces";
+import { IFormData } from "../../interfaces/index";
 
 interface IFormDataDoc extends IFormData, Document {
   adminId: typeof Schema.Types.ObjectId;
