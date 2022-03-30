@@ -1,8 +1,27 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
 
 <header>
-  <div class="headings">
-    <h2>Welcome to Info Hawk!</h2>
+  <div class="headings" style="margin: 5px">
+    <% if (auth) { %>
+    <h2 style="text-align: center">What would you like to do <%= auth.firstName %>?</h3>
+    <br />
+    <div class="mb-3" style="text-align: center">
+      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/edit">Edit one of your forms</a>
+    </div>
+    <div class="mb-3" style="text-align: center">
+      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/create">Create a new form</a>
+    </div>
+    <div class="mb-3" style="text-align: center">
+      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/view">View your submissions</a>
+    </div>
+    <% } else {%>
+    <h2 style="text-align: center">Welcome to Info Hawk!</h2>
+    <p style="text-align: center;font-size: xx-large;">
+      Info Hawk is a service for creating , updating , and deleting forms that are created by
+      approved admins of the website. It is used to ease the transfer of data without needing the
+      admins to manually call and fill out the fields themselves
+    </p>
+    <% } %>
   </div>
 </header>
 
