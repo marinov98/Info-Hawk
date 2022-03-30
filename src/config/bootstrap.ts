@@ -2,7 +2,7 @@ import cookieParser from "cookie-parser";
 import express, { Application } from "express";
 import path from "path";
 import { fillAuth } from "../middleware/authMiddleware";
-import { adminRoutes, homeRoutes, infoDataRoutes, resetRoutes } from "../routes";
+import * as routes from "../routes";
 import { COOKIE_SECRET, PORT } from "./keys.env";
 
 export default function bootstrap(): Application {
@@ -20,10 +20,9 @@ export default function bootstrap(): Application {
   server.set("view engine", "ejs");
 
   server.get("*", fillAuth);
-  server.use(homeRoutes);
-  server.use(adminRoutes);
-  server.use(resetRoutes);
-  server.use(infoDataRoutes);
+  Object.entries(routes).forEach(([, route]) => {
+    server.use(route);
+  });
 
   return server;
 }

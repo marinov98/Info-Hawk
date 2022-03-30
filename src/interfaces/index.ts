@@ -1,4 +1,4 @@
 import IAdmin from "./admin";
-import ITaxData from "./taxData";
+import IFormData from "./formData";
 
-export { IAdmin, ITaxData };
+export { IAdmin, IFormData };
