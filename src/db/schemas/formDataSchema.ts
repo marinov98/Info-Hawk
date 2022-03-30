@@ -3,7 +3,6 @@ import { IFormData } from "../../interfaces/index";
 
 interface IFormDataDoc extends IFormData, Document {
   adminId: typeof Schema.Types.ObjectId;
-  isSkeleton: boolean;
 }
 
 interface IFormDataModel extends Model<IFormDataDoc> {}
