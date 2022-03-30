@@ -1,0 +1,122 @@
+<%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
+<form style="margin-left: 10px; margin-right: 50px" action="/infoData">
+  <h2>Create Data Form</h2>
+  <div id="info-data-disclaimer" class="info-data error alert alert-primary" role="alert">
+    Disclaimer! The inputs are shown for you to see how the form will look like to the client, do
+    not fill them in, their data will not be saved (except for the title field, you will have to
+    fill that one out), focus on ensuring the right key values are present! Your code (which you
+    recieved when you account was created) will always be displayed and will be used for the client
+    to send the form to you. If you need spaces in your keys please write them together using camel
+    or snake case!
+  </div>
+  <div id="info-data-error" class="info-data error alert alert-info" role="alert">
+    Please fill out the info below to create your document
+  </div>
+  <div class="mb-3">
+    <label for="formTitle" class="form-label">Form Title</label>
+    <input type="text" name="title" class="form-control" placeholder="My Form Name" required />
+  </div>
+  <div class="mb-3">
+    <label for="adminCode" class="form-label">code</label>
+    <input type="text" name="adminCode" class="form-control" placeholder="adminCode123" readonly />
+  </div>
+  <p id="add_after_me"></p>
+  <button class="btn btn-primary">Finish Creating Form</button>
+  <br />
+  <br />
+  <button class="btn btn-info" id="add-item-btn">Add Data</button>
+  <button class="btn btn-danger" id="remove-item-btn">Remove Data</button>
+  <div class="mb-3">
+    <label for="newItem" class="newItem form-label">Key</label>
+    <input
+      type="text"
+      id="new-item-input"
+      name="newItem"
+      class="form-control"
+      placeholder="my-key"
+    />
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector("form");
+  const addButton = document.getElementById("add-item-btn");
+  const removeButton = document.getElementById("remove-item-btn");
+  const infoError = document.getElementById("info-data-error");
+  const dataStore = { code: true };
+  const inputNew = document.getElementById("new-item-input");
+  const errorClass = "info-data alert alert-danger";
+  const infoClass = "info-data alert alert-info";
+  const originalContent = "Please fill out the info below to sign up.";
+
+  addButton.addEventListener("click", function appendRow(e) {
+    e.preventDefault();
+    const key = form.newItem.value.trim();
+    if (!key || key === "") {
+      infoError.className = errorClass;
+      infoError.textContent = "Key cannot be empty!";
+    } else if (dataStore[key] || key === "Code") {
+      infoError.className = errorClass;
+      infoError.textContent = "Cannot have duplicate keys!";
+    } else {
+      if (/\s/.test(key)) {
+        infoError.className = errorClass;
+        infoError.textContent = "No spaces allowed!";
+      } else {
+        infoError.className = infoClass;
+        infoError.textContent = originalContent;
+        document
+          .getElementById("add_after_me")
+          .insertAdjacentHTML(
+            "beforebegin",
+            `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${key}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+          );
+        dataStore[key] = true;
+        inputNew.value = "";
+      }
+    }
+  });
+
+  removeButton.addEventListener("click", function removeRow(e) {
+    e.preventDefault();
+    const key = form.newItem.value.trim();
+    if (!key) {
+      infoError.className = errorClass;
+      infoError.textContent = "Key cannot be empty!";
+    } else if (key === "code" || key === "Code") {
+      infoError.className = errorClass;
+      infoError.textContent = "Cannot delete code attribute!";
+    } else {
+      const divToDelete = document.getElementById(key);
+      if (divToDelete) {
+        divToDelete.parentNode.removeChild(divToDelete);
+        delete dataStore[key];
+        infoError.className = infoClass;
+        infoError.textContent = originalContent;
+        inputNew.value = "";
+      } else {
+        infoError.className = errorClass;
+        infoError.textContent = "Key not found in the form!";
+      }
+    }
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    if (
+      confirm(
+        "Are you sure you are ready with your form? You can will be able to view and edit later"
+      )
+    ) {
+      const title = form.title.value.trim();
+      if (!title) {
+        infoError.className = errorClass;
+        infoError.textContent = "Title cannot be empty!";
+      } else {
+        // TODO: CREATE IN SERVER LOGIC GOES HERE
+      }
+      console.log(title);
+    }
+    console.table(dataStore);
+  });
+</script>
