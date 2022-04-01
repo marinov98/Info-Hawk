@@ -56,7 +56,11 @@
     "Title",
     "admincode",
     "adminCode",
-    "Admincode"
+    "Admincode",
+    "admin-code",
+    "Admin-Code",
+    "admin-Code",
+    "Admin-code"
   ];
   const inputNew = document.getElementById("new-item-input");
   const errorClass = "info-data alert alert-danger";
@@ -65,7 +69,8 @@
 
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
-    const key = form.newItem.value.trim();
+    const userInput = form.newItem.value.trim();
+    const key = userInput.split(" ").join("-");
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
@@ -73,27 +78,23 @@
       infoError.className = errorClass;
       infoError.textContent = "Cannot have duplicate keys!";
     } else {
-      if (/\s/.test(key)) {
-        infoError.className = errorClass;
-        infoError.textContent = "No spaces allowed!";
-      } else {
-        infoError.className = infoClass;
-        infoError.textContent = originalContent;
-        document
-          .getElementById("add_after_me")
-          .insertAdjacentHTML(
-            "beforebegin",
-            `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${key}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
-          );
-        dataStore[key] = true;
-        inputNew.value = "";
-      }
+      infoError.className = infoClass;
+      infoError.textContent = originalContent;
+      document
+        .getElementById("add_after_me")
+        .insertAdjacentHTML(
+          "beforebegin",
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+        );
+      dataStore[key] = true;
+      inputNew.value = "";
     }
   });
 
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
-    const key = form.newItem.value.trim();
+    const userInput = form.newItem.value.trim();
+    const key = userInput.split(" ").join("-");
     if (!key) {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
