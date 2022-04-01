@@ -52,6 +52,15 @@ describe("Testing Reset Controller", () => {
     await db.closeDB();
   });
 
+  it("should make all GET requests successfully", async () => {
+    let res = await request(app).get("/error/token");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/passwordMail");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/passwordReset/;lkjasdf;lkja");
+    expect(res.status).toBe(302);
+  });
+
   it("should send resend link successfully", async () => {
     const { email } = ADMIN_MOCK;
     const { body, status } = await request(app).post("/passwordMail").send({ email });

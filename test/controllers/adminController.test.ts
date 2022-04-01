@@ -36,6 +36,15 @@ describe("Testing Admin Controller", () => {
     await db.closeDB();
   });
 
+  it("should make all GET requests successfully", async () => {
+    let res = await request(app).get("/register");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/login");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/logout");
+    expect(res.status).toBe(302);
+  });
+
   it("should register successfully", async () => {
     const admin = { ...ADMIN_MOCK } as any;
     admin.email = "secondSuccessful@gmail.com";

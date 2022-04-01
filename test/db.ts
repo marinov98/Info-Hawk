@@ -26,9 +26,13 @@ export default class dbTester {
     }
   }
 
+  public async grabOne(key: string) {
+    return mongoose.connection.collections[key].findOne();
+  }
+
   public async clearDB() {
     try {
-      const collections = mongoose.connection.collections;
+      const { collections } = mongoose.connection;
       for (const collection in collections) {
         if (await collections[collection].findOne()) {
           await mongoose.connection.db.dropCollection(collection);

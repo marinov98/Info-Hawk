@@ -38,6 +38,6 @@ export function validateForm(req: Request, res: Response, next: NextFunction) {
       res.status(hawkError.status).json({ hawkError });
     }
   } else {
-    return res.status(hawkError.status).json(hawkError.msg);
+    return res.status(hawkError.status).json({ hawkError });
   }
 }
