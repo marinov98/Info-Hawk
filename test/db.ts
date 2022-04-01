@@ -26,16 +26,6 @@ export default class dbTester {
     }
   }
 
-  public async closeDB() {
-    try {
-      await mongoose.connection.dropDatabase();
-      await mongoose.connection.close();
-      if (!this.local) await this.mongoServer.stop();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   public async clearDB() {
     try {
       const collections = mongoose.connection.collections;
@@ -44,6 +34,16 @@ export default class dbTester {
           await mongoose.connection.db.dropCollection(collection);
         }
       }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  public async closeDB() {
+    try {
+      await mongoose.connection.dropDatabase();
+      await mongoose.connection.close();
+      if (!this.local) await this.mongoServer.stop();
     } catch (err) {
       console.error(err);
     }
