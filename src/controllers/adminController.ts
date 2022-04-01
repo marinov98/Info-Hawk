@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Admin } from "../db/models";
 import { IHError } from "../types/errors";
+import { generateAdminCode } from "../utils/code";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
 import { BAD_REQUEST, CREATED, OK, SAME_EMAIL_ERR, UNKNOWN_ERR_MSG } from "./../config/keys.error";
 
@@ -23,6 +24,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
       hawkError.msg = SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
+    req.body.code = generateAdminCode();
     await Admin.create(req.body);
     return res.status(CREATED).json({ created: true });
   } catch (err) {
@@ -59,7 +61,7 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
   }
 }
 
-export function logout_get(req: Request, res: Response, _: NextFunction) {
+export function logout_get(_: Request, res: Response, __: NextFunction) {
   removeCookies(res);
   return res.redirect("/");
 }

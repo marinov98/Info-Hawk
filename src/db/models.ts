@@ -1,3 +1,4 @@
 import Admin from "./schemas/adminSchema";
+import Form from "./schemas/formSchema";
 
-export { Admin };
+export { Admin, Form };

@@ -18,8 +18,8 @@
     <input type="text" name="title" class="form-control" placeholder="My Form Name" required />
   </div>
   <div class="mb-3">
-    <label for="adminCode" class="form-label">code</label>
-    <input type="text" name="adminCode" class="form-control" placeholder="adminCode123" readonly />
+    <label for="adminCode" class="form-label">Admin Code</label>
+    <input type="text" name="adminCode" class="form-control" placeholder="adminCode123" required />
   </div>
   <p id="add_after_me"></p>
   <br />
@@ -48,7 +48,16 @@
   const addButton = document.getElementById("add-item-btn");
   const removeButton = document.getElementById("remove-item-btn");
   const infoError = document.getElementById("info-data-error");
-  const dataStore = { code: true };
+  const dataStore = {};
+  const restricted = [
+    "AdminCode",
+    "title",
+    "Admincode",
+    "Title",
+    "admincode",
+    "adminCode",
+    "Admincode"
+  ];
   const inputNew = document.getElementById("new-item-input");
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
@@ -60,7 +69,7 @@
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
-    } else if (dataStore[key] || key === "Code") {
+    } else if (dataStore[key] || restricted.includes(key)) {
       infoError.className = errorClass;
       infoError.textContent = "Cannot have duplicate keys!";
     } else {
@@ -88,9 +97,9 @@
     if (!key) {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
-    } else if (key === "code" || key === "Code") {
+    } else if (restricted.includes(key)) {
       infoError.className = errorClass;
-      infoError.textContent = "Cannot delete code attribute!";
+      infoError.textContent = "Cannot delete restricted attributes!";
     } else {
       const divToDelete = document.getElementById(key);
       if (divToDelete) {
@@ -106,7 +115,7 @@
     }
   });
 
-  form.addEventListener("submit", e => {
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     if (
       confirm(
@@ -114,11 +123,32 @@
       )
     ) {
       const title = form.title.value.trim();
+      const adminCode = form.adminCode.value;
       if (!title) {
         infoError.className = errorClass;
         infoError.textContent = "Title cannot be empty!";
+      } else if (Object.keys(dataStore).length === 0) {
+        infoError.className = errorClass;
+        infoError.textContent = "Cannot create form with no keys!";
       } else {
-        // TODO: CREATE IN SERVER LOGIC GOES HERE
+        try {
+          dataStore.title = title;
+          dataStore.code = adminCode;
+          const { data } = await axios.post("/auth/forms/create", { form: dataStore });
+          console.log(data);
+          if (data.msg) {
+            alert(data.msg);
+            location.assign("/");
+          }
+        } catch (err) {
+          infoError.className = errorClass;
+          if (err.response && err.response.data) {
+            const { hawkError } = err.response.data;
+            if (hawkError && hawkError.msg) infoError.textContent = hawkError.msg;
+          } else {
+            infoError.textContent = err.message || "Something went wrong try again later...";
+          }
+        }
       }
     }
   });

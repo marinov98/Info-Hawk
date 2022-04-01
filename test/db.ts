@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 import { DB_URL_TEST } from "../src/config/keys.env";
 
 export default class dbTester {
-  mongoServer: any = null;
-  uri: string = DB_URL_TEST;
-  local: boolean;
+  private mongoServer: any = null;
+  private uri: string = DB_URL_TEST;
+  private local: boolean;
 
   constructor(local: boolean = false, uri: string = DB_URL_TEST) {
     this.local = local;
@@ -14,24 +14,38 @@ export default class dbTester {
     }
   }
 
-  async connectTestDB() {
-    if (!this.local) {
-      this.mongoServer = await MongoMemoryServer.create();
-      this.uri = this.mongoServer.getUri();
+  public async connectTestDB() {
+    try {
+      if (!this.local) {
+        this.mongoServer = await MongoMemoryServer.create();
+        this.uri = this.mongoServer.getUri();
+      }
+      await mongoose.connect(this.uri);
+    } catch (err) {
+      console.error(err);
     }
-    await mongoose.connect(this.uri);
   }
 
-  async closeDB() {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    if (!this.local) await this.mongoServer.stop();
+  public async closeDB() {
+    try {
+      await mongoose.connection.dropDatabase();
+      await mongoose.connection.close();
+      if (!this.local) await this.mongoServer.stop();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
-  async clearDB() {
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-      await mongoose.connection.db.dropCollection(key);
+  public async clearDB() {
+    try {
+      const collections = mongoose.connection.collections;
+      for (const collection in collections) {
+        if (await collections[collection].findOne()) {
+          await mongoose.connection.db.dropCollection(collection);
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 }
