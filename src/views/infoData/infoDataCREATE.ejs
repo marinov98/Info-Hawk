@@ -3,12 +3,9 @@
 <form style="margin-left: 10px; margin-right: 50px" action="/infoData">
   <h2>Create Data Form</h2>
   <div id="info-data-disclaimer" class="info-data error alert alert-primary" role="alert">
-    Disclaimer! The inputs are shown for you to see how the form will look like to the client, do
-    not fill them in, their data will not be saved (except for the title field, you will have to
-    fill that one out), focus on ensuring the right key values are present! Your code (which you
-    recieved when you account was created) will always be displayed and will be used for the client
-    to send the form to you. If you need spaces in your keys please write them together using camel
-    or snake case!
+    Disclaimer! The inputs are shown for you to see how the form will look like to the client, this
+    is why you cannot fill them in (except title and admin code), focus on ensuring the right key
+    values are present!
   </div>
   <div id="info-data-error" class="info-data error alert alert-info" role="alert">
     Please fill out the info below to create your document
@@ -19,7 +16,17 @@
   </div>
   <div class="mb-3">
     <label for="adminCode" class="form-label">Admin Code</label>
-    <input type="text" name="adminCode" class="form-control" placeholder="adminCode123" required />
+    <% if (auth) { %>
+    <input
+      type="text"
+      name="adminCode"
+      class="form-control"
+      placeholder="<%= auth.code %>"
+      readonly
+    />
+    <% } else { %>
+    <input type="text" name="adminCode" class="form-control" placeholder="code123" />
+    readonly /> <% } %>
   </div>
   <p id="add_after_me"></p>
   <br />
@@ -124,7 +131,7 @@
       )
     ) {
       const title = form.title.value.trim();
-      const adminCode = form.adminCode.value;
+      const adminCode = form.adminCode.placeholder.trim();
       if (!title) {
         infoError.className = errorClass;
         infoError.textContent = "Title cannot be empty!";
@@ -136,7 +143,6 @@
           dataStore.title = title;
           dataStore.code = adminCode;
           const { data } = await axios.post("/auth/forms/create", { form: dataStore });
-          console.log(data);
           if (data.msg) {
             alert(data.msg);
             location.assign("/");
