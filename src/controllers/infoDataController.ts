@@ -247,7 +247,7 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
       const { messageId } = await TRANSPORTER.sendMail({
         from: APP_EMAIL,
         to: admin.email,
-        subject: `Submission was submitted with your code!`,
+        subject: `Someone submitted something with your code!`,
         text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
       });
       return res.status(CREATED).json({ msg: "Submission successful!", messageId });

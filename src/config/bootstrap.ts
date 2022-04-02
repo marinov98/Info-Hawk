@@ -1,7 +1,7 @@
 import cookieParser from "cookie-parser";
 import express, { Application } from "express";
 import { resolve } from "path";
-import { fillAuth } from "../middleware/authMiddleware";
+import { fillAuth, monitorCookies } from "../middleware/authMiddleware";
 import * as routes from "../routes";
 import { COOKIE_SECRET, PORT } from "./keys.env";
 
@@ -19,6 +19,7 @@ export default function bootstrap(): Application {
   server.set("views", resolve(__dirname, "../views"));
   server.set("view engine", "ejs");
 
+  server.use(monitorCookies);
   server.get("*", fillAuth);
   Object.values(routes).forEach(route => server.use(route));
 
