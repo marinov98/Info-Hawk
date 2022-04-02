@@ -1,10 +1,38 @@
-import { Application } from "express";
+import { Application, NextFunction, Request, Response } from "express";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
 import { BAD_REQUEST, CREATED, FORM_CREATE_ERR, NOT_FOUND, OK } from "../../src/config/keys.error";
 import dbTester from "./../db";
 import { ADMIN_MOCK } from "./adminController.mock";
 import { FORM_MOCK } from "./formData.mock";
+
+jest.mock("./../../src/middleware/authMiddleware", () => {
+  return {
+    authenticateAdmin: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    maintainAuth: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    fillAuth: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    attemptRefresh: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    }
+  };
+});
+
+jest.mock("nodemailer", () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: async function (options: any) {
+      return Promise.resolve({
+        messageId: "123",
+        success: true
+      });
+    }
+  })
+}));
 
 describe("Testing Form Controller", () => {
   const app: Application = bootstrap();

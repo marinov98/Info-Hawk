@@ -41,6 +41,7 @@
       if (data.message) {
         infoError.className = "info-data error alert alert-success";
         infoError.textContent = data.message;
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     } catch (err) {
       infoError.className = "info-data error alert alert-danger";

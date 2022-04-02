@@ -93,7 +93,6 @@ export async function info_data_edit_post(req: Request, res: Response, _: NextFu
     src: "InfoDataController"
   };
   try {
-    console.log("hit endpoint!");
     const { form } = req.body;
     const admin = await Admin.findOne({ code: form.code });
     if (!admin) {
@@ -189,6 +188,50 @@ export async function info_data_link_post(req: Request, res: Response, _: NextFu
     });
 
     return res.status(OK).json({ message: "Form link sent successfully!", messageId });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message) hawkError.msg = err.message;
+    }
+
+    return res.status(hawkError.status).json({ hawkError });
+  }
+}
+
+export async function info_data_client_post(req: Request, res: Response, _: NextFunction) {
+  const hawkError: IHError = {
+    msg: UNKNOWN_ERR_MSG,
+    status: BAD_REQUEST,
+    src: "InfoDataController"
+  };
+
+  try {
+    const { form } = req.body;
+    const { title, code } = form;
+    const admin = await Admin.findOne({ code });
+    if (!admin) {
+      hawkError.status = NOT_FOUND;
+      hawkError.msg = FORM_EDIT_CODE_ERR;
+      return res.status(hawkError.status).json({ hawkError });
+    }
+    const formSkeleton = await Form.findOne({ adminId: admin._id, title, isSkeleton: true });
+    if (!formSkeleton) {
+      hawkError.status = NOT_FOUND;
+      hawkError.msg = FORM_EDIT_DOC_ERR;
+      return res.status(hawkError.status).json({ hawkError });
+    }
+    delete form.code;
+    form.adminId = admin._id;
+    const createdForm = await Form.create(form);
+    if (createdForm) {
+      const { messageId } = await TRANSPORTER.sendMail({
+        from: APP_EMAIL,
+        to: admin.email,
+        subject: `Submission was submitted with your code!`,
+        text: `Submission with id: ${createdForm._id.toString()} has been added to your account`
+      });
+      return res.status(CREATED).json({ msg: "Submission successful!", messageId });
+    }
+    return res.status(BAD_REQUEST).json({ hawkError });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;

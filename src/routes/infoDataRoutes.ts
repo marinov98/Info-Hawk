@@ -1,14 +1,18 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
 import { authenticateAdmin } from "../middleware/authMiddleware";
-import { validateForm } from "../middleware/infoDataMiddleware";
+import {
+  validateDeleteVars,
+  validateSkeleton,
+  validateSubmission
+} from "../middleware/infoDataMiddleware";
 const router: Router = Router();
 
 router.get("/auth/forms/create", authenticateAdmin, infoDataController.info_data_create_get);
 router.post(
   "/auth/forms/create",
   authenticateAdmin,
-  validateForm,
+  validateSkeleton,
   infoDataController.info_data_create_post
 );
 router.get("/auth/forms/view/:id", authenticateAdmin, infoDataController.info_data_view_get);
@@ -18,8 +22,23 @@ router.post(
   authenticateAdmin,
   infoDataController.info_data_link_post
 );
-router.post("/auth/forms/edit", authenticateAdmin, infoDataController.info_data_edit_post);
+router.post(
+  "/auth/forms/edit",
+  authenticateAdmin,
+  validateSkeleton,
+  infoDataController.info_data_edit_post
+);
 router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
-router.delete("/auth/forms/delete", authenticateAdmin, infoDataController.info_data_edit_delete);
+router.post(
+  "/client/form-submission",
+  validateSubmission,
+  infoDataController.info_data_client_post
+);
+router.delete(
+  "/auth/forms/delete",
+  authenticateAdmin,
+  validateDeleteVars,
+  infoDataController.info_data_edit_delete
+);
 
 export default router;
