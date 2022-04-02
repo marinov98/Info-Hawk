@@ -1,11 +1,25 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
+import { authenticateAdmin } from "../middleware/authMiddleware";
 import { validateForm } from "../middleware/infoDataMiddleware";
 const router: Router = Router();
 
-router.get("/auth/forms/create", infoDataController.info_data_create_get);
-router.get("/auth/forms/edit", infoDataController.info_data_edit_get);
-router.get("/auth/forms/view", infoDataController.info_data_view_get);
-router.post("/auth/forms/create", validateForm, infoDataController.info_data_create_post);
+router.get("/auth/forms/create", authenticateAdmin, infoDataController.info_data_create_get);
+router.post(
+  "/auth/forms/create",
+  authenticateAdmin,
+  validateForm,
+  infoDataController.info_data_create_post
+);
+router.get("/auth/forms/view/:id", authenticateAdmin, infoDataController.info_data_view_get);
+router.get("/auth/forms/link/:id", authenticateAdmin, infoDataController.info_data_link_get);
+router.post(
+  "/auth/forms/link/:adminId/:formId",
+  authenticateAdmin,
+  infoDataController.info_data_link_post
+);
+router.post("/auth/forms/edit", authenticateAdmin, infoDataController.info_data_edit_post);
+router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
+router.delete("/auth/forms/delete", authenticateAdmin, infoDataController.info_data_edit_delete);
 
 export default router;

@@ -43,8 +43,6 @@ describe("Testing Form Controller", () => {
   it("should make all GET requests successfully", async () => {
     let res = await request(app).get("/auth/forms/create");
     expect(res.status).toBe(OK);
-    res = await request(app).get("/auth/forms/edit");
-    expect(res.status).toBe(OK);
     res = await request(app).get("/auth/forms/view");
     expect(res.status).toBe(OK);
   });

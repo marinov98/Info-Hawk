@@ -1,22 +1,25 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
 
 <header>
-  <div class="headings" style="margin: 5px">
+  <div class="headings" style="margin: 5px; text-align: center">
     <% if (auth) { %>
-    <h2 style="text-align: center">What would you like to do <%= auth.firstName %>?</h3>
-    <br />
-    <div class="mb-3" style="text-align: center">
-      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/edit">Edit one of your forms</a>
+    <h2 style="text-align: center">Any Forms you have made will be displayed below</h2>
+    <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
+    <div
+      class="card"
+      style="margin: 50px; text-align: center; border: 5px solid rgb(167, 167, 167)"
+    >
+      <div class="card-body">
+        <h5 class="card-title"><%=skeleton.title%></h5>
+        <a href="/auth/forms/view/<%=skeleton._id%> " class="btn btn-primary card-link">View</a>
+        <a href="/auth/forms/link/<%=skeleton._id%> " class="btn btn-secondary card-link"
+          >Send Link</a
+        >
+      </div>
     </div>
-    <div class="mb-3" style="text-align: center">
-      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/create">Create a new form</a>
-    </div>
-    <div class="mb-3" style="text-align: center">
-      <a class="btn btn btn-secondary" style="font-size: xx-large;" href="/auth/forms/view">View your submissions</a>
-    </div>
-    <% } else {%>
+    <% })} %> <% } else {%>
     <h2 style="text-align: center">Welcome to Info Hawk!</h2>
-    <p style="text-align: center;font-size: xx-large;">
+    <p style="text-align: center; font-size: xx-large">
       Info Hawk is a service for creating , updating , and deleting forms that are created by
       approved admins of the website. It is used to ease the transfer of data without needing the
       admins to manually call and fill out the fields themselves
