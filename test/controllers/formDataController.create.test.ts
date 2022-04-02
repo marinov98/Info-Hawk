@@ -1,8 +1,8 @@
 import { Application, NextFunction, Request, Response } from "express";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
-import { BAD_REQUEST, CREATED, FORM_CREATE_ERR, NOT_FOUND, OK } from "../../src/config/keys.error";
-import dbTester from "./../db";
+import { BAD_REQUEST, CREATED, FORM_CREATE_ERR, NOT_FOUND } from "../../src/config/keys.error";
+import dbTester from "../db";
 import { ADMIN_MOCK } from "./adminController.mock";
 import { FORM_MOCK } from "./formData.mock";
 
@@ -18,6 +18,9 @@ jest.mock("./../../src/middleware/authMiddleware", () => {
       next();
     },
     attemptRefresh: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    monitorCookies: function (req: Request, res: Response, next: NextFunction) {
       next();
     }
   };
@@ -66,13 +69,6 @@ describe("Testing Form Controller", () => {
 
   afterAll(async () => {
     await db.closeDB();
-  });
-
-  it("should make all GET requests successfully", async () => {
-    let res = await request(app).get("/auth/forms/create");
-    expect(res.status).toBe(OK);
-    res = await request(app).get("/auth/forms/view");
-    expect(res.status).toBe(OK);
   });
 
   it("should create form successfully", async () => {
