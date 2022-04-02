@@ -33,7 +33,7 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
   try {
     const auth = res.app.locals.auth;
     const forms = await Form.find({ adminId: auth._id, isSkeleton: false });
-    return res.render("infoData/SUBMISSIONS", { forms });
+    return res.render("infoData/infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);
   }
@@ -43,7 +43,7 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
   try {
     const id = req.params.id;
     const form = await Form.findById(id);
-    return res.render("infoData/SUBMISSION", { form });
+    return res.render("infoData/infoDataSUBMISSION", { submission: form });
   } catch (err) {
     console.error(err);
   }
@@ -204,7 +204,7 @@ export async function info_data_link_post(req: Request, res: Response, _: NextFu
       from: APP_EMAIL,
       to: userEmail,
       subject: `Info Hawk Form Link from ${admin.firstName}`,
-      text: `${admin.firstName} has sent you a form to fill, you can fill it out at ${req.protocol}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
+      text: `${admin.firstName} has sent you a form to fill, you can fill it out using code ${admin.code} at ${req.protocol}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
     });
 
     return res.status(OK).json({ message: "Form link sent successfully!", messageId });
@@ -262,4 +262,29 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
   }
 }
 
-export async function info_data_submission_delete(req: Request, res: Response, _: NextFunction) {}
+export async function info_data_submission_delete(req: Request, res: Response, _: NextFunction) {
+  const hawkError: IHError = {
+    msg: UNKNOWN_ERR_MSG,
+    status: BAD_REQUEST,
+    src: "InfoDataController"
+  };
+  try {
+    const { code, formId } = req.body;
+    if (!(await Admin.findOne({ code }))) {
+      hawkError.status = NOT_FOUND;
+      hawkError.msg = FORM_EDIT_CODE_ERR;
+      return res.status(hawkError.status).json({ hawkError });
+    }
+    const deletedForm = await Form.findByIdAndDelete(formId);
+    if (!deletedForm) {
+      return res.status(hawkError.status).json({ hawkError });
+    }
+    return res.status(OK).json({ msg: "Submission deleted successfully" });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message) hawkError.msg = err.message;
+    }
+
+    return res.status(hawkError.status).json({ hawkError });
+  }
+}

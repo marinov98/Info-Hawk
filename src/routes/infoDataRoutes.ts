@@ -43,5 +43,6 @@ router.delete(
 );
 router.get("/auth/forms/submissions", infoDataController.info_data_submissions_get);
 router.get("/auth/forms/submission/:id", infoDataController.info_data_submission_get);
+router.delete("/auth/forms/submissions/delete", infoDataController.info_data_submission_delete);
 
 export default router;

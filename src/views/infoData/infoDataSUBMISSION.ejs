@@ -1,0 +1,78 @@
+<%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%> <% if (submission) {%>
+
+<form style="margin-left: 10px; margin-right: 50px" action="/infoData">
+  <div
+    id="info-data-error-submission"
+    class="info-data error alert alert-info"
+    style="margin: 5px"
+    role="alert"
+  >
+    Your submission answers are shown below
+  </div>
+  <h2 id="form-data-title" style="text-align: center"><%=submission.title%></h2>
+  <div class="mb-3">
+    <label for="adminCode" class="form-label">Admin Code</label>
+    <input
+      id="auth-code-submission"
+      type="text"
+      name="adminCode"
+      class="form-control"
+      value="<%=auth.code%>"
+      readonly
+    />
+  </div>
+  <% Object.entries(submission).forEach(([key, val]) => { if (key !== submission.title && typeof val
+  === "string") {%>
+  <div id="<%=key%>" class="mb-3">
+    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <input
+      type="text"
+      value="<%=val%>"
+      name="<%=key%>"
+      class="form-control skeleton-key-item"
+      readonly
+    />
+  </div>
+  <% } }); %>
+  <div style="text-align: center">
+    <button style="font-size: x-large" class="btn btn-danger">Delete Submission</button>
+  </div>
+</form>
+<% } %>
+
+<script>
+  const form = document.querySelector("form");
+  const errorClass = "info-data alert alert-danger";
+  const infoClass = "info-data alert alert-info";
+  const infoError = document.getElementById("info-data-error-submission");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (confirm("Are you sure you want to delete this submission? This action cannot be undone..."))
+      try {
+        const code = document.getElementById("auth-code-submission").value;
+        const refs = location.href.split("/");
+        const formId = refs[refs.length - 1];
+        const { data } = await axios.delete("/auth/forms/submissions/delete", {
+          data: {
+            code,
+            formId
+          }
+        });
+
+        if (data.msg) {
+          infoError.classList = "alert alert-success";
+          infoError.textContent = `${data.msg} Redirecting you soon...`;
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          location.assign("/auth/forms/submissions");
+        }
+      } catch (err) {
+        infoError.className = errorClass;
+        if (err.response && err.response.data) {
+          const { hawkError } = err.response.data;
+          if (hawkError && hawkError.msg) infoError.textContent = hawkError.msg;
+        } else {
+          infoError.textContent = err.message || "Something went wrong try again later...";
+        }
+      }
+  });
+</script>
