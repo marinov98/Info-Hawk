@@ -6,6 +6,7 @@ import {
   validateSkeleton,
   validateSubmission
 } from "../middleware/infoDataMiddleware";
+
 const router: Router = Router();
 
 router.get("/auth/forms/create", authenticateAdmin, infoDataController.info_data_create_get);
@@ -40,5 +41,7 @@ router.delete(
   validateDeleteVars,
   infoDataController.info_data_edit_delete
 );
+router.get("/auth/forms/submissions", infoDataController.info_data_submissions_get);
+router.get("/auth/forms/submission/:id", infoDataController.info_data_submission_get);
 
 export default router;

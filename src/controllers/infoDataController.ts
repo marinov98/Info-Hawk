@@ -23,7 +23,27 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
     const form = await Form.findById(req.params.id);
     if (!form) return res.redirect("/");
 
-    return res.render("infoData/infoDataLink", { formId: form._id });
+    return res.render("infoData/infoDataLINK", { formId: form._id });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function info_data_submissions_get(req: Request, res: Response, _: NextFunction) {
+  try {
+    const auth = res.app.locals.auth;
+    const forms = await Form.find({ adminId: auth._id, isSkeleton: false });
+    return res.render("infoData/SUBMISSIONS", { forms });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function info_data_submission_get(req: Request, res: Response, _: NextFunction) {
+  try {
+    const id = req.params.id;
+    const form = await Form.findById(id);
+    return res.render("infoData/SUBMISSION", { form });
   } catch (err) {
     console.error(err);
   }
@@ -223,11 +243,12 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
     form.adminId = admin._id;
     const createdForm = await Form.create(form);
     if (createdForm) {
+      const formId = createdForm._id.toString();
       const { messageId } = await TRANSPORTER.sendMail({
         from: APP_EMAIL,
         to: admin.email,
         subject: `Submission was submitted with your code!`,
-        text: `Submission with id: ${createdForm._id.toString()} has been added to your account`
+        text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
       });
       return res.status(CREATED).json({ msg: "Submission successful!", messageId });
     }
@@ -240,3 +261,5 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
     return res.status(hawkError.status).json({ hawkError });
   }
 }
+
+export async function info_data_submission_delete(req: Request, res: Response, _: NextFunction) {}

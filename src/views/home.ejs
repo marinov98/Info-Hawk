@@ -4,6 +4,18 @@
   <div class="headings" style="margin: 5px; text-align: center">
     <% if (auth) { %>
     <h2 style="text-align: center">Any Forms you have made will be displayed below</h2>
+    <a
+      class="btn btn-primary"
+      href="/auth/forms/create"
+      style="font-size: xx-large; text-align: center; margin-right: 10px"
+      >Create new Form</a
+    >
+    <a
+      class="btn btn-success"
+      href="/auth/forms/submission"
+      style="font-size: xx-large; text-align: center"
+      >View Submissions</a
+    >
     <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
     <div
       class="card"
@@ -32,14 +44,7 @@
         >
       </div>
     </div>
-    <% })} %>
-    <a
-      class="btn btn-primary"
-      href="/auth/forms/create"
-      style="font-size: xx-large; text-align: center"
-      >Create new Form</a
-    >
-    <% } else {%>
+    <% })} %> <% } else {%>
     <h2 style="text-align: center">Welcome to Info Hawk!</h2>
     <p style="text-align: center; font-size: xx-large">
       Info Hawk is a service for creating , updating , and deleting forms that are created by
