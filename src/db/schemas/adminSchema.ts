@@ -32,6 +32,7 @@ const AdminSchema: Schema<IAdminDoc> = new Schema<IAdminDoc>({
   },
   code: {
     type: String,
+    default: "NA",
     required: true
   }
 });

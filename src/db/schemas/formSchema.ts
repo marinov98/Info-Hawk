@@ -1,7 +1,10 @@
 import { Document, model, Schema } from "mongoose";
 import { IFormData } from "../../interfaces/index";
 
-interface IFormDataDoc extends IFormData, Document {}
+interface IFormDataDoc extends IFormData, Document {
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const FormSchema: Schema<IFormDataDoc> = new Schema<IFormDataDoc>(
   {
@@ -20,7 +23,7 @@ const FormSchema: Schema<IFormDataDoc> = new Schema<IFormDataDoc>(
       required: true
     }
   },
-  { strict: false }
+  { strict: false, timestamps: true }
 );
 
 export default model<IFormDataDoc>("Form", FormSchema);

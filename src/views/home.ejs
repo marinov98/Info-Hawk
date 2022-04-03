@@ -2,7 +2,7 @@
 
 <header>
   <div class="headings" style="margin: 5px; text-align: center">
-    <% if (auth) { %>
+    <% if (auth) { %> <% if (auth.code !== "NA") {%>
     <h2 style="text-align: center">Any Forms you have made will be displayed below</h2>
     <a
       class="btn btn-primary"
@@ -44,7 +44,19 @@
         >
       </div>
     </div>
-    <% })} %> <% } else {%>
+    <% })} %> <% } else { %>
+    <div id="register-error" class="register error alert alert-info" role="alert">
+      It looks like you are not verified...
+    </div>
+    <h2 style="text-align: center">
+      It seems you have not verified your account, please verify it or click the link below to
+      resend the email.
+    </h2>
+    <input id="email-input" value="<%=auth.email%>" style="visibility: hidden" />
+    <div style="text-align: center">
+      <button style="font-size: large" onclick="resend()" class="btn btn-info">Resend Link</button>
+    </div>
+    <% } } else { %>
     <h2 style="text-align: center">Welcome to Info Hawk!</h2>
     <p style="text-align: center; font-size: xx-large">
       Info Hawk is a service for creating , updating , and deleting forms that are created by
@@ -54,5 +66,27 @@
     <% } %>
   </div>
 </header>
+
+<script>
+  const alertDiv = document.getElementById("register-error");
+  async function resend() {
+    const email = document.getElementById("email-input").value;
+    try {
+      const { data } = await axios.post("/auth/resend", { email });
+      if (data.message) {
+        alertDiv.className = "register error alert alert-success";
+        alertDiv.textContent = data.message;
+      }
+    } catch (err) {
+      alertDiv.className = "register error alert alert-danger";
+      if (err.response && err.response.data) {
+        const { hawkError } = err.response.data;
+        if (hawkError && hawkError.msg) alertDiv.textContent = hawkError.msg;
+      } else {
+        alertDiv.textContent = err.message || "Something went wrong try again later...";
+      }
+    }
+  }
+</script>
 
 <%- include('partials/footer'); -%>

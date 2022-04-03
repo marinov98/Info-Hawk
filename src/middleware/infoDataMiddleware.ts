@@ -5,7 +5,7 @@ import { IHError } from "../types/errors";
 
 const formSchema = Joi.object({
   title: Joi.string().min(1).required(),
-  "Admin Code": Joi.string().length(10)
+  "Admin Code": Joi.string().length(10).required()
 });
 
 export function validateSkeleton(req: Request, res: Response, next: NextFunction) {

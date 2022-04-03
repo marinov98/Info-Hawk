@@ -32,7 +32,7 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
 export async function info_data_submissions_get(req: Request, res: Response, _: NextFunction) {
   try {
     const auth = res.app.locals.auth;
-    const forms = await Form.find({ adminId: auth._id, isSkeleton: false });
+    const forms = await Form.find({ adminId: auth._id, isSkeleton: false }).sort({ createdAt: -1 });
     return res.render("infoData/infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);

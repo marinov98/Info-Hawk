@@ -51,8 +51,8 @@
         password,
         confirmPassword
       });
-      if (data.created) {
-        alert("registeration was successful!");
+      if (data.msg) {
+        alert(`${data.msg} A link was sent to you to verify your email.`);
         location.assign("/login");
       }
     } catch (err) {

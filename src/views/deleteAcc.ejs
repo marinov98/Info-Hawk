@@ -1,0 +1,49 @@
+<%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
+
+<div style="text-align: center">
+  <div class="reset error alert alert-info" id="delete-acc-alert" role="alert">
+    Account options settings below
+  </div>
+  <h3>
+    Pressing the button below will delete your account and all the forms and submissions you have
+    linked to your account
+  </h3>
+  <input id="id-input" value="<%=auth._id.toString()%>" style="visibility: hidden" />
+  <div style="text-align: center">
+    <button onclick="deleteAccount()" style="font-size: x-large" class="btn btn-danger">
+      Delete Account
+    </button>
+  </div>
+</div>
+
+<script>
+  const infoError = document.getElementById("delete-acc-alert");
+
+  async function deleteAccount() {
+    if (confirm("Are you sure? This operationg cannot be undone...")) {
+      try {
+        const id = document.getElementById("id-input").value;
+        const { data } = await axios.delete("/auth/account/delete", {
+          data: {
+            id
+          }
+        });
+
+        if (data.msg) {
+          infoError.className = "reset error alert alert-success";
+          infoError.textContent = `${data.msg} Redirecting you to home...`;
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          location.assign("/");
+        }
+      } catch (err) {
+        infoError.className = "register error alert alert-danger";
+        if (err.response && err.response.data) {
+          const { hawkError } = err.response.data;
+          if (hawkError && hawkError.msg) infoError.textContent = hawkError.msg;
+        } else {
+          infoError.textContent = err.message || "Something went wrong try again later...";
+        }
+      }
+    }
+  }
+</script>
