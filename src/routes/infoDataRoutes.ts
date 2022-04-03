@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
-import { authenticateAdmin, maintainAuth } from "../middleware/authMiddleware";
+import { authenticateAdmin } from "../middleware/authMiddleware";
 import {
   ensureVerified,
   validateDeleteVars,
@@ -35,11 +35,7 @@ router.post(
   validateSkeleton,
   infoDataController.info_data_edit_post
 );
-router.get(
-  "/client/form-submission/:adminId/:formId",
-  maintainAuth,
-  infoDataController.info_data_client_get
-);
+router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
 router.post(
   "/client/form-submission",
   validateSubmission,
