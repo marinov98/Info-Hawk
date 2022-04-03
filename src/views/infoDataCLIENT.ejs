@@ -10,6 +10,19 @@
     Please fill out this form for your service provider
   </div>
   <h2 id="form-data-client-title" style="text-align: center"><%=form.title%></h2>
+  <% if (auth) {%>
+  <div class="mb-3">
+    <label for="adminCode" class="form-label">Admin Code</label>
+    <input
+      type="text"
+      name="adminCode"
+      class="form-control"
+      value="<%=auth.code%>"
+      placeholder="admin code goes here..."
+      required
+    />
+  </div>
+  <% } else { %>
   <div class="mb-3">
     <label for="adminCode" class="form-label">Admin Code</label>
     <input
@@ -20,7 +33,8 @@
       required
     />
   </div>
-  <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !== "isSkeleton") {%>
+  <% } %> <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !==
+  "isSkeleton") {%>
   <div id="<%=key%>" class="mb-3">
     <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
     <input
@@ -40,6 +54,7 @@
 
 <script>
   const form = document.querySelector("form");
+  const errorClass = "info-data alert alert-danger";
   const submitButton = document.getElementById("submit-btn");
   const infoError = document.getElementById("info-data-error-client");
 
