@@ -56,7 +56,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       hawkError.msg = NOT_SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
-    const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "20m" });
+    const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "10m" });
     const { messageId } = await TRANSPORTER.sendMail({
       from: APP_EMAIL,
       to: email,

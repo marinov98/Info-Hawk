@@ -51,7 +51,8 @@
         password,
         confirmPassword
       });
-      if (data.created) {
+      if (data.msg) {
+        alert(`${data.msg} A link was sent to you to verify your email.`);
         location.assign("/login");
       }
     } catch (err) {
@@ -59,10 +60,8 @@
       if (err.response && err.response.data) {
         const { hawkError } = err.response.data;
         if (hawkError && hawkError.msg) alertDiv.textContent = hawkError.msg;
-      }
-
-      if ("" === registrationError.textContent) {
-        alertDiv.textContent = "Something went wrong try again later...";
+      } else {
+        alertDiv.textContent = err.message || "Something went wrong try again later...";
       }
     }
   });

@@ -1,9 +1,93 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
 
 <header>
-  <div class="headings">
-    <h2>Welcome to Info Hawk!</h2>
+  <div class="headings" style="margin: 5px; text-align: center">
+    <% if (auth) { %> <% if (auth.code !== "NA") {%>
+    <h2 style="text-align: center">Any Forms you have made will be displayed below</h2>
+    <a
+      class="btn btn-primary"
+      href="/auth/forms/create"
+      style="font-size: xx-large; text-align: center; margin-right: 10px"
+      >Create new Form</a
+    >
+    <a
+      class="btn btn-success"
+      href="/auth/forms/submissions"
+      style="font-size: xx-large; text-align: center"
+      >View Submissions</a
+    >
+    <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
+    <div
+      class="card"
+      style="
+        margin: 20px;
+        margin-left: 200px;
+        margin-right: 200px;
+        text-align: center;
+        font-size: xx-large;
+        border: 1px solid rgb(167, 167, 167);
+      "
+    >
+      <div class="card-body">
+        <h5 style="font-size: xx-large" class="card-title"><%=skeleton.title%></h5>
+        <h6><%=skeleton.updatedAt%></h6>
+        <a
+          style="font-size: x-large"
+          href="/auth/forms/view/<%=skeleton._id%> "
+          class="btn btn-primary card-link"
+          >View</a
+        >
+        <a
+          style="font-size: x-large"
+          href="/auth/forms/link/<%=skeleton._id%> "
+          class="btn btn-secondary card-link"
+          >Send Link</a
+        >
+      </div>
+    </div>
+    <% })} %> <% } else { %>
+    <div id="register-error" class="register error alert alert-info" role="alert">
+      It looks like you are not verified...
+    </div>
+    <h2 style="text-align: center">
+      It seems you have not verified your account, please verify it or click the link below to
+      resend the email.
+    </h2>
+    <input id="email-input" value="<%=auth.email%>" style="visibility: hidden" />
+    <div style="text-align: center">
+      <button style="font-size: large" onclick="resend()" class="btn btn-info">Resend Link</button>
+    </div>
+    <% } } else { %>
+    <h2 style="text-align: center">Welcome to Info Hawk!</h2>
+    <p style="text-align: center; font-size: xx-large">
+      Info Hawk is a service for creating , updating , and deleting forms that are created by
+      approved admins of the website. It is used to ease the transfer of data without needing the
+      admins to manually call and fill out the fields themselves
+    </p>
+    <% } %>
   </div>
 </header>
+
+<script>
+  const alertDiv = document.getElementById("register-error");
+  async function resend() {
+    const email = document.getElementById("email-input").value;
+    try {
+      const { data } = await axios.post("/auth/resend", { email });
+      if (data.message) {
+        alertDiv.className = "register error alert alert-success";
+        alertDiv.textContent = data.message;
+      }
+    } catch (err) {
+      alertDiv.className = "register error alert alert-danger";
+      if (err.response && err.response.data) {
+        const { hawkError } = err.response.data;
+        if (hawkError && hawkError.msg) alertDiv.textContent = hawkError.msg;
+      } else {
+        alertDiv.textContent = err.message || "Something went wrong try again later...";
+      }
+    }
+  }
+</script>
 
 <%- include('partials/footer'); -%>

@@ -1,11 +1,20 @@
 import { Application } from "express";
 import bootstrap from "./config/bootstrap";
 import connectToDB from "./config/db";
-import { PORT } from "./config/keys.env";
+import { PORT, TRANSPORTER } from "./config/keys.env";
 
 (async () => {
+  // Application configuration
   const app: Application = bootstrap();
+
+  // Database
   await connectToDB();
+
+  // Email
+  TRANSPORTER.verify(err => {
+    if (err) console.error(err);
+    else console.log("Email service up and running!");
+  });
 
   // Launch server
   app.listen(PORT, () => {
