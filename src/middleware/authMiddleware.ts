@@ -71,7 +71,7 @@ export function attemptRefresh(req: Request, res: Response): void {
         const { accessToken } = createTokens(id);
         const options = {
           httpOnly: true,
-          expires: new Date(Date.now() + 37 * 100000),
+          expires: new Date(Date.now() + 37 * 100000 * 24 * 10),
           secure: process.env.NODE_ENV === "production"
         };
         res.cookie(JWT_COOKIE_KEY, accessToken, options);

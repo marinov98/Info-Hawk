@@ -20,11 +20,12 @@ export function validateSkeleton(req: Request, res: Response, next: NextFunction
     err = formSchema.validate({ title, "Admin Code": code }).error;
     if (!err) {
       Object.entries(req.body.form).forEach(([key, val]) => {
-        if (key !== "title" && key !== "code") {
-          err = Joi.boolean().validate(val).error;
-        }
         if (err) {
           return;
+        }
+
+        if (key !== "title" && key !== "code") {
+          err = Joi.boolean().validate(val).error;
         }
       });
     }
@@ -53,11 +54,12 @@ export function validateSubmission(req: Request, res: Response, next: NextFuncti
     err = formSchema.validate({ title, "Admin Code": code }).error;
     if (!err) {
       Object.entries(req.body.form).forEach(([key, val]) => {
-        if (key !== "title" && key !== "code") {
-          err = Joi.string().validate(val).error;
-        }
         if (err) {
           return;
+        }
+
+        if (key !== "title" && key !== "code") {
+          err = Joi.string().validate(val).error;
         }
       });
     }

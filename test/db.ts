@@ -26,7 +26,8 @@ export default class dbTester {
     }
   }
 
-  public async grabOne(key: string) {
+  public async grabOne(key: string, option: any = null) {
+    if (option) return mongoose.connection.collections[key].findOne(option);
     return mongoose.connection.collections[key].findOne();
   }
 

@@ -116,7 +116,6 @@ export async function info_data_edit_post(req: Request, res: Response, _: NextFu
     const { form } = req.body;
     const admin = await Admin.findOne({ code: form.code });
     if (!admin) {
-      console.log("ADMIN NOT FOUND");
       hawkError.status = NOT_FOUND;
       hawkError.msg = FORM_EDIT_CODE_ERR;
       return res.status(hawkError.status).json({ hawkError });
@@ -167,7 +166,7 @@ export async function info_data_edit_delete(req: Request, res: Response, _: Next
       return res.status(hawkError.status).json({ hawkError });
     }
 
-    return res.status(OK).json({ msg: "Form sucessfully deleted!" });
+    return res.status(OK).json({ msg: "Form successfully deleted!" });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -242,17 +241,17 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
     delete form.code;
     form.adminId = admin._id;
     const createdForm = await Form.create(form);
-    if (createdForm) {
-      const formId = createdForm._id.toString();
-      const { messageId } = await TRANSPORTER.sendMail({
-        from: APP_EMAIL,
-        to: admin.email,
-        subject: `Someone submitted something with your code!`,
-        text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
-      });
-      return res.status(CREATED).json({ msg: "Submission successful!", messageId });
+    if (!createdForm) {
+      return res.status(BAD_REQUEST).json({ hawkError });
     }
-    return res.status(BAD_REQUEST).json({ hawkError });
+    const formId = createdForm._id.toString();
+    const { messageId } = await TRANSPORTER.sendMail({
+      from: APP_EMAIL,
+      to: admin.email,
+      subject: `Someone submitted something with your code!`,
+      text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
+    });
+    return res.status(CREATED).json({ msg: "Submission successful!", messageId });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -279,7 +278,7 @@ export async function info_data_submission_delete(req: Request, res: Response, _
     if (!deletedForm) {
       return res.status(hawkError.status).json({ hawkError });
     }
-    return res.status(OK).json({ msg: "Submission deleted successfully" });
+    return res.status(OK).json({ msg: "Submission deleted successfully!" });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;

@@ -21,14 +21,14 @@ export function createTokens(id: string): Tokens {
 export function setCookies(res: Response, { accessToken, refreshToken }: Tokens): void {
   const options: CookieOptions = {
     httpOnly: true,
-    expires: new Date(Date.now() + 37 * 100000),
+    expires: new Date(Date.now() + 37 * 100000 * 24 * 10),
     sameSite: sameSiteOptions.strict,
     secure: process.env.NODE_ENV === "production"
   };
   res.cookie(JWT_COOKIE_KEY, accessToken, options);
 
   options.signed = true;
-  options.expires = new Date(Date.now() + 37 * 100000 * 24 * 10);
+  options.expires = new Date(Date.now() + 37 * 100000 * 24 * 11);
 
   res.cookie(JWT_REFRESH_COOKIE_KEY, refreshToken, options);
 }

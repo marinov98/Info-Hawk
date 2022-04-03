@@ -135,6 +135,16 @@ describe("Testing Form Controller", () => {
     expect(status).toBe(BAD_REQUEST);
   });
 
+  it("should create form unsuccessfully key not boolean", async () => {
+    const form = { ...FORM_MOCK } as any;
+    form.code = code;
+    form.SSN = "1234";
+    const { body, status } = await request(app).post("/auth/forms/create").send({ form });
+    expect(body.hawkError).toBeDefined();
+    expect(body.hawkError.src).toBe("infoDataMiddleware");
+    expect(status).toBe(BAD_REQUEST);
+  });
+
   it("should create form unsuccessfully title not string", async () => {
     const form = { ...FORM_MOCK };
     form.title = true as any;
