@@ -10,23 +10,16 @@ import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constan
 export function monitorCookies(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies[JWT_COOKIE_KEY];
   if (token) {
-    verify(
-      token,
-      JWT_SECRET,
-      { ignoreExpiration: true, issuer, audience },
-      async (err: any, decoded) => {
-        if (decoded) {
-          const { exp } = decoded as DecodedToken;
-          if (Date.now() >= exp * 1000) {
-            attemptRefresh(req, res, next);
-          }
+    verify(token, JWT_SECRET, { ignoreExpiration: true, issuer, audience }, (err: any, decoded) => {
+      if (decoded) {
+        const { exp } = decoded as DecodedToken;
+        if (Date.now() >= exp * 1000) {
+          attemptRefresh(req, res);
         }
-        next();
       }
-    );
-  } else {
-    next();
+    });
   }
+  next();
 }
 
 export function fillAuth(req: Request, res: Response, next: NextFunction): void {
@@ -65,12 +58,14 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
   }
 }
 
-export function attemptRefresh(req: Request, res: Response, _: NextFunction): void {
+export function attemptRefresh(req: Request, res: Response): void {
   const refreshToken = req.cookies[JWT_REFRESH_COOKIE_KEY];
+  req.cookies[JWT_COOKIE_KEY] = null;
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
     verify(refreshToken, JWT_REFRESH_SECRET, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
+        req.cookies[JWT_REFRESH_COOKIE_KEY] = null;
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
       } else {
         const { id } = decodedToken as DecodedToken;
@@ -81,6 +76,7 @@ export function attemptRefresh(req: Request, res: Response, _: NextFunction): vo
           secure: process.env.NODE_ENV === "production"
         };
         res.cookie(JWT_COOKIE_KEY, accessToken, options);
+        req.cookies[JWT_COOKIE_KEY] = accessToken;
       }
     });
   }
