@@ -166,7 +166,6 @@ describe("Testing Admin Controller", () => {
     if (user) expect(user.code).toBe("NA");
     const { status } = await request(app).get(`/auth/verify/${accessToken}`);
     expect(status).toBe(302);
-    db.grabOne("admins");
     user = await db.grabOne("admins");
     expect(user).toBeDefined();
     if (user) expect(user.code.length).toBe(10);

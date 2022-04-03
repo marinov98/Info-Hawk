@@ -16,8 +16,13 @@
     "
   >
     <div class="card-body">
-      <h5 style="font-size: xxx-large" class="card-title"><%=submission.title%></h5>
-      <h7 class="btn btn-info" style="font-size: xx-large">id: <%=submission._id%></h7>
+      <h3 style="font-size: xx-large" class="card-title"><%=submission.title%></h3>
+      <h4 class="card-subtitle mb-2 text-muted"><%=submission.createdAt%></h4>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><%=submission._id%></li>
+    </ul>
+    <div class="card-body">
       <a
         style="font-size: x-large"
         href="/auth/forms/submission/<%=submission._id%> "
