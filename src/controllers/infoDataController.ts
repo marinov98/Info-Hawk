@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { APP_EMAIL, TRANSPORTER } from "../config/keys.env";
+import { APP_EMAIL, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -203,7 +203,7 @@ export async function info_data_link_post(req: Request, res: Response, _: NextFu
       from: APP_EMAIL,
       to: userEmail,
       subject: `Info Hawk Form Link from ${admin.firstName}`,
-      text: `${admin.firstName} has sent you a form to fill, you can fill it out using code ${admin.code} at ${req.protocol}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
+      text: `${admin.firstName} has sent you a form to fill, you can fill it out using code ${admin.code} at ${PROTOCAL}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
     });
 
     return res.status(OK).json({ message: "Form link sent successfully!", messageId });
@@ -249,7 +249,7 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
       from: APP_EMAIL,
       to: admin.email,
       subject: `Someone submitted something with your code!`,
-      text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
+      text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${PROTOCAL}://${req.headers.host}/auth/forms/submission/${formId}`
     });
     return res.status(CREATED).json({ msg: "Submission successful!", messageId });
   } catch (err) {

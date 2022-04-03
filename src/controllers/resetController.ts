@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
-import { APP_EMAIL, audience, issuer, JWT_SECRET, TRANSPORTER } from "../config/keys.env";
+import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import {
   BAD_REQUEST,
   NOT_FOUND,
@@ -62,7 +62,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       to: email,
       subject: "Info Hawk Password Reset",
       text: `Please click to link below to reset your password:
-      ${req.protocol}://${req.headers.host}/passwordReset/${accessToken}`
+      ${PROTOCAL}://${req.headers.host}/passwordReset/${accessToken}`
     });
     return res.status(OK).json({ message: `A reset link was sent to your email`, messageId });
   } catch (err) {
