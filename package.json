@@ -13,7 +13,7 @@
   "scripts": {
     "copy-assets": "ts-node tools/copyAssets",
     "build": "tsc && npm run copy-assets",
-    "start": "dist/app.js",
+    "start": "node dist/app.js",
     "test": "jest",
     "dev": "nodemon src/app.ts",
     "clean": "rimraf dist",
