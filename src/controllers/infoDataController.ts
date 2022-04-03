@@ -55,7 +55,7 @@ export async function info_data_client_get(req: Request, res: Response, _: NextF
     const form = await Form.findOne({ _id: formId, adminId, isSkeleton: true });
     if (!(await Admin.findById(adminId)) || !form) return res.redirect("/");
 
-    return res.render("infoDataClient", { form });
+    return res.render("infoDataCLIENT", { form });
   } catch (err) {
     console.error(err);
   }
