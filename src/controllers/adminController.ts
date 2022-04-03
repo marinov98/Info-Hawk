@@ -83,7 +83,7 @@ export async function verify_email_get(req: Request, res: Response, _: NextFunct
           return res.status(hawkError.status).json({ hawkError });
         }
         if (req.cookies[JWT_COOKIE_KEY]) {
-          res.app.locals.auth = updatedAdmin;
+          res.app.locals.auth = admin;
         }
         return res.redirect("/");
       } else {
