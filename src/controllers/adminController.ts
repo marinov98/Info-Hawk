@@ -79,13 +79,14 @@ export async function verify_email_get(req: Request, res: Response, _: NextFunct
       if (!admin) {
         return res.status(NOT_FOUND).redirect("/error/token");
       }
-      const updatedAdmin = await admin.updateOne({ code: generateAdminCode() });
+      const code = generateAdminCode();
+      const updatedAdmin = await admin.updateOne({ code });
       if (!updatedAdmin) {
         hawkError.status = NOT_FOUND;
         return res.status(hawkError.status).json({ hawkError });
       }
-      if (req.cookies[JWT_COOKIE_KEY]) {
-        res.app.locals.auth = admin;
+      if (req.cookies[JWT_COOKIE_KEY] && res.app.locals.auth) {
+        res.app.locals.auth.code = code;
       }
       return res.redirect("/");
     });
