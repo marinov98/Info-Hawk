@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
-import { authenticateAdmin } from "../middleware/authMiddleware";
+import { authenticateAdmin, maintainAuth } from "../middleware/authMiddleware";
 import {
+  ensureVerified,
   validateDeleteVars,
   validateSkeleton,
   validateSubmission
@@ -9,7 +10,12 @@ import {
 
 const router: Router = Router();
 
-router.get("/auth/forms/create", authenticateAdmin, infoDataController.info_data_create_get);
+router.get(
+  "/auth/forms/create",
+  authenticateAdmin,
+  ensureVerified,
+  infoDataController.info_data_create_get
+);
 router.post(
   "/auth/forms/create",
   authenticateAdmin,
@@ -29,7 +35,11 @@ router.post(
   validateSkeleton,
   infoDataController.info_data_edit_post
 );
-router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
+router.get(
+  "/client/form-submission/:adminId/:formId",
+  maintainAuth,
+  infoDataController.info_data_client_get
+);
 router.post(
   "/client/form-submission",
   validateSubmission,

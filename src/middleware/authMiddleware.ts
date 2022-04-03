@@ -59,13 +59,12 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
 }
 
 export function attemptRefresh(req: Request, res: Response): void {
-  const refreshToken = req.cookies[JWT_REFRESH_COOKIE_KEY];
+  const refreshToken = req.signedCookies[JWT_REFRESH_COOKIE_KEY];
   req.cookies[JWT_COOKIE_KEY] = null;
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
     verify(refreshToken, JWT_REFRESH_SECRET, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
-        req.cookies[JWT_REFRESH_COOKIE_KEY] = null;
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
       } else {
         const { id } = decodedToken as DecodedToken;

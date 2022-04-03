@@ -93,3 +93,11 @@ export function validateDeleteVars(req: Request, res: Response, next: NextFuncti
     res.status(hawkError.status).json({ hawkError });
   }
 }
+
+export function ensureVerified(req: Request, res: Response, next: NextFunction) {
+  if (res.app.locals.auth && res.app.locals.auth.code.length !== 10) {
+    return res.redirect("/");
+  } else {
+    next();
+  }
+}

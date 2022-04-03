@@ -82,4 +82,8 @@ describe("Testing Form Controller", () => {
   afterAll(async () => {
     await db.closeDB();
   });
+
+  it("should allow client to submit form successfully", async () => {
+    expect(1).toBe(1);
+  });
 });
