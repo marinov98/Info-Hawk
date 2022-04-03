@@ -15,7 +15,7 @@ import { Admin, Form } from "../db/models";
 import { IHError } from "../types/errors";
 
 export function info_data_create_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("infoData/infoDataCREATE");
+  return res.render("infoDataCREATE");
 }
 
 export async function info_data_link_get(req: Request, res: Response, _: NextFunction) {
@@ -23,7 +23,7 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
     const form = await Form.findById(req.params.id);
     if (!form) return res.redirect("/");
 
-    return res.render("infoData/infoDataLINK", { formId: form._id });
+    return res.render("infoDataLINK", { formId: form._id });
   } catch (err) {
     console.error(err);
   }
@@ -33,7 +33,7 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
   try {
     const auth = res.app.locals.auth;
     const forms = await Form.find({ adminId: auth._id, isSkeleton: false }).sort({ createdAt: -1 });
-    return res.render("infoData/infoDataSUBMISSIONS", { submissions: forms });
+    return res.render("infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);
   }
@@ -43,7 +43,7 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
   try {
     const id = req.params.id;
     const form = await Form.findById(id);
-    return res.render("infoData/infoDataSUBMISSION", { submission: form });
+    return res.render("infoDataSUBMISSION", { submission: form });
   } catch (err) {
     console.error(err);
   }
@@ -55,7 +55,7 @@ export async function info_data_client_get(req: Request, res: Response, _: NextF
     const form = await Form.findOne({ _id: formId, adminId, isSkeleton: true });
     if (!(await Admin.findById(adminId)) || !form) return res.redirect("/");
 
-    return res.render("infoData/infoDataClient", { form });
+    return res.render("infoDataClient", { form });
   } catch (err) {
     console.error(err);
   }
@@ -70,7 +70,7 @@ export async function info_data_view_get(req: Request, res: Response, _: NextFun
       res.redirect("/");
     }
 
-    return res.render("infoData/infoDataVIEW", { form });
+    return res.render("infoDataVIEW", { form });
   } catch (err) {
     console.error(err);
   }
