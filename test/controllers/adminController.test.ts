@@ -1,15 +1,50 @@
-import { Application } from "express";
+import { Application, NextFunction, Request, Response } from "express";
+import { sign } from "jsonwebtoken";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
+import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
   LOGIN_ERR_MSG,
+  NOT_FOUND,
+  NOT_SAME_EMAIL_ERR,
   OK,
   SAME_EMAIL_ERR
 } from "../../src/config/keys.error";
 import dbTester from "./../db";
 import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock";
+
+jest.mock("./../../src/middleware/authMiddleware", () => {
+  return {
+    authenticateAdmin: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    maintainAuth: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    fillAuth: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    },
+    attemptRefresh: function (req: Request, res: Response, next: NextFunction) {
+      return;
+    },
+    monitorCookies: function (req: Request, res: Response, next: NextFunction) {
+      next();
+    }
+  };
+});
+
+jest.mock("nodemailer", () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: async function (options: any) {
+      return Promise.resolve({
+        messageId: "123",
+        success: true
+      });
+    }
+  })
+}));
 
 describe("Testing Admin Controller", () => {
   const app: Application = bootstrap();
@@ -34,15 +69,6 @@ describe("Testing Admin Controller", () => {
 
   afterAll(async () => {
     await db.closeDB();
-  });
-
-  it("should make all GET requests successfully", async () => {
-    let res = await request(app).get("/register");
-    expect(res.status).toBe(OK);
-    res = await request(app).get("/login");
-    expect(res.status).toBe(OK);
-    res = await request(app).get("/logout");
-    expect(res.status).toBe(302);
   });
 
   it("should register successfully", async () => {
@@ -127,5 +153,51 @@ describe("Testing Admin Controller", () => {
       '"password" length must be less than or equal to 36 characters long'
     );
     expect(status).toBe(BAD_REQUEST);
+  });
+
+  it("should verify admin successfully", async () => {
+    const accessToken: string = sign({ email: ADMIN_MOCK.email }, JWT_SECRET, {
+      audience,
+      issuer,
+      expiresIn: "2m"
+    });
+    let user = await db.grabOne("admins");
+    expect(user).toBeDefined();
+    if (user) expect(user.code).toBe("NA");
+    const { status } = await request(app).get(`/auth/verify/${accessToken}`);
+    expect(status).toBe(302);
+    db.grabOne("admins");
+    user = await db.grabOne("admins");
+    expect(user).toBeDefined();
+    if (user) expect(user.code.length).toBe(10);
+  });
+
+  it("should resend verification link successfully", async () => {
+    const { body, status } = await request(app)
+      .post("/auth/resend")
+      .send({ email: ADMIN_MOCK.email });
+    expect(body.message).toBeDefined();
+    expect(body.messageId).toBeDefined();
+    expect(body.message).toBe("Link resent!");
+    expect(body.messageId).toBe("123");
+    expect(status).toBe(OK);
+  });
+
+  it("should resend verification link unsuccessfully email not found", async () => {
+    const { body } = await request(app).post("/auth/resend").send({ email: "fake@gmail.com" });
+    expect(body.hawkError).toBeDefined();
+    expect(body.hawkError.msg).toBe(NOT_SAME_EMAIL_ERR);
+    expect(body.hawkError.status).toBe(NOT_FOUND);
+  });
+
+  it("should delete user account successfully", async () => {
+    let user = (await db.grabOne("admins")) as any;
+    const id = user._id.toString();
+    expect(user._id).toBeDefined;
+    const { body, status } = await request(app).delete("/auth/account/delete").send({ id });
+    expect(body.msg).toBe("Account deleted successfully!");
+    expect(status).toBe(OK);
+    user = await db.grabOne("admins");
+    expect(user).toBe(null);
   });
 });

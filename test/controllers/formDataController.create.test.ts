@@ -17,8 +17,8 @@ jest.mock("./../../src/middleware/authMiddleware", () => {
     fillAuth: function (req: Request, res: Response, next: NextFunction) {
       next();
     },
-    attemptRefresh: function (req: Request, res: Response, next: NextFunction) {
-      next();
+    attemptRefresh: function (req: Request, res: Response) {
+      return;
     },
     monitorCookies: function (req: Request, res: Response, next: NextFunction) {
       next();

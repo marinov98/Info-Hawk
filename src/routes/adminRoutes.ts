@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { maintainAuth } from "../middleware/authMiddleware";
+import { authenticateAdmin, maintainAuth } from "../middleware/authMiddleware";
 import { validateInput } from "../middleware/validationMiddleware";
 import { adminController } from "./../controllers/index";
 
@@ -11,9 +11,9 @@ router.get("/login", maintainAuth, adminController.login_get);
 router.post("/login", validateInput, adminController.login_post);
 router.get("/logout", adminController.logout_get);
 router.get("/auth/verify/:token", adminController.verify_email_get);
-router.post("/auth/resend", adminController.home_resend_link_post);
-router.delete("/auth/account/delete", adminController.auth_account_delete);
-router.get("/settings", adminController.settings_get);
-router.get("/setting/deleteAcc", adminController.deleteAcc_get);
+router.post("/auth/resend", authenticateAdmin, adminController.home_resend_link_post);
+router.delete("/auth/account/delete", authenticateAdmin, adminController.auth_account_delete);
+router.get("/settings", authenticateAdmin, adminController.settings_get);
+router.get("/setting/deleteAcc", authenticateAdmin, adminController.deleteAcc_get);
 
 export default router;

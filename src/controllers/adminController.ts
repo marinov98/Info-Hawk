@@ -57,7 +57,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
       subject: "Welcome to Info Hawk!",
       text: `We are pleased for you to join Info Hawk. In order to use our functionality, please verify your email using this link ${req.protocol}://${req.headers.host}/auth/verify/${accessToken}`
     });
-    return res.status(CREATED).json({ msg: "Registration successful!", messageId });
+    return res.status(CREATED).json({ msg: "Registration Successful!", messageId });
   } catch (err) {
     if (err instanceof Error) {
       if (err.message) hawkError.msg = err.message;
@@ -76,19 +76,18 @@ export async function verify_email_get(req: Request, res: Response, _: NextFunct
       }
       const { email } = decodedToken as ResetDecodedToken;
       const admin = await Admin.findOne({ email });
-      if (admin) {
-        const updatedAdmin = await admin.updateOne({ code: generateAdminCode() });
-        if (!updatedAdmin) {
-          hawkError.status = NOT_FOUND;
-          return res.status(hawkError.status).json({ hawkError });
-        }
-        if (req.cookies[JWT_COOKIE_KEY]) {
-          res.app.locals.auth = admin;
-        }
-        return res.redirect("/");
-      } else {
+      if (!admin) {
         return res.status(NOT_FOUND).redirect("/error/token");
       }
+      const updatedAdmin = await admin.updateOne({ code: generateAdminCode() });
+      if (!updatedAdmin) {
+        hawkError.status = NOT_FOUND;
+        return res.status(hawkError.status).json({ hawkError });
+      }
+      if (req.cookies[JWT_COOKIE_KEY]) {
+        res.app.locals.auth = admin;
+      }
+      return res.redirect("/");
     });
   } catch (err) {
     if (err instanceof Error) {
