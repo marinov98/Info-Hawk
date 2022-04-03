@@ -19,14 +19,21 @@ const DB_URL_LOCAL: string = "mongodb://localhost:27017/info-hawk-store";
 const DB_URL_TEST: string = process.env.TEST_DB_URL || "mongodb://localhost:27017/test-info-hawk";
 const DB_URL: string = process.env.DB_URL || DB_URL_LOCAL;
 const BCRYPT_SALT: number = parseInt(process.env.HASH!) || 12;
+const EMAIL_PORT: number = parseInt(process.env.EMAIL_PORT!) || 400;
+const EMAIL_HOST: string = process.env.EMAIL_HOST || "smtp.example.com";
+const EMAIL_SECURITY: boolean = process.env.EMAIL_SECURITY ? true : false;
 const APP_EMAIL: string = process.env.EMAIL_USERNAME || "example@gmail.com";
 const TRANSPORTER = nodemailer.createTransport({
-  service: "gmail",
+  host: EMAIL_HOST,
+  secure: EMAIL_SECURITY,
+  port: EMAIL_PORT,
+  tls: {
+    ciphers: "SSLv3"
+  },
   auth: {
     user: APP_EMAIL,
     pass: process.env.EMAIL_PASS
-  },
-  secure: process.env.NODE_ENV === "production"
+  }
 });
 
 export {

@@ -1,0 +1,200 @@
+<%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%> <% if (form) {%>
+<form style="margin-left: 10px; margin-right: 50px" action="/infoData">
+  <div
+    id="info-data-error-edit"
+    class="info-data error alert alert-info"
+    style="margin: 5px"
+    role="alert"
+  >
+    You can edit, delete, or send a link of this form in this section
+  </div>
+  <h2 id="form-data-title" style="text-align: center"><%=form.title%></h2>
+  <div class="mb-3">
+    <label for="adminCode" class="form-label">Admin Code</label>
+    <% if (auth) { %>
+    <input
+      type="text"
+      name="adminCode"
+      class="form-control"
+      placeholder="<%=auth.code%>"
+      readonly
+    />
+    <% } else { %>
+    <input type="text" name="adminCode" class="form-control" placeholder="code123" readonly /> <% }
+    %>
+  </div>
+  <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !== "isSkeleton") {%>
+  <div id="<%=key%>" class="mb-3">
+    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <input
+      type="text"
+      name="<%=key%>"
+      class="form-control skeleton-key-item"
+      placeholder="user input goes here"
+      readonly
+    />
+  </div>
+  <% } }); %>
+  <p id="add_after_me"></p>
+  <br />
+  <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
+    <button class="btn btn-info" id="add-item-btn-edit">Add Key</button>
+    <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn-edit">
+      Remove Key
+    </button>
+  </div>
+  <div class="mb-3">
+    <label for="newItem" class="newItem form-label">Key</label>
+    <input
+      type="text"
+      id="new-item-input"
+      name="newItem"
+      class="form-control"
+      placeholder="my-key"
+    />
+  </div>
+  <br />
+  <div style="text-align: center">
+    <button id="action-edit-btn" class="btn btn-primary" style="font-size: xx-large">
+      Finish Editing Form
+    </button>
+    <button id="action-delete-btn" class="btn btn-danger" style="font-size: xx-large">
+      Delete Form
+    </button>
+  </div>
+</form>
+
+<% } %>
+
+<script>
+  const form = document.querySelector("form");
+  const addButton = document.getElementById("add-item-btn-edit");
+  const removeButton = document.getElementById("remove-item-btn-edit");
+  const finishEditButton = document.getElementById("action-edit-btn");
+  const deleteFormButton = document.getElementById("action-delete-btn");
+  const infoError = document.getElementById("info-data-error-edit");
+  const dataStore = {
+    isSkeleton: true,
+    code: form.adminCode.placeholder.trim(),
+    title: document.getElementById("form-data-title").textContent
+  };
+  const restricted = [
+    "AdminCode",
+    "title",
+    "Admincode",
+    "Title",
+    "admincode",
+    "adminCode",
+    "Admincode",
+    "admin-code",
+    "Admin-Code",
+    "admin-Code",
+    "Admin-code"
+  ];
+  const inputNew = document.getElementById("new-item-input");
+  const errorClass = "info-data alert alert-danger";
+  const infoClass = "info-data alert alert-info";
+  const originalContent = "You can edit, delete, or send a link of this form in this section";
+  const inputs = document.querySelectorAll(".skeleton-key-item");
+  for (const input of inputs) {
+    dataStore[input.name] = true;
+  }
+  addButton.addEventListener("click", function appendRow(e) {
+    e.preventDefault();
+    const userInput = form.newItem.value.trim();
+    const key = userInput.split(" ").join("-");
+    if (!key || key === "") {
+      infoError.className = errorClass;
+      infoError.textContent = "Key cannot be empty!";
+    } else if (dataStore[key] || restricted.includes(key)) {
+      infoError.className = errorClass;
+      infoError.textContent = "Cannot have duplicate keys!";
+    } else {
+      infoError.className = infoClass;
+      infoError.textContent = originalContent;
+      document
+        .getElementById("add_after_me")
+        .insertAdjacentHTML(
+          "beforebegin",
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+        );
+      dataStore[key] = true;
+      inputNew.value = "";
+    }
+  });
+
+  removeButton.addEventListener("click", function removeRow(e) {
+    e.preventDefault();
+    const userInput = form.newItem.value.trim();
+    const key = userInput.split(" ").join("-");
+    if (!key) {
+      infoError.className = errorClass;
+      infoError.textContent = "Key cannot be empty!";
+    } else if (restricted.includes(key)) {
+      infoError.className = errorClass;
+      infoError.textContent = "Cannot delete restricted attributes!";
+    } else {
+      const divToDelete = document.getElementById(key);
+      if (divToDelete) {
+        divToDelete.parentNode.removeChild(divToDelete);
+        delete dataStore[key];
+        infoError.className = infoClass;
+        infoError.textContent = originalContent;
+        inputNew.value = "";
+      } else {
+        infoError.className = errorClass;
+        infoError.textContent = "Key not found in the form!";
+      }
+    }
+  });
+
+  finishEditButton.addEventListener("click", async e => {
+    e.preventDefault();
+    if (confirm("Are you sure you want to modify your form?")) {
+      try {
+        const { data } = await axios.post("/auth/forms/edit", { form: dataStore });
+        if (data.msg) {
+          infoError.className = "reset error alert alert-success";
+          infoError.textContent = data.msg;
+        }
+      } catch (err) {
+        infoError.className = errorClass;
+        if (err.response && err.response.data) {
+          const { hawkError } = err.response.data;
+          if (hawkError && hawkError.msg) infoError.textContent = hawkError.msg;
+        } else {
+          infoError.textContent = err.message || "Something went wrong try again later...";
+        }
+      }
+    }
+  });
+
+  deleteFormButton.addEventListener("click", async e => {
+    e.preventDefault();
+    if (confirm("Are you are you want to delete this form!")) {
+      try {
+        console.table(dataStore);
+        const { data } = await axios.delete("/auth/forms/delete", {
+          data: {
+            title: dataStore.title,
+            code: dataStore.code
+          }
+        });
+        if (data.msg) {
+          infoError.className = "reset error alert alert-success";
+          infoError.textContent = `${data.msg} Redirecting you to home...`;
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          location.assign("/");
+        }
+      } catch (err) {
+        infoError.className = errorClass;
+        if (err.response && err.response.data) {
+          const { hawkError } = err.response.data;
+          if (hawkError && hawkError.msg) infoError.textContent = hawkError.msg;
+        } else {
+          infoError.textContent = err.message || "Something went wrong try again later...";
+        }
+      }
+    }
+  });
+</script>

@@ -3,4 +3,5 @@ export default interface IAdmin {
   lastName: string;
   email: string;
   password: string;
+  code: string;
 }

@@ -1,5 +1,6 @@
 import adminRoutes from "./adminRoutes";
 import homeRoutes from "./homeRoutes";
+import infoDataRoutes from "./infoDataRoutes";
 import resetRoutes from "./resetRoutes";
 
-export { adminRoutes, resetRoutes, homeRoutes };
+export { adminRoutes, resetRoutes, homeRoutes, infoDataRoutes };

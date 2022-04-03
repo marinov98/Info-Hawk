@@ -6,5 +6,6 @@ export const ADMIN_MOCK = {
 };
 
 export const REGISTER_CONTROLLER_SUCCESS = {
-  created: true
+  msg: "Registration Successful!",
+  messageId: "123"
 };

@@ -39,10 +39,8 @@
       if (err.response && err.response.data) {
         const { hawkError } = err.response.data;
         if (hawkError && hawkError.msg) loginError.textContent = hawkError.msg;
-      }
-
-      if ("" === loginError.textContent) {
-        loginError.textContent = "Something went wrong try again later...";
+      } else {
+        loginError.textContent = err.message || "Something went wrong try again later...";
       }
     }
   });

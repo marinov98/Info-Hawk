@@ -13,7 +13,7 @@ import {
   UNAUTHORIZED
 } from "../../src/config/keys.error";
 import dbTester from "./../db";
-import { ADMIN_MOCK } from "./adminController.mock";
+import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock";
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn().mockReturnValue({
@@ -41,7 +41,7 @@ describe("Testing Reset Controller", () => {
     admin.confirmPassword = admin.password;
     const { body, status } = await request(app).post("/register").send(admin);
     expect(status).toBe(CREATED);
-    expect(body.created).toBe(true);
+    expect(body).toStrictEqual(REGISTER_CONTROLLER_SUCCESS);
   });
 
   afterEach(async () => {
@@ -50,6 +50,15 @@ describe("Testing Reset Controller", () => {
 
   afterAll(async () => {
     await db.closeDB();
+  });
+
+  it("should make all GET requests successfully", async () => {
+    let res = await request(app).get("/error/token");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/passwordMail");
+    expect(res.status).toBe(OK);
+    res = await request(app).get("/passwordReset/;lkjasdf;lkja");
+    expect(res.status).toBe(302);
   });
 
   it("should send resend link successfully", async () => {
