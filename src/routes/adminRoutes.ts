@@ -14,6 +14,6 @@ router.get("/auth/verify/:token", adminController.verify_email_get);
 router.post("/auth/resend", authenticateAdmin, adminController.home_resend_link_post);
 router.delete("/auth/account/delete", authenticateAdmin, adminController.auth_account_delete);
 router.get("/settings", authenticateAdmin, adminController.settings_get);
-router.get("/setting/deleteAcc", authenticateAdmin, adminController.deleteAcc_get);
+router.get("/setting/account", authenticateAdmin, adminController.deleteAcc_get);
 
 export default router;

@@ -6,6 +6,7 @@ import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import { CREATED } from "../../src/config/keys.error";
 import dbTester from "../db";
 import { ADMIN_MOCK } from "./adminController.mock";
+import { FORM_MOCK } from "./formData.mock";
 
 jest.mock("./../../src/middleware/authMiddleware", () => {
   return {
@@ -79,6 +80,14 @@ describe("Testing Form Controller", () => {
     }
     expect(code).toBeDefined();
     expect(code.length).toBe(10);
+
+    const form = { ...FORM_MOCK };
+    form.code = code;
+    const { body, status: statusCode } = await request(app)
+      .post("/auth/forms/create")
+      .send({ form });
+    expect(body.msg).toBeDefined();
+    expect(statusCode).toBe(CREATED);
   });
 
   afterEach(async () => {

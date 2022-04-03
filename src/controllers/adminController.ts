@@ -31,7 +31,7 @@ export function settings_get(_: Request, res: Response, __: NextFunction) {
 }
 
 export function deleteAcc_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("deleteAcc");
+  return res.render("account");
 }
 
 export async function register_post(req: Request, res: Response, _: NextFunction) {
