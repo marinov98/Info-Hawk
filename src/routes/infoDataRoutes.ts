@@ -41,8 +41,20 @@ router.delete(
   validateDeleteVars,
   infoDataController.info_data_edit_delete
 );
-router.get("/auth/forms/submissions", infoDataController.info_data_submissions_get);
-router.get("/auth/forms/submission/:id", infoDataController.info_data_submission_get);
-router.delete("/auth/forms/submissions/delete", infoDataController.info_data_submission_delete);
+router.get(
+  "/auth/forms/submissions",
+  authenticateAdmin,
+  infoDataController.info_data_submissions_get
+);
+router.get(
+  "/auth/forms/submission/:id",
+  authenticateAdmin,
+  infoDataController.info_data_submission_get
+);
+router.delete(
+  "/auth/forms/submissions/delete",
+  authenticateAdmin,
+  infoDataController.info_data_submission_delete
+);
 
 export default router;

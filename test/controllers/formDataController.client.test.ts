@@ -1,6 +1,8 @@
 import { Application, NextFunction, Request, Response } from "express";
+import { sign } from "jsonwebtoken";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
+import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import { CREATED } from "../../src/config/keys.error";
 import dbTester from "../db";
 import { ADMIN_MOCK } from "./adminController.mock";
@@ -52,8 +54,19 @@ describe("Testing Form Controller", () => {
     admin.confirmPassword = admin.password;
     const { status } = await request(app).post("/register").send(admin);
     expect(status).toBe(CREATED);
-    const registeredAdmin = await db.grabOne("admins");
+    let registeredAdmin = (await db.grabOne("admins")) as any;
     expect(registeredAdmin).toBeDefined();
+    expect(registeredAdmin.code.length).toBe(2);
+
+    const accessToken: string = sign({ email: admin.email }, JWT_SECRET, {
+      audience,
+      issuer,
+      expiresIn: "2m"
+    });
+
+    const res = await request(app).get(`/auth/verify/${accessToken}`);
+    expect(res.status).toBe(302);
+    registeredAdmin = await db.grabOne("admins");
 
     if (registeredAdmin) {
       code = registeredAdmin.code;
