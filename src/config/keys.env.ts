@@ -23,6 +23,7 @@ const EMAIL_PORT: number = parseInt(process.env.EMAIL_PORT!) || 400;
 const EMAIL_HOST: string = process.env.EMAIL_HOST || "smtp.example.com";
 const EMAIL_SECURITY: boolean = process.env.EMAIL_SECURITY ? true : false;
 const APP_EMAIL: string = process.env.EMAIL_USERNAME || "example@gmail.com";
+const PROTOCAL: string = process.env.NODE_ENV === "production" ? "https" : "http";
 const TRANSPORTER = nodemailer.createTransport({
   host: EMAIL_HOST,
   secure: EMAIL_SECURITY,
@@ -47,5 +48,6 @@ export {
   DB_URL_TEST,
   TRANSPORTER,
   APP_EMAIL,
-  BCRYPT_SALT
+  BCRYPT_SALT,
+  PROTOCAL
 };

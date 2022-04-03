@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 import { JWT_COOKIE_KEY } from "../config/keys.constants";
-import { APP_EMAIL, audience, issuer, JWT_SECRET, TRANSPORTER } from "../config/keys.env";
+import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import { Admin, Form } from "../db/models";
 import { ResetDecodedToken } from "../interfaces/token";
 import { IHError } from "../types/errors";
@@ -55,7 +55,7 @@ export async function register_post(req: Request, res: Response, _: NextFunction
       to: req.body.email,
       from: APP_EMAIL,
       subject: "Welcome to Info Hawk!",
-      text: `We are pleased for you to join Info Hawk. In order to use our functionality, please verify your email using this link ${req.protocol}://${req.headers.host}/auth/verify/${accessToken}`
+      text: `We are pleased for you to join Info Hawk. In order to use our functionality, please verify your email using this link ${PROTOCAL}://${req.headers.host}/auth/verify/${accessToken}`
     });
     return res.status(CREATED).json({ msg: "Registration Successful!", messageId });
   } catch (err) {
@@ -152,7 +152,7 @@ export async function home_resend_link_post(req: Request, res: Response, __: Nex
       to: email,
       from: APP_EMAIL,
       subject: "Welcome to Info Hawk!",
-      text: `We are pleased for you to join Info Hawk. In order to use our functionality, please verify your email using this link ${req.protocol}://${req.headers.host}/auth/verify/${accessToken}`
+      text: `We are pleased for you to join Info Hawk. In order to use our functionality, please verify your email using this link ${PROTOCAL}://${req.headers.host}/auth/verify/${accessToken}`
     });
     return res.status(OK).json({ message: "Link resent!", messageId });
   } catch (err) {

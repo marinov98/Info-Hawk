@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { APP_EMAIL, TRANSPORTER } from "../config/keys.env";
+import { APP_EMAIL, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -15,7 +15,7 @@ import { Admin, Form } from "../db/models";
 import { IHError } from "../types/errors";
 
 export function info_data_create_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("infoData/infoDataCREATE");
+  return res.render("infoDataCREATE");
 }
 
 export async function info_data_link_get(req: Request, res: Response, _: NextFunction) {
@@ -23,7 +23,7 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
     const form = await Form.findById(req.params.id);
     if (!form) return res.redirect("/");
 
-    return res.render("infoData/infoDataLINK", { formId: form._id });
+    return res.render("infoDataLINK", { formId: form._id });
   } catch (err) {
     console.error(err);
   }
@@ -33,7 +33,7 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
   try {
     const auth = res.app.locals.auth;
     const forms = await Form.find({ adminId: auth._id, isSkeleton: false }).sort({ createdAt: -1 });
-    return res.render("infoData/infoDataSUBMISSIONS", { submissions: forms });
+    return res.render("infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);
   }
@@ -43,7 +43,7 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
   try {
     const id = req.params.id;
     const form = await Form.findById(id);
-    return res.render("infoData/infoDataSUBMISSION", { submission: form });
+    return res.render("infoDataSUBMISSION", { submission: form });
   } catch (err) {
     console.error(err);
   }
@@ -55,7 +55,7 @@ export async function info_data_client_get(req: Request, res: Response, _: NextF
     const form = await Form.findOne({ _id: formId, adminId, isSkeleton: true });
     if (!(await Admin.findById(adminId)) || !form) return res.redirect("/");
 
-    return res.render("infoData/infoDataClient", { form });
+    return res.render("infoDataCLIENT", { form });
   } catch (err) {
     console.error(err);
   }
@@ -70,7 +70,7 @@ export async function info_data_view_get(req: Request, res: Response, _: NextFun
       res.redirect("/");
     }
 
-    return res.render("infoData/infoDataVIEW", { form });
+    return res.render("infoDataVIEW", { form });
   } catch (err) {
     console.error(err);
   }
@@ -203,7 +203,7 @@ export async function info_data_link_post(req: Request, res: Response, _: NextFu
       from: APP_EMAIL,
       to: userEmail,
       subject: `Info Hawk Form Link from ${admin.firstName}`,
-      text: `${admin.firstName} has sent you a form to fill, you can fill it out using code ${admin.code} at ${req.protocol}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
+      text: `${admin.firstName} has sent you a form to fill, you can fill it out using code ${admin.code} at ${PROTOCAL}://${req.headers.host}/client/form-submission/${adminId}/${formId}`
     });
 
     return res.status(OK).json({ message: "Form link sent successfully!", messageId });
@@ -249,7 +249,7 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
       from: APP_EMAIL,
       to: admin.email,
       subject: `Someone submitted something with your code!`,
-      text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${req.protocol}://${req.headers.host}/auth/forms/submission/${formId}`
+      text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${PROTOCAL}://${req.headers.host}/auth/forms/submission/${formId}`
     });
     return res.status(CREATED).json({ msg: "Submission successful!", messageId });
   } catch (err) {
