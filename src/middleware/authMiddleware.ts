@@ -10,9 +10,7 @@ import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constan
 export function monitorCookies(req: Request, res: Response, next: NextFunction): void {
   const refreshToken = req.signedCookies[JWT_REFRESH_COOKIE_KEY];
   if (refreshToken) {
-    console.log("refresh token found!");
     const accessToken = req.cookies[JWT_COOKIE_KEY];
-    console.log(`access Token: ${accessToken}`);
     if (accessToken) {
       verify(
         accessToken,
@@ -23,7 +21,6 @@ export function monitorCookies(req: Request, res: Response, next: NextFunction):
             const { exp, attempts } = decoded as DecodedToken;
             if (Date.now() >= exp * 1000) {
               const refreshesSoFar = attempts ? attempts : 0;
-              console.log(`Attempts so far:${refreshesSoFar}`);
               attemptRefresh(refreshesSoFar, req, res);
             }
           }
@@ -84,10 +81,8 @@ export function attemptRefresh(attempts: number, req: Request, res: Response): v
         const { id } = decodedToken as DecodedToken;
         const tokens = createTokens(id, attempts);
         if (attempts < 1 || attempts % 7 !== 0) {
-          console.log("refresh only accessToken");
           setCookies(res, tokens, false);
         } else {
-          console.log("all tokens refreshed");
           setCookies(res, tokens);
         }
 
