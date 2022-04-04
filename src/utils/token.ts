@@ -5,29 +5,35 @@ import { audience, issuer, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/keys
 
 type Tokens = { accessToken: string; refreshToken: string };
 
-export function createTokens(id: string): Tokens {
+export function createTokens(id: string, attempts: number = 0): Tokens {
   return {
-    accessToken: jwt.sign({ id }, JWT_SECRET, { audience, issuer, expiresIn: "35m" }),
+    accessToken: jwt.sign({ id, attempts }, JWT_SECRET, { audience, issuer, expiresIn: "20m" }),
     refreshToken: jwt.sign({ id }, JWT_REFRESH_SECRET, {
       audience,
       issuer,
-      expiresIn: "10 days"
+      expiresIn: "7 days"
     })
   };
 }
 
-export function setCookies(res: Response, { accessToken, refreshToken }: Tokens): void {
+export function setCookies(
+  res: Response,
+  { accessToken, refreshToken }: Tokens,
+  includeRefresh = true
+): void {
   const options: CookieOptions = {
     httpOnly: true,
-    expires: new Date(Date.now() + 37 * 100000 * 24 * 10),
+    expires: new Date(Date.now() + 36 * 100000),
     secure: process.env.NODE_ENV === "production"
   };
   res.cookie(JWT_COOKIE_KEY, accessToken, options);
 
-  options.signed = true;
-  options.expires = new Date(Date.now() + 37 * 100000 * 24 * 11);
+  if (includeRefresh) {
+    options.signed = true;
+    options.expires = new Date(Date.now() + 36 * 100000 * 24 * 10);
 
-  res.cookie(JWT_REFRESH_COOKIE_KEY, refreshToken, options);
+    res.cookie(JWT_REFRESH_COOKIE_KEY, refreshToken, options);
+  }
 }
 
 export function removeCookies(res: Response) {
