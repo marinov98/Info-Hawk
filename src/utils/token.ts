@@ -23,14 +23,14 @@ export function setCookies(
 ): void {
   const options: CookieOptions = {
     httpOnly: true,
-    expires: new Date(Date.now() + 36 * 100000),
+    expires: new Date(Date.now() + 60 * 1000 * 30),
     secure: process.env.NODE_ENV === "production"
   };
   res.cookie(JWT_COOKIE_KEY, accessToken, options);
 
   if (includeRefresh) {
     options.signed = true;
-    options.expires = new Date(Date.now() + 36 * 100000 * 24 * 10);
+    options.expires = new Date(Date.now() + 60 * 60 * 1000 * 24 * 10);
 
     res.cookie(JWT_REFRESH_COOKIE_KEY, refreshToken, options);
   }
