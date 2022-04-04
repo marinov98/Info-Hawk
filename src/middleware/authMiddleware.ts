@@ -4,20 +4,31 @@ import { audience, issuer, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/keys
 import { FORBIDDEN } from "../config/keys.error";
 import { Admin } from "../db/models";
 import { DecodedToken } from "../interfaces/token";
-import { createTokens, removeCookies } from "../utils/token";
+import { createTokens, removeCookies, setCookies } from "../utils/token";
 import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
 
 export function monitorCookies(req: Request, res: Response, next: NextFunction): void {
-  const token = req.cookies[JWT_COOKIE_KEY];
-  if (token) {
-    verify(token, JWT_SECRET, { ignoreExpiration: true, issuer, audience }, (err: any, decoded) => {
-      if (decoded) {
-        const { exp } = decoded as DecodedToken;
-        if (Date.now() >= exp * 1000) {
-          attemptRefresh(req, res);
+  const refreshToken = req.signedCookies[JWT_REFRESH_COOKIE_KEY];
+  if (refreshToken) {
+    const accessToken = req.cookies[JWT_COOKIE_KEY];
+    if (accessToken) {
+      verify(
+        accessToken,
+        JWT_SECRET,
+        { ignoreExpiration: true, issuer, audience },
+        (err: any, decoded) => {
+          if (decoded) {
+            const { exp, attempts } = decoded as DecodedToken;
+            if (Date.now() >= exp * 1000) {
+              const refreshesSoFar = attempts ? attempts : 0;
+              attemptRefresh(refreshesSoFar, req, res);
+            }
+          }
         }
-      }
-    });
+      );
+    } else {
+      attemptRefresh(-1, req, res);
+    }
   }
   next();
 }
@@ -58,24 +69,24 @@ export function authenticateAdmin(req: Request, res: Response, next: NextFunctio
   }
 }
 
-export function attemptRefresh(req: Request, res: Response): void {
+export function attemptRefresh(attempts: number, req: Request, res: Response): void {
   const refreshToken = req.signedCookies[JWT_REFRESH_COOKIE_KEY];
-  req.cookies[JWT_COOKIE_KEY] = null;
   res.clearCookie(JWT_COOKIE_KEY);
   if (refreshToken) {
     verify(refreshToken, JWT_REFRESH_SECRET, { issuer, audience }, (err: any, decodedToken) => {
       if (err) {
         res.clearCookie(JWT_REFRESH_COOKIE_KEY);
       } else {
+        attempts++;
         const { id } = decodedToken as DecodedToken;
-        const { accessToken } = createTokens(id);
-        const options = {
-          httpOnly: true,
-          expires: new Date(Date.now() + 37 * 100000 * 24 * 10),
-          secure: process.env.NODE_ENV === "production"
-        };
-        res.cookie(JWT_COOKIE_KEY, accessToken, options);
-        req.cookies[JWT_COOKIE_KEY] = accessToken;
+        const tokens = createTokens(id, attempts);
+        if (attempts < 1 || attempts % 7 !== 0) {
+          setCookies(res, tokens, false);
+        } else {
+          setCookies(res, tokens);
+        }
+
+        req.cookies[JWT_COOKIE_KEY] = tokens.accessToken;
       }
     });
   }
