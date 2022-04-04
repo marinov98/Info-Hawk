@@ -20,7 +20,8 @@ export function info_data_create_get(_: Request, res: Response, __: NextFunction
 
 export async function info_data_link_get(req: Request, res: Response, _: NextFunction) {
   try {
-    const form = await Form.findById(req.params.id);
+    const adminId = res.app.locals.auth._id;
+    const form = await Form.findOne({ _id: req.params.id, adminId });
     if (!form) return res.redirect("/");
 
     return res.render("infoDataLINK", { formId: form._id });
@@ -42,7 +43,8 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
 export async function info_data_submission_get(req: Request, res: Response, _: NextFunction) {
   try {
     const id = req.params.id;
-    const form = await Form.findById(id);
+    const adminId = res.app.locals.auth._id;
+    const form = await Form.findOne({ _id: id, adminId });
     return res.render("infoDataSUBMISSION", { submission: form });
   } catch (err) {
     console.error(err);
@@ -63,9 +65,10 @@ export async function info_data_client_get(req: Request, res: Response, _: NextF
 
 export async function info_data_view_get(req: Request, res: Response, _: NextFunction) {
   const id = req.params.id;
+  const adminId = res.app.locals.auth._id;
   let form = null;
   try {
-    form = await Form.findById(id);
+    form = await Form.findOne({ _id: id, adminId });
     if (!form) {
       res.redirect("/");
     }
