@@ -11,7 +11,7 @@ export function createTokens(id: string, attempts: number = 0): Tokens {
     refreshToken: jwt.sign({ id }, JWT_REFRESH_SECRET, {
       audience,
       issuer,
-      expiresIn: "7 days"
+      expiresIn: "10 days"
     })
   };
 }
