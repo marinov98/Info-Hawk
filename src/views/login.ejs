@@ -32,6 +32,9 @@
     try {
       const { data } = await axios.post("/login", { email, password });
       if (data.id) {
+        alert(
+          `This website only uses Authentication cookies to keep you logged in and does not collect any information in regards to user preferences or activities.`
+        );
         location.assign("/");
       }
     } catch (err) {
