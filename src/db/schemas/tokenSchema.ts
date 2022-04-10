@@ -5,7 +5,7 @@ export enum TokenType {
   RESET = "Reset"
 }
 
-@modelOptions({ schemaOptions: { _id: false, timestamps: true } })
+@modelOptions({ schemaOptions: { timestamps: true } })
 class Token {
   @prop({ required: true })
   public owner!: string;

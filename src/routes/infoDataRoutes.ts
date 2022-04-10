@@ -29,11 +29,11 @@ router.post(
   authenticateAdmin,
   infoDataController.info_data_link_post
 );
-router.post(
+router.put(
   "/auth/forms/edit",
   authenticateAdmin,
   validateSkeleton,
-  infoDataController.info_data_edit_post
+  infoDataController.info_data_edit_put
 );
 router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
 router.post(
