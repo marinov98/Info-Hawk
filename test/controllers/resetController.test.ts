@@ -12,6 +12,7 @@ import {
   TOKEN_RESET_PAYLOAD_ERR,
   UNAUTHORIZED
 } from "../../src/config/keys.error";
+import { TokenType } from "../../src/db/schemas/tokenSchema";
 import dbTester from "./../db";
 import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock";
 
@@ -61,30 +62,45 @@ describe("Testing Reset Controller", () => {
     expect(res.status).toBe(302);
   });
 
-  it("should send resend link successfully", async () => {
+  it("should send reset link successfully", async () => {
     const { email } = ADMIN_MOCK;
     const { body, status } = await request(app).post("/passwordMail").send({ email });
     expect(status).toBe(OK);
     expect(body.message).toBe("A reset link was sent to your email");
     expect(body.messageId).toBe("123");
+    const token = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
+    expect(token.value).toBeDefined();
   });
 
-  it("should send resend link unsuccessfully email does not exist", async () => {
+  it("should send reset link unsuccessfully email does not exist", async () => {
     let { email } = ADMIN_MOCK;
     email = "bad@gmail.com";
     const { body, status } = await request(app).post("/passwordMail").send({ email });
     expect(status).toBe(BAD_REQUEST);
     expect(body.hawkError.msg).toBe("User with this email does not exist!");
+    const token = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
+    expect(token).toBe(null);
   });
 
   it("should reset password successfully", async () => {
+    const res = await request(app).post("/passwordMail").send({ email: ADMIN_MOCK.email });
+    expect(res.status).toBe(OK);
+    expect(res.body.message).toBe("A reset link was sent to your email");
+    expect(res.body.messageId).toBe("123");
+    const checkToken = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
+    expect(checkToken.value).toBeDefined();
+
     const { email, password } = ADMIN_MOCK;
-    const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "2m" });
+    const accessToken = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
     const newPassword = "newPass123";
-    const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
+    const { body, status } = await request(app)
+      .patch(`/reset/${accessToken.value}`)
+      .send({ newPassword });
     expect(status).toBe(OK);
     expect(body.message).toBe("Password reset successfully!");
     expect(body.messageId).toBe("123");
+    const token = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
+    expect(token).toBe(null);
 
     // login with old password (should fail)
     const {
@@ -103,9 +119,13 @@ describe("Testing Reset Controller", () => {
   it("should reset unsuccessfully bad token", async () => {
     const accessToken: string = "badktoken123";
     const newPassword = "newPass123";
-    const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
+    const { body, status } = await request(app)
+      .patch(`/reset/${accessToken}`)
+      .send({ newPassword });
     expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
+    const token = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
+    expect(token).toBe(null);
   });
 
   it("should reset unsuccessfully bad issuer", async () => {
@@ -115,10 +135,23 @@ describe("Testing Reset Controller", () => {
       issuer: "fake",
       expiresIn: "2m"
     });
+    await db.addOne("tokens", {
+      owner: "badIssuerOwner",
+      value: accessToken,
+      type: TokenType.RESET
+    });
     const newPassword = "newPass123";
-    const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
+    const { body, status } = await request(app)
+      .patch(`/reset/${accessToken}`)
+      .send({ newPassword });
     expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
+    const token = (await db.grabOne("tokens", {
+      owner: "badIssuerOwner",
+      value: accessToken,
+      type: TokenType.RESET
+    })) as any;
+    expect(token).toBe(null);
   });
 
   it("should reset unsuccessfully bad audience", async () => {
@@ -128,10 +161,22 @@ describe("Testing Reset Controller", () => {
       issuer,
       expiresIn: "2m"
     });
+    await db.addOne("tokens", {
+      owner: "badAudienceOwner",
+      value: accessToken,
+      type: TokenType.RESET
+    });
     const newPassword = "newPass123";
-    const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
+    const { body, status } = await request(app)
+      .patch(`/reset/${accessToken}`)
+      .send({ newPassword });
     expect(body.hawkError.msg).toBe(TOKEN_RESET_ERR);
     expect(status).toBe(UNAUTHORIZED);
+    const token = (await db.grabOne("tokens", {
+      value: accessToken,
+      type: TokenType.RESET
+    })) as any;
+    expect(token).toBe(null);
   });
 
   it("should reset unsuccessfully bad payload", async () => {
@@ -142,20 +187,36 @@ describe("Testing Reset Controller", () => {
       issuer,
       expiresIn: "2m"
     });
+    await db.addOne("tokens", { owner: "fakeOwner", value: accessToken, type: TokenType.RESET });
     const newPassword = "newPass123";
-    const { body, status } = await request(app).put(`/reset/${accessToken}`).send({ newPassword });
+    const { body, status } = await request(app)
+      .patch(`/reset/${accessToken}`)
+      .send({ newPassword });
     expect(body.hawkError.msg).toBe("Data in token was not valid, request a new link");
     expect(status).toBe(UNAUTHORIZED);
+    const token = (await db.grabOne("tokens", {
+      owner: "fakeOwner",
+      valude: accessToken,
+      type: TokenType.RESET
+    })) as any;
+    expect(token).toBe(null);
 
     const accessToken2: string = sign({ id: email }, JWT_SECRET, {
       audience,
       issuer,
       expiresIn: "2m"
     });
+    await db.addOne("tokens", { owner: "fakeOwner2", value: accessToken2, type: TokenType.RESET });
     const {
       body: { hawkError }
-    } = await request(app).put(`/reset/${accessToken2}`).send({ newPassword });
+    } = await request(app).patch(`/reset/${accessToken2}`).send({ newPassword });
     expect(hawkError.msg).toBe(TOKEN_RESET_PAYLOAD_ERR);
     expect(hawkError.status).toBe(UNAUTHORIZED);
+    const token2 = (await db.grabOne("tokens", {
+      owner: "fakeOwner2",
+      value: accessToken2,
+      type: TokenType.RESET
+    })) as any;
+    expect(token2).toBe(null);
   });
 });

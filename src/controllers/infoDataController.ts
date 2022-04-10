@@ -109,7 +109,7 @@ export async function info_data_create_post(req: Request, res: Response, _: Next
   }
 }
 
-export async function info_data_edit_post(req: Request, res: Response, _: NextFunction) {
+export async function info_data_edit_put(req: Request, res: Response, _: NextFunction) {
   const hawkError: IHError = {
     msg: UNKNOWN_ERR_MSG,
     status: BAD_REQUEST,

@@ -1,9 +1,7 @@
 import { Application, NextFunction, Request, Response } from "express";
-import { sign } from "jsonwebtoken";
 import { Types } from "mongoose";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
-import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -13,6 +11,7 @@ import {
   OK,
   UNKNOWN_ERR_MSG
 } from "../../src/config/keys.error";
+import { TokenType } from "../../src/db/schemas/tokenSchema";
 import dbTester from "../db";
 import { ADMIN_MOCK } from "./adminController.mock";
 import { FORM_MOCK } from "./formData.mock";
@@ -68,13 +67,8 @@ describe("Testing Form Controller", () => {
     expect(registeredAdmin).toBeDefined();
     expect(registeredAdmin.code.length).toBe(2);
 
-    const accessToken: string = sign({ email: admin.email }, JWT_SECRET, {
-      audience,
-      issuer,
-      expiresIn: "2m"
-    });
-
-    const res = await request(app).get(`/auth/verify/${accessToken}`);
+    const accessToken = (await db.grabOne("tokens", { type: TokenType.VERIFY })) as any;
+    const res = await request(app).get(`/auth/verify/${accessToken.value}`);
     expect(res.status).toBe(302);
     registeredAdmin = await db.grabOne("admins");
 

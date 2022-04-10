@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 import { audience, issuer, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/keys.env";
 import { FORBIDDEN } from "../config/keys.error";
 import { Admin } from "../db/models";
-import { DecodedToken } from "../interfaces/token";
+import { DecodedToken } from "../interfaces/index";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
 import { JWT_COOKIE_KEY, JWT_REFRESH_COOKIE_KEY } from "./../config/keys.constants";
 
