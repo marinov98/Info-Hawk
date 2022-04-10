@@ -50,6 +50,7 @@ router.delete(
 router.get(
   "/auth/forms/submissions",
   authenticateAdmin,
+  ensureVerified,
   infoDataController.info_data_submissions_get
 );
 router.get(
