@@ -1,9 +1,9 @@
 import { getModelForClass, index, modelOptions, prop } from "@typegoose/typegoose";
 
-@modelOptions({ schemaOptions: { _id: false } })
+@modelOptions({ schemaOptions: { _id: false, timestamps: true } })
 @index({ value: 1 })
 class Token {
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   value!: string;
 }
 
