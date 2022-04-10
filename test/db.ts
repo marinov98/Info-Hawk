@@ -14,7 +14,7 @@ export default class dbTester {
     }
   }
 
-  public async connectTestDB() {
+  public async connectTestDB(): Promise<void> {
     try {
       if (!this.local) {
         this.mongoServer = await MongoMemoryServer.create();
@@ -31,7 +31,11 @@ export default class dbTester {
     return mongoose.connection.collections[key].findOne();
   }
 
-  public async clearDB() {
+  public async addOne(key: string, option: any = null): Promise<void> {
+    await mongoose.connection.collections[key].insertOne(option);
+  }
+
+  public async clearDB(): Promise<void> {
     try {
       const { collections } = mongoose.connection;
       for (const collection in collections) {
@@ -44,7 +48,7 @@ export default class dbTester {
     }
   }
 
-  public async closeDB() {
+  public async closeDB(): Promise<void> {
     try {
       await mongoose.connection.dropDatabase();
       await mongoose.connection.close();

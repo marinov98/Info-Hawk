@@ -116,7 +116,7 @@
         .getElementById("add_after_me")
         .insertAdjacentHTML(
           "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="user input goes here" readonly/></div>`
         );
       dataStore[key] = true;
       inputNew.value = "";
@@ -152,7 +152,7 @@
     e.preventDefault();
     if (confirm("Are you sure you want to modify your form?")) {
       try {
-        const { data } = await axios.post("/auth/forms/edit", { form: dataStore });
+        const { data } = await axios.put("/auth/forms/edit", { form: dataStore });
         if (data.msg) {
           infoError.className = "reset error alert alert-success";
           infoError.textContent = data.msg;

@@ -44,6 +44,8 @@
     const confirmPassword = form.confirmPassword.value;
 
     try {
+      alertDiv.className = "register error alert alert-info";
+      alertDiv.textContent = "Registering... DO NOT click the sign up button again";
       const { data } = await axios.post("/register", {
         firstName,
         lastName,
@@ -52,6 +54,9 @@
         confirmPassword
       });
       if (data.msg) {
+        alertDiv.className = "register error alert alert-success";
+        alertDiv.textContent = "Success!";
+        await new Promise(resolve => setTimeout(resolve, 250));
         alert(`${data.msg} A link was sent to you to verify your email.`);
         location.assign("/login");
       }

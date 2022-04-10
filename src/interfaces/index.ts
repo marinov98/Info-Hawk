@@ -1,4 +1,3 @@
-import IAdmin from "./admin";
-import IFormData from "./formData";
+import { DecodedToken, ResetDecodedToken } from "./token";
 
-export { IAdmin, IFormData };
+export { ResetDecodedToken, DecodedToken };

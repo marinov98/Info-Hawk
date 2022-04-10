@@ -1,8 +1,6 @@
 import { Application, NextFunction, Request, Response } from "express";
-import { sign } from "jsonwebtoken";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
-import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -12,6 +10,7 @@ import {
   OK,
   SAME_EMAIL_ERR
 } from "../../src/config/keys.error";
+import { TokenType } from "../../src/db/schemas/tokenSchema";
 import dbTester from "./../db";
 import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock";
 
@@ -156,19 +155,19 @@ describe("Testing Admin Controller", () => {
   });
 
   it("should verify admin successfully", async () => {
-    const accessToken: string = sign({ email: ADMIN_MOCK.email }, JWT_SECRET, {
-      audience,
-      issuer,
-      expiresIn: "2m"
-    });
-    let user = await db.grabOne("admins");
+    let user = (await db.grabOne("admins")) as any;
     expect(user).toBeDefined();
+    let token = (await db.grabOne("tokens", { owner: user._id.toString() })) as any;
+    expect(token.value).toBeDefined();
+    expect(token.type).toBe(TokenType.VERIFY);
     if (user) expect(user.code).toBe("NA");
-    const { status } = await request(app).get(`/auth/verify/${accessToken}`);
+    const { status } = await request(app).get(`/auth/verify/${token.value}`);
     expect(status).toBe(302);
     user = await db.grabOne("admins");
     expect(user).toBeDefined();
     if (user) expect(user.code.length).toBe(10);
+    token = await db.grabOne("tokens", { value: token.value });
+    expect(token).toBe(null);
   });
 
   it("should resend verification link successfully", async () => {
@@ -191,12 +190,14 @@ describe("Testing Admin Controller", () => {
 
   it("should delete user account successfully", async () => {
     let user = (await db.grabOne("admins")) as any;
-    const id = user._id.toString();
     expect(user._id).toBeDefined;
+    const id = user._id.toString();
     const { body, status } = await request(app).delete("/auth/account/delete").send({ id });
     expect(body.msg).toBe("Account deleted successfully!");
     expect(status).toBe(OK);
     user = await db.grabOne("admins");
     expect(user).toBe(null);
+    const token = await db.grabOne("tokens", { owner: id });
+    expect(token).toBe(null);
   });
 });

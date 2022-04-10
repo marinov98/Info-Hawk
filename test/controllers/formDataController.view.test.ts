@@ -1,9 +1,7 @@
 import { Application, NextFunction, Request, Response } from "express";
-import { sign } from "jsonwebtoken";
 import { Types } from "mongoose";
 import request from "supertest";
 import bootstrap from "../../src/config/bootstrap";
-import { audience, issuer, JWT_SECRET } from "../../src/config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -65,17 +63,13 @@ describe("Testing Form Controller", () => {
     const { status } = await request(app).post("/register").send(admin);
     expect(status).toBe(CREATED);
 
+    let token = (await db.grabOne("tokens")) as any;
+    expect(token.value).toBeDefined();
     let registeredAdmin = (await db.grabOne("admins")) as any;
     expect(registeredAdmin).toBeDefined();
     expect(registeredAdmin.code.length).toBe(2);
 
-    const accessToken: string = sign({ email: admin.email }, JWT_SECRET, {
-      audience,
-      issuer,
-      expiresIn: "2m"
-    });
-
-    const res = await request(app).get(`/auth/verify/${accessToken}`);
+    const res = await request(app).get(`/auth/verify/${token.value}`);
     expect(res.status).toBe(302);
     registeredAdmin = await db.grabOne("admins");
 
@@ -97,6 +91,8 @@ describe("Testing Form Controller", () => {
       .send({ form });
     expect(body.msg).toBeDefined();
     expect(statusCode).toBe(CREATED);
+    token = await db.grabOne("tokens", { owner: registeredAdmin._id.toString() });
+    expect(token).toBe(null);
   });
 
   afterEach(async () => {
@@ -112,7 +108,7 @@ describe("Testing Form Controller", () => {
     newForm.code = code;
     delete newForm.SSN;
     newForm.newAttribute = true;
-    const { body, status } = await request(app).post("/auth/forms/edit").send({ form: newForm });
+    const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(body.msg).toBe("Form successfully updated!");
     expect(status).toBe(OK);
     const updatedForm = (await db.grabOne("forms")) as any;
@@ -125,7 +121,7 @@ describe("Testing Form Controller", () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = code;
     newForm.newAttribute = "new";
-    const { body, status } = await request(app).post("/auth/forms/edit").send({ form: newForm });
+    const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(body.hawkError.src).toBe("infoDataMiddleware");
     expect(status).toBe(BAD_REQUEST);
   });
@@ -134,7 +130,7 @@ describe("Testing Form Controller", () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = "badcode123";
     newForm.newAttribute = true;
-    const { body, status } = await request(app).post("/auth/forms/edit").send({ form: newForm });
+    const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(status).toBe(NOT_FOUND);
     expect(body.hawkError.msg).toBe(FORM_EDIT_CODE_ERR);
   });
@@ -144,7 +140,7 @@ describe("Testing Form Controller", () => {
     newForm.code = code;
     newForm.title = "wrong title";
     newForm.newAttribute = true;
-    const { body, status } = await request(app).post("/auth/forms/edit").send({ form: newForm });
+    const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(status).toBe(NOT_FOUND);
     expect(body.hawkError.msg).toBe(FORM_EDIT_DOC_ERR);
   });

@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 import { JWT_COOKIE_KEY } from "../config/keys.constants";
 import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
-import { Admin, Form } from "../db/models";
-import { ResetDecodedToken } from "../interfaces/token";
+import { Admin, Form, Token } from "../db/models";
+import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 import { generateAdminCode } from "../utils/code";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
@@ -45,12 +45,15 @@ export async function register_post(req: Request, res: Response, _: NextFunction
       hawkError.msg = SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
-    await Admin.create(req.body);
+    const admin = await Admin.create(req.body);
     const accessToken: string = sign({ email: req.body.email }, JWT_SECRET, {
       audience,
       issuer,
-      expiresIn: "10m"
+      expiresIn: "30m"
     });
+
+    await Token.create({ value: accessToken, owner: admin._id.toString() });
+
     const { messageId } = await TRANSPORTER.sendMail({
       to: req.body.email,
       from: APP_EMAIL,
@@ -69,25 +72,30 @@ export async function register_post(req: Request, res: Response, _: NextFunction
 export async function verify_email_get(req: Request, res: Response, _: NextFunction) {
   const hawkError: IHError = { src: "resetController", msg: UNKNOWN_ERR_MSG, status: BAD_REQUEST };
   try {
-    const token = req.params.token;
-    verify(token, JWT_SECRET, { issuer, audience }, async (err, decodedToken) => {
+    const token = await Token.findOne({ value: req.params.token });
+    if (!token) return res.status(UNAUTHORIZED).redirect("/error/token");
+    verify(token.value, JWT_SECRET, { issuer, audience }, async (err, decodedToken) => {
       if (err) {
+        await Token.deleteOne({ value: token.value });
         return res.status(UNAUTHORIZED).redirect("/error/token");
       }
       const { email } = decodedToken as ResetDecodedToken;
       const admin = await Admin.findOne({ email });
       if (!admin) {
+        await Token.deleteOne({ value: token.value });
         return res.status(NOT_FOUND).redirect("/error/token");
       }
       const code = generateAdminCode();
       const updatedAdmin = await admin.updateOne({ code });
       if (!updatedAdmin) {
+        await Token.deleteOne({ value: token.value });
         hawkError.status = NOT_FOUND;
         return res.status(hawkError.status).json({ hawkError });
       }
       if (req.cookies[JWT_COOKIE_KEY] && res.app.locals.auth) {
         res.app.locals.auth.code = code;
       }
+      await Token.deleteOne({ value: token.value });
       return res.redirect("/");
     });
   } catch (err) {
@@ -173,6 +181,7 @@ export async function auth_account_delete(req: Request, res: Response, __: NextF
   try {
     const { id } = req.body;
     await Form.deleteMany({ adminId: id });
+    await Token.deleteMany({ owner: id });
     await Admin.findByIdAndDelete(id);
     removeCookies(res);
     return res.status(OK).json({ msg: "Account deleted successfully!" });
