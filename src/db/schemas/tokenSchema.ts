@@ -1,8 +1,8 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 
-enum TokenType {
+export enum TokenType {
   VERIFY = "Verify",
-  RESET = "RESET"
+  RESET = "Reset"
 }
 
 @modelOptions({ schemaOptions: { _id: false, timestamps: true } })
