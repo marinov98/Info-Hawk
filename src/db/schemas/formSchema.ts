@@ -1,29 +1,17 @@
-import { Document, model, Schema } from "mongoose";
-import { IFormData } from "../../interfaces/index";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
+import { Types } from "mongoose";
+import Admin from "./adminSchema";
 
-interface IFormDataDoc extends IFormData, Document {
-  createdAt: Date;
-  updatedAt: Date;
+@modelOptions({ schemaOptions: { timestamps: true, strict: false } })
+class Form {
+  @prop({ required: true })
+  public title!: string;
+
+  @prop({ required: true, default: false })
+  public isSkeleton!: boolean;
+
+  @prop({ ref: () => Admin, required: true })
+  public adminId!: Types.ObjectId;
 }
 
-const FormSchema: Schema<IFormDataDoc> = new Schema<IFormDataDoc>(
-  {
-    title: {
-      type: String,
-      required: true
-    },
-    isSkeleton: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    adminId: {
-      type: Schema.Types.ObjectId,
-      ref: "Admin",
-      required: true
-    }
-  },
-  { strict: false, timestamps: true }
-);
-
-export default model<IFormDataDoc>("Form", FormSchema);
+export default getModelForClass(Form);

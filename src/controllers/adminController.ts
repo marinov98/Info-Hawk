@@ -3,7 +3,7 @@ import { sign, verify } from "jsonwebtoken";
 import { JWT_COOKIE_KEY } from "../config/keys.constants";
 import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import { Admin, Form } from "../db/models";
-import { ResetDecodedToken } from "../interfaces/token";
+import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 import { generateAdminCode } from "../utils/code";
 import { createTokens, removeCookies, setCookies } from "../utils/token";

@@ -12,7 +12,7 @@ import {
   UNKNOWN_ERR_MSG
 } from "../config/keys.error";
 import { Admin } from "../db/models";
-import { ResetDecodedToken } from "../interfaces/token";
+import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 
 export function reset_password_mail_get(req: Request, res: Response, next: NextFunction) {
