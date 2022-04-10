@@ -1,6 +1,5 @@
 import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { Types } from "mongoose";
-import Admin from "./adminSchema";
 
 @modelOptions({ schemaOptions: { timestamps: true, strict: false } })
 class Form {
@@ -10,7 +9,7 @@ class Form {
   @prop({ required: true, default: false })
   public isSkeleton!: boolean;
 
-  @prop({ ref: () => Admin, required: true })
+  @prop({ ref: "Admin", required: true })
   public adminId!: Types.ObjectId;
 }
 

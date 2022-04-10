@@ -1,10 +1,17 @@
-import { getModelForClass, index, modelOptions, prop } from "@typegoose/typegoose";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
+
+enum TokenType {
+  VERIFY = "Verify",
+  RESET = "RESET"
+}
 
 @modelOptions({ schemaOptions: { _id: false, timestamps: true } })
-@index({ value: 1 })
 class Token {
-  @prop({ required: true, unique: true })
-  value!: string;
+  @prop({ required: true, unique: true, index: true })
+  public value!: string;
+
+  @prop({ required: true, enum: TokenType, default: TokenType.VERIFY })
+  public type!: string;
 }
 
 export default getModelForClass(Token);

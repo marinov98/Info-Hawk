@@ -1,4 +1,4 @@
-import { getModelForClass, index, pre, prop, ReturnModelType } from "@typegoose/typegoose";
+import { getModelForClass, pre, prop, ReturnModelType } from "@typegoose/typegoose";
 import bcrypt from "bcrypt";
 import { BCRYPT_SALT } from "../../config/keys.env";
 import { BAD_REQUEST, LOGIN_ERR_MSG, UNKNOWN_ERR_MSG } from "../../config/keys.error";
@@ -14,7 +14,6 @@ import { IHError } from "../../types/errors";
     console.error(err);
   }
 })
-@index({ email: 1 })
 class Admin {
   @prop({ required: true })
   public firstName!: string;
@@ -22,7 +21,7 @@ class Admin {
   @prop({ required: true })
   public lastName!: string;
 
-  @prop({ required: true, unique: true })
+  @prop({ required: true, unique: true, index: true })
   public email!: string;
 
   @prop({ required: true })
