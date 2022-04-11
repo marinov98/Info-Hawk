@@ -71,8 +71,11 @@
 <script>
   const alertDiv = document.getElementById("register-error");
   async function resend() {
+    alertDiv.textContent = "It looks like you are not verified...";
     const email = document.getElementById("email-input").value;
     try {
+      alertDiv.className = "register error alert alert-info";
+      alertDiv.textContent = "Sending new link...";
       const { data } = await axios.post("/auth/resend", { email });
       if (data.message) {
         alertDiv.className = "register error alert alert-success";
