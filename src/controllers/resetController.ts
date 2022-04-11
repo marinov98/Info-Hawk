@@ -60,6 +60,7 @@ export async function reset_password_mail_post(req: Request, res: Response, next
       hawkError.msg = NOT_SAME_EMAIL_ERR;
       return res.status(hawkError.status).json({ hawkError });
     }
+    await Token.deleteMany({ owner: user._id.toString(), type: TokenType.RESET });
     const accessToken: string = sign({ email }, JWT_SECRET, { audience, issuer, expiresIn: "15m" });
     await Token.create({ owner: user._id.toString(), value: accessToken, type: TokenType.RESET });
     const { messageId } = await TRANSPORTER.sendMail({
@@ -84,7 +85,6 @@ export async function reset_password_form_patch(req: Request, res: Response, nex
   try {
     const token = await Token.findOne({ value: req.params.token, type: TokenType.RESET });
     if (!token) {
-      console.debug("did not find token");
       hawkError.msg = TOKEN_RESET_ERR;
       hawkError.status = UNAUTHORIZED;
       return res.status(hawkError.status).json({ hawkError });
