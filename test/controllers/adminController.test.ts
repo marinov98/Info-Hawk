@@ -155,12 +155,15 @@ describe("Testing Admin Controller", () => {
   });
 
   it("should verify admin successfully", async () => {
+    // grab admin and token
     let user = (await db.grabOne("admins")) as any;
     expect(user).toBeDefined();
     let token = (await db.grabOne("tokens", { owner: user._id.toString() })) as any;
     expect(token.value).toBeDefined();
     expect(token.type).toBe(TokenType.VERIFY);
     if (user) expect(user.code).toBe("NA");
+
+    // verify
     const { status } = await request(app).get(`/auth/verify/${token.value}`);
     expect(status).toBe(302);
     user = await db.grabOne("admins");
@@ -171,6 +174,9 @@ describe("Testing Admin Controller", () => {
   });
 
   it("should resend verification link successfully", async () => {
+    // resend link
+    let oldToken = (await db.grabOne("tokens")) as any;
+    expect(oldToken).toBeDefined();
     const { body, status } = await request(app)
       .post("/auth/resend")
       .send({ email: ADMIN_MOCK.email });
@@ -179,6 +185,19 @@ describe("Testing Admin Controller", () => {
     expect(body.message).toBe("Link resent!");
     expect(body.messageId).toBe("123");
     expect(status).toBe(OK);
+    const expiredToken = await db.grabOne("tokens", { value: oldToken.value });
+    expect(expiredToken).toBe(null);
+
+    // verify admin with new link
+    let token = (await db.grabOne("tokens")) as any;
+    expect(token).toBeDefined();
+    const res = await request(app).get(`/auth/verify/${token.value}`);
+    expect(res.status).toBe(302);
+    const user = await db.grabOne("admins");
+    expect(user).toBeDefined();
+    if (user) expect(user.code.length).toBe(10);
+    token = await db.grabOne("tokens", { value: token.value });
+    expect(token).toBe(null);
   });
 
   it("should resend verification link unsuccessfully email not found", async () => {

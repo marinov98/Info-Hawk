@@ -3,6 +3,7 @@ import { sign, verify } from "jsonwebtoken";
 import { JWT_COOKIE_KEY } from "../config/keys.constants";
 import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
 import { Admin, Form, Token } from "../db/models";
+import { TokenType } from "../db/schemas/tokenSchema";
 import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 import { generateAdminCode } from "../utils/code";
@@ -151,11 +152,14 @@ export async function home_resend_link_post(req: Request, res: Response, __: Nex
       hawkError.msg = NOT_SAME_EMAIL_ERR;
       return res.status(NOT_FOUND).json({ hawkError });
     }
+    await Token.deleteMany({ owner: admin._id.toString(), type: TokenType.VERIFY });
     const accessToken: string = sign({ email }, JWT_SECRET, {
       audience,
       issuer,
       expiresIn: "10m"
     });
+
+    await Token.create({ value: accessToken, owner: admin._id.toString() });
     const { messageId } = await TRANSPORTER.sendMail({
       to: email,
       from: APP_EMAIL,

@@ -63,6 +63,12 @@ describe("Testing Reset Controller", () => {
   });
 
   it("should send reset link successfully", async () => {
+    const admin = (await db.grabOne("admins")) as any;
+    const id = admin._id.toString();
+    await db.addOne("tokens", { owner: id, value: "123", type: TokenType.VERIFY });
+    await db.addOne("tokens", { owner: id, value: "1234", type: TokenType.RESET });
+    await db.addOne("tokens", { owner: id, value: "12345", type: TokenType.RESET });
+
     const { email } = ADMIN_MOCK;
     const { body, status } = await request(app).post("/passwordMail").send({ email });
     expect(status).toBe(OK);
@@ -70,6 +76,25 @@ describe("Testing Reset Controller", () => {
     expect(body.messageId).toBe("123");
     const token = (await db.grabOne("tokens", { type: TokenType.RESET })) as any;
     expect(token.value).toBeDefined();
+    expect(token.value === "123").toBe(false);
+    expect(token.value === "1234").toBe(false);
+    expect(token.value === "12345").toBe(false);
+
+    const verifySurvivalToken = await db.grabOne("tokens", {
+      value: "123",
+      type: TokenType.VERIFY
+    });
+    const resetExpiredToken1 = await db.grabOne("tokens", {
+      value: "1234",
+      type: TokenType.RESET
+    });
+    const resetExpiredToken2 = await db.grabOne("tokens", {
+      value: "12345",
+      type: TokenType.RESET
+    });
+    expect(verifySurvivalToken).toBeDefined();
+    expect(resetExpiredToken1).toBe(null);
+    expect(resetExpiredToken2).toBe(null);
   });
 
   it("should send reset link unsuccessfully email does not exist", async () => {
