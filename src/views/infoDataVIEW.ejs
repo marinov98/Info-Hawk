@@ -96,9 +96,8 @@
   const infoClass = "info-data alert alert-info";
   const originalContent = "You can edit, delete, or send a link of this form in this section";
   const inputs = document.querySelectorAll(".skeleton-key-item");
-  for (const input of inputs) {
-    dataStore[input.name] = true;
-  }
+  inputs.forEach(input => (dataStore[input.name] = true));
+
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
