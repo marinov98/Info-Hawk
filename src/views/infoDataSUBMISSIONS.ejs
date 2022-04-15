@@ -11,20 +11,22 @@
       margin-left: 200px;
       margin-right: 200px;
       text-align: center;
-      font-size: xx-large;
+      font-size: 3vw;
       border: 1px solid rgb(167, 167, 167);
     "
   >
     <div class="card-body">
-      <h3 style="font-size: xx-large" class="card-title"><%=submission.title%></h3>
-      <h4 class="card-subtitle mb-2 text-muted"><%=submission.createdAt%></h4>
+      <h3 style="font-size: 2vw" class="card-title"><%=submission.title%></h3>
+      <h4 style="font-size: 2vw" class="card-subtitle mb-2 text-muted">
+        <%=submission.createdAt%>
+      </h4>
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item"><%=submission._id%></li>
     </ul>
     <div class="card-body">
       <a
-        style="font-size: x-large"
+        style="font-size: 2vw"
         href="/auth/forms/submission/<%=submission._id%> "
         class="btn btn-success card-link"
         >View</a
