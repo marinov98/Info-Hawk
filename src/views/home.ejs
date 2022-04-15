@@ -3,17 +3,19 @@
 <header>
   <div class="headings" style="margin: 5px; text-align: center">
     <% if (auth) { %> <% if (auth.code !== "NA") {%>
-    <h2 style="text-align: center">Any Forms you have made will be displayed below</h2>
+    <h2 style="text-align: center; font-size: 3vw">
+      Any Forms you have made will be displayed below
+    </h2>
     <a
       class="btn btn-primary"
       href="/auth/forms/create"
-      style="font-size: xx-large; text-align: center; margin-right: 10px"
+      style="font-size: 2vw; text-align: center; margin-right: 10px"
       >Create new Form</a
     >
     <a
       class="btn btn-success"
       href="/auth/forms/submissions"
-      style="font-size: xx-large; text-align: center"
+      style="font-size: 2vw; text-align: center"
       >View Submissions</a
     >
     <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
@@ -24,21 +26,21 @@
         margin-left: 200px;
         margin-right: 200px;
         text-align: center;
-        font-size: xx-large;
+        font-size: 3vw;
         border: 1px solid rgb(167, 167, 167);
       "
     >
       <div class="card-body">
-        <h5 style="font-size: xx-large" class="card-title"><%=skeleton.title%></h5>
-        <h6><%=skeleton.updatedAt%></h6>
+        <h5 style="font-size: 3vw" class="card-title"><%=skeleton.title%></h5>
+        <h6 style="font-size: 2vw"><%=skeleton.updatedAt%></h6>
         <a
-          style="font-size: x-large"
+          style="font-size: 2vw"
           href="/auth/forms/view/<%=skeleton._id%> "
           class="btn btn-primary card-link"
           >View</a
         >
         <a
-          style="font-size: x-large"
+          style="font-size: 2vw"
           href="/auth/forms/link/<%=skeleton._id%> "
           class="btn btn-secondary card-link"
           >Send Link</a
