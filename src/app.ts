@@ -7,6 +7,7 @@ import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
   // Redis
   REDIS_CLIENT.on("error", err => console.error("Redis Client Error", err));
   await REDIS_CLIENT.connect();
+  console.log("Redis Client finished trying to connect");
 
   // Application configuration
   const app: Application = bootstrap();
