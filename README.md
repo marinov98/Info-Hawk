@@ -2,6 +2,10 @@
 
 App to meant to help transfer information between clients and service providers.
 
+## Link
+
+- Check out the application [here](https://info-hawk.herokuapp.com/)
+
 ## Supported Functionality
 
 ### Auth
@@ -28,5 +32,5 @@ App to meant to help transfer information between clients and service providers.
 Should this project recieve more team members or go open source...
 
 - Install dependencies with `yarn install`
-- To run locally use `yarn run dev`
+- To run locally use `yarn run dev` (note: You may need to install `typescript` and `ts-node` globally)
 - To test locally use `yarn run test`
