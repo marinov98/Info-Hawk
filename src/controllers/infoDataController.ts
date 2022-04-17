@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { APP_EMAIL, PROTOCAL, TRANSPORTER } from "../config/keys.env";
+import { APP_EMAIL, PROTOCAL, REDIS_CLIENT, TRANSPORTER } from "../config/keys.env";
 import {
   BAD_REQUEST,
   CREATED,
@@ -34,6 +34,9 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
   try {
     const auth = res.app.locals.auth;
     const forms = await Form.find({ adminId: auth._id, isSkeleton: false }).sort({ createdAt: -1 });
+    if (forms) {
+      REDIS_CLIENT.setEx(`${auth._id.toString()}-submissions`, 3600, JSON.stringify(forms));
+    }
     return res.render("infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);
@@ -99,6 +102,7 @@ export async function info_data_create_post(req: Request, res: Response, _: Next
     delete form.code;
     form.adminId = admin._id;
     await Form.create(form);
+    await REDIS_CLIENT.del(`${admin._id.toString()}-home`);
     return res.status(CREATED).json({ msg: "Form successfully created!" });
   } catch (err) {
     if (err instanceof Error) {
@@ -169,6 +173,7 @@ export async function info_data_edit_delete(req: Request, res: Response, _: Next
       return res.status(hawkError.status).json({ hawkError });
     }
 
+    await REDIS_CLIENT.del(`${admin._id.toString()}-home`);
     return res.status(OK).json({ msg: "Form successfully deleted!" });
   } catch (err) {
     if (err instanceof Error) {
@@ -254,6 +259,7 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
       subject: `Someone submitted something with your code!`,
       text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${PROTOCAL}://${req.headers.host}/auth/forms/submission/${formId}`
     });
+    await REDIS_CLIENT.del(`${admin._id.toString()}-submissions`);
     return res.status(CREATED).json({ msg: "Submission successful!", messageId });
   } catch (err) {
     if (err instanceof Error) {
@@ -272,7 +278,8 @@ export async function info_data_submission_delete(req: Request, res: Response, _
   };
   try {
     const { code, formId } = req.body;
-    if (!(await Admin.findOne({ code }))) {
+    const admin = await Admin.findOne({ code });
+    if (!admin) {
       hawkError.status = NOT_FOUND;
       hawkError.msg = FORM_EDIT_CODE_ERR;
       return res.status(hawkError.status).json({ hawkError });
@@ -281,6 +288,7 @@ export async function info_data_submission_delete(req: Request, res: Response, _
     if (!deletedForm) {
       return res.status(hawkError.status).json({ hawkError });
     }
+    await REDIS_CLIENT.del(`${admin._id.toString()}-submissions`);
     return res.status(OK).json({ msg: "Submission deleted successfully!" });
   } catch (err) {
     if (err instanceof Error) {

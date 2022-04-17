@@ -1,9 +1,13 @@
 import { Application } from "express";
 import bootstrap from "./config/bootstrap";
 import connectToDB from "./config/db";
-import { PORT, TRANSPORTER } from "./config/keys.env";
+import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
 
 (async () => {
+  // Redis
+  REDIS_CLIENT.on("error", err => console.error("Redis Client Error", err));
+  await REDIS_CLIENT.connect();
+
   // Application configuration
   const app: Application = bootstrap();
 

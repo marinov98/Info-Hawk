@@ -1,20 +1,25 @@
 import { NextFunction, Request, Response, Router } from "express";
+import { REDIS_CLIENT } from "../config/keys.env";
 import { OK } from "../config/keys.error";
 import { Form } from "../db/models";
+import { cacheHome } from "../middleware/cacheMiddleware";
 const router: Router = Router();
 
 router.get("/healthcheck", (_: Request, res: Response, __: NextFunction) => {
   return res.status(OK).send({ status: "healthy" });
 });
 
-router.get("/", async (_: Request, res: Response, __: NextFunction) => {
+router.get("/", cacheHome, async (_: Request, res: Response, __: NextFunction) => {
   try {
     const auth = res.app.locals.auth;
     let skeletons = null;
     if (auth) {
-      skeletons = await Form.find({ isSkeleton: true, adminId: auth._id });
+      skeletons = await Form.find({ isSkeleton: true, adminId: auth._id }).sort({ updatedAt: -1 });
+      if (skeletons) {
+        REDIS_CLIENT.setEx(`${auth._id.toString()}-home`, 3600, JSON.stringify(skeletons));
+      }
     }
-    res.render("home", {
+    return res.render("home", {
       skeletons
     });
   } catch (err) {
