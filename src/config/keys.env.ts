@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import nodemailer from "nodemailer";
+import { createClient } from "redis";
 
 if (process.env.NODE_ENV !== "production") {
   const { error } = config();
@@ -9,6 +10,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const PORT_DEFAULT: number = 8081;
+const REDIS_URL: string = process.env.REDIS_URL || "";
 const PORT: number = parseInt(process.env.PORT!) || PORT_DEFAULT;
 const JWT_SECRET: string = process.env.JWT_SECRET || "supersupersecret";
 const JWT_REFRESH_SECRET: string = process.env.REFRESH_SECRET || "supersuperrefreshsecret";
@@ -24,6 +26,8 @@ const EMAIL_HOST: string = process.env.EMAIL_HOST || "smtp.example.com";
 const EMAIL_SECURITY: boolean = process.env.EMAIL_SECURITY ? true : false;
 const APP_EMAIL: string = process.env.EMAIL_USERNAME || "example@gmail.com";
 const PROTOCAL: string = process.env.NODE_ENV === "production" ? "https" : "http";
+const REDIS_CLIENT = REDIS_URL !== "" ? createClient({ url: REDIS_URL }) : createClient();
+
 const TRANSPORTER = nodemailer.createTransport({
   host: EMAIL_HOST,
   secure: EMAIL_SECURITY,
@@ -39,6 +43,7 @@ const TRANSPORTER = nodemailer.createTransport({
 
 export {
   PORT,
+  REDIS_CLIENT,
   COOKIE_SECRET,
   JWT_SECRET,
   JWT_REFRESH_SECRET,
