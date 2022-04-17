@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
 import { authenticateAdmin } from "../middleware/authMiddleware";
+import { cacheSubmissions } from "../middleware/cacheMiddleware";
 import {
   ensureVerified,
   validateDeleteVars,
@@ -51,6 +52,7 @@ router.get(
   "/auth/forms/submissions",
   authenticateAdmin,
   ensureVerified,
+  cacheSubmissions,
   infoDataController.info_data_submissions_get
 );
 router.get(

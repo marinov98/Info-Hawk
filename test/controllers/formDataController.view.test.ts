@@ -46,6 +46,19 @@ jest.mock("nodemailer", () => ({
   })
 }));
 
+jest.mock("redis", () => ({
+  createClient: function () {
+    return {
+      setEx(key: string, exp: number, val: string) {
+        return null;
+      },
+      del(key: string) {
+        return null;
+      }
+    };
+  }
+}));
+
 describe("Testing Form Controller", () => {
   const app: Application = bootstrap();
   const db = new dbTester();
