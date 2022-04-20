@@ -1,7 +1,7 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
 
 <form style="margin-left: 10px; margin-right: 50px" action="/infoData">
-  <h2>Create Data Form</h2>
+  <h2 style="margin-top: 5px">Create Data Form</h2>
   <div id="info-data-disclaimer" class="info-data error alert alert-primary" role="alert">
     Disclaimer! The inputs are shown for you to see how the form will look like to the client, this
     is why you cannot fill them in (except title and admin code), focus on ensuring the right key
@@ -55,6 +55,7 @@
   const addButton = document.getElementById("add-item-btn");
   const removeButton = document.getElementById("remove-item-btn");
   const infoError = document.getElementById("info-data-error");
+  const JOINER = "_^_";
   const dataStore = {};
   const restricted = [
     "AdminCode",
@@ -77,7 +78,7 @@
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
@@ -91,7 +92,7 @@
         .getElementById("add_after_me")
         .insertAdjacentHTML(
           "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="Client answer goes here..." readonly/></div>`
         );
       dataStore[key] = true;
       inputNew.value = "";
@@ -101,7 +102,7 @@
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key) {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";

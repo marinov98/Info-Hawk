@@ -9,7 +9,7 @@
   >
     Please fill out this form for your service provider
   </div>
-  <h2 id="form-data-client-title" style="text-align: center"><%=form.title%></h2>
+  <h2 id="form-data-client-title" style="text-align: center; margin-top: 10px"><%=form.title%></h2>
   <% if (auth) {%>
   <div class="mb-3">
     <label for="adminCode" class="form-label">Admin Code</label>
@@ -36,7 +36,7 @@
   <% } %> <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !==
   "isSkeleton") {%>
   <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
     <input
       type="text"
       name="<%=key%>"

@@ -2,35 +2,32 @@
 
 <div class="headings" style="margin: 5px; text-align: center">
   <% if (auth) { %>
-  <h2 style="text-align: center; font-size: 3vw">
+  <h2 class="animate__animated animate__bounceIn" style="text-align: center">
     Any submissions submitted with your code with be shown below
   </h2>
   <% if (submissions) { %> <% submissions.forEach(submission => { %>
   <div
-    class="card"
+    class="card text-white bg-success animate__animated animate__fadeIn"
     style="
       margin: 20px;
-      margin-left: 20%;
-      margin-right: 20%;
+      margin-left: 25%;
+      margin-right: 25%;
       text-align: center;
-      font-size: 3vw;
-      border: 1px solid rgb(167, 167, 167);
+      border: 1px solid rgb(24, 57, 37);
+      --animate_duration: 3s;
     "
   >
     <div class="card-body">
-      <h3 style="font-size: 2vw" class="card-title"><%=submission.title%></h3>
-      <h4 style="font-size: 2vw" class="card-subtitle mb-2 text-muted">
-        <%=submission.createdAt%>
+      <div style="background-color: #1b7b4e" class="card-header"><%=submission.title%></div>
+      <h4 style="margin-top: 10px" class="card-subtitle mb-2">
+        <%=new Date(submission.createdAt).toDateString()%>
       </h4>
     </div>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item"><%=submission._id%></li>
+      <li class="list-group-item bg-success"><%=submission._id%></li>
     </ul>
     <div class="card-body">
-      <a
-        style="font-size: 2vw"
-        href="/auth/forms/submission/<%=submission._id%> "
-        class="btn btn-success card-link"
+      <a href="/auth/forms/submission/<%=submission._id%> " class="btn btn-primary card-link"
         >View</a
       >
     </div>

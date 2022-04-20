@@ -25,7 +25,7 @@
   </div>
   <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !== "isSkeleton") {%>
   <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
     <input
       type="text"
       name="<%=key%>"
@@ -38,8 +38,10 @@
   <p id="add_after_me"></p>
   <br />
   <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
-    <button class="btn btn-info" id="add-item-btn-edit">Add Key</button>
-    <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn-edit">
+    <button class="btn btn-info" id="add-item-btn-edit" style="margin-right: 5px; margin-top: 5px">
+      Add Key
+    </button>
+    <button class="btn btn-danger" style="margin-top: 5px" id="remove-item-btn-edit">
       Remove Key
     </button>
   </div>
@@ -55,10 +57,18 @@
   </div>
   <br />
   <div style="text-align: center">
-    <button id="action-edit-btn" class="btn btn-primary" style="font-size: xx-large">
+    <button
+      id="action-edit-btn"
+      class="btn btn-primary"
+      style="font-size: xx-large; margin-top: 5px"
+    >
       Finish Editing Form
     </button>
-    <button id="action-delete-btn" class="btn btn-danger" style="font-size: xx-large">
+    <button
+      id="action-delete-btn"
+      class="btn btn-danger"
+      style="font-size: xx-large; margin-top: 5px"
+    >
       Delete Form
     </button>
   </div>
@@ -73,6 +83,7 @@
   const finishEditButton = document.getElementById("action-edit-btn");
   const deleteFormButton = document.getElementById("action-delete-btn");
   const infoError = document.getElementById("info-data-error-edit");
+  const JOINER = "_^_";
   const dataStore = {
     isSkeleton: true,
     code: form.adminCode.placeholder.trim(),
@@ -101,7 +112,7 @@
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
@@ -115,7 +126,7 @@
         .getElementById("add_after_me")
         .insertAdjacentHTML(
           "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="user input goes here" readonly/></div>`
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="user input goes here" readonly/></div>`
         );
       dataStore[key] = true;
       inputNew.value = "";
@@ -125,7 +136,7 @@
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key) {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
