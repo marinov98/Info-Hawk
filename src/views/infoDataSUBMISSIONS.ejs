@@ -18,13 +18,13 @@
     "
   >
     <div class="card-body">
-      <div style="background-color: #1b7b4e" class="card-header"><%=submission.title%></div>
-      <h4 style="margin-top: 10px" class="card-subtitle mb-2">
-        <%=new Date(submission.createdAt).toDateString()%>
-      </h4>
+      <div style="background-color: #1b7b4e" class="card-header"><%=submission._id%></div>
+      <h4 style="margin-top: 10px" class="card-subtitle mb-2"><%=submission.title%></h4>
     </div>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item bg-success"><%=submission._id%></li>
+      <li class="list-group-item bg-success text-white">
+        <%=new Date(submission.createdAt).toDateString()%>
+      </li>
     </ul>
     <div class="card-body">
       <a href="/auth/forms/submission/<%=submission._id%> " class="btn btn-primary card-link"
