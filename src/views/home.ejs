@@ -9,13 +9,13 @@
     <a
       class="btn btn-primary animate__animated animate__backInLeft"
       href="/auth/forms/create"
-      style="font-size: 2vw; text-align: center; margin-right: 10px"
+      style="font-size: 4vw; text-align: center; margin-top: 4px; margin-right: 10px"
       >Create new Form</a
     >
     <a
       class="btn btn-success animate__animated animate__backInRight"
       href="/auth/forms/submissions"
-      style="font-size: 2vw; text-align: center; --animate_duration: 3s"
+      style="font-size: 4vw; text-align: center; margin-top: 4px; --animate_duration: 3s"
       >View Submissions</a
     >
     <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
@@ -26,23 +26,23 @@
         margin-left: 25%;
         margin-right: 25%;
         text-align: center;
-        font-size: 3vw;
+        font-size: 5vw;
         border: 1px solid rgb(21, 58, 76);
       "
     >
       <div class="card-body text-white bg-primary">
-        <div style="font-size: 3vw; background-color: #1067ea" class="card-header">
+        <div style="font-size: 4vw; background-color: #1067ea" class="card-header">
           <%=skeleton.title%>
         </div>
-        <h6 style="font-size: 2vw; margin-top: 2px"><%=skeleton.updatedAt%></h6>
+        <h6 style="font-size: 3vw; margin-top: 2px"><%=skeleton.updatedAt%></h6>
         <a
-          style="font-size: 2vw; margin-top: 2px"
+          style="font-size: 3vw; margin-top: 5px"
           href="/auth/forms/view/<%=skeleton._id%> "
           class="btn btn-info card-link"
           >View</a
         >
         <a
-          style="font-size: 2vw; margin-top: 2px"
+          style="font-size: 3vw; margin-top: 5px"
           href="/auth/forms/link/<%=skeleton._id%> "
           class="btn btn-secondary card-link"
           >Send Link</a
