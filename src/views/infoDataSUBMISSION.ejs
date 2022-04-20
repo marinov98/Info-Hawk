@@ -35,9 +35,17 @@
   </div>
   <% } }); %>
   <div style="text-align: center">
-    <button style="font-size: x-large" class="btn btn-danger">Delete Submission</button>
+    <button id="delete-submission-btn" style="font-size: x-large; margin-top: 5px" class="btn btn-danger">Delete</button>
+    <button
+      id="action-excel-btn"
+      class="btn btn-success"
+      style="font-size: x-large; margin-top: 5px"
+    >
+      to Excel
+    </button>
   </div>
 </form>
+<input style="visibility: hidden" id="dataStorage" value="<%=JSON.stringify(submission)%>"></input>
 <% } %>
 
 <script>
@@ -45,7 +53,11 @@
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
   const infoError = document.getElementById("info-data-error-submission");
-  form.addEventListener("submit", async e => {
+  deletionBtn = document.getElementById("delete-submission-btn");
+  xmlButton = document.getElementById("action-excel-btn");
+  const JOINER = "_^_";
+
+  deletionBtn.addEventListener("click", async e => {
     e.preventDefault();
     if (confirm("Are you sure you want to delete this submission? This action cannot be undone..."))
       try {
@@ -74,5 +86,27 @@
           infoError.textContent = err.message || "Something went wrong try again later...";
         }
       }
+  });
+
+  xmlButton.addEventListener("click", function toXml(e) {
+    e.preventDefault();
+    target = document.getElementById("dataStorage").value;
+    target_json = JSON.parse(target);
+
+    // remove unecessary values
+    delete target_json["__v"];
+    delete target_json["isSkeleton"];
+    delete target_json["updatedAt"];
+    target_json["createdAt"] = new Date(target_json["createdAt"]).toDateString();
+
+    // format accordingly
+    formattedDataStore = {};
+    Object.entries(target_json).forEach(([key, val]) => formattedDataStore[key.split(JOINER).join(" ")] = val);
+    filename = `submission_report_${formattedDataStore._id}.xlsx`;
+    data = [formattedDataStore];
+    let ws = XLSX.utils.json_to_sheet(data);
+    let wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Submission");
+    XLSX.writeFile(wb, filename);
   });
 </script>
