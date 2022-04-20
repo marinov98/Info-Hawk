@@ -142,6 +142,7 @@ export async function info_data_edit_put(req: Request, res: Response, _: NextFun
     form._id = formToUpdate._id;
     await formToUpdate.deleteOne();
     await Form.create(form);
+    await REDIS_CLIENT.del(`${admin._id.toString()}-home`);
     return res.status(OK).json({ msg: "Form successfully updated!" });
   } catch (err) {
     if (err instanceof Error) {

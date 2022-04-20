@@ -25,7 +25,7 @@
   </div>
   <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !== "isSkeleton") {%>
   <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
     <input
       type="text"
       name="<%=key%>"
@@ -83,6 +83,7 @@
   const finishEditButton = document.getElementById("action-edit-btn");
   const deleteFormButton = document.getElementById("action-delete-btn");
   const infoError = document.getElementById("info-data-error-edit");
+  const JOINER = "_^_";
   const dataStore = {
     isSkeleton: true,
     code: form.adminCode.placeholder.trim(),
@@ -111,7 +112,7 @@
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
@@ -135,7 +136,7 @@
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join("-");
+    const key = userInput.split(" ").join(JOINER);
     if (!key) {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";

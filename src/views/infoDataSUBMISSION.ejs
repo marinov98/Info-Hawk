@@ -9,7 +9,7 @@
   >
     The submission answers are shown below
   </div>
-  <h2 id="form-data-title" style="text-align: center"><%=submission.title%></h2>
+  <h2 id="form-data-title" style="text-align: center; margin-top: 10px"><%=submission.title%></h2>
   <div class="mb-3">
     <label for="adminCode" class="form-label">Admin Code</label>
     <input
@@ -24,7 +24,7 @@
   <% Object.entries(submission).forEach(([key, val]) => { if (key !== submission.title && typeof val
   === "string") {%>
   <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("-").join(" ")%> </label>
+    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
     <input
       type="text"
       value="<%=val%>"
