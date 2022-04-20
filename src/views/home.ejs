@@ -23,24 +23,24 @@
       class="card"
       style="
         margin: 20px;
-        margin-left: 20%;
-        margin-right: 20%;
+        margin-left: 25%;
+        margin-right: 25%;
         text-align: center;
         font-size: 3vw;
-        border: 1px solid rgb(167, 167, 167);
+        border: 1px solid rgb(21, 58, 76);
       "
     >
-      <div class="card-body">
-        <h5 style="font-size: 3vw" class="card-title"><%=skeleton.title%></h5>
-        <h6 style="font-size: 2vw"><%=skeleton.updatedAt%></h6>
+      <div class="card-body text-white bg-primary">
+        <div style="font-size: 3vw" class="card-header"><%=skeleton.title%></div>
+        <h6 style="font-size: 2vw; margin-top: 2px"><%=skeleton.updatedAt%></h6>
         <a
-          style="font-size: 2vw"
+          style="font-size: 2vw; margin-top: 2px"
           href="/auth/forms/view/<%=skeleton._id%> "
-          class="btn btn-primary card-link"
+          class="btn btn-info card-link"
           >View</a
         >
         <a
-          style="font-size: 2vw"
+          style="font-size: 2vw; margin-top: 2px"
           href="/auth/forms/link/<%=skeleton._id%> "
           class="btn btn-secondary card-link"
           >Send Link</a
@@ -61,7 +61,7 @@
     </div>
     <% } } else { %>
     <h2 style="text-align: center">Welcome to Info Hawk!</h2>
-    <img src="/images/info-hawk.jpg" style="width: 25vw; height: 25vw" alt="info-hawk" />
+    <img src="/images/info-hawk.png" style="width: 28vw; height: 24vw" alt="info-hawk" />
     <p style="text-align: center; font-size: 2.5vw">
       Info Hawk is a service for creating , updating , and deleting forms that are created by
       approved admins of the website. It is used to ease the transfer of data without needing the
