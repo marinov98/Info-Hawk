@@ -26,6 +26,7 @@ App to meant to help transfer information between clients and service providers.
 
 - Create Submission
 - Delete Submission
+- Export Submission JSON data to XML (excel file)
 
 ## Contributing
 
