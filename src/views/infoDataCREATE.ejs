@@ -91,7 +91,7 @@
         .getElementById("add_after_me")
         .insertAdjacentHTML(
           "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control" placeholder="Client answer goes here..." readonly/></div>`
+          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="Client answer goes here..." readonly/></div>`
         );
       dataStore[key] = true;
       inputNew.value = "";
