@@ -73,7 +73,7 @@
     </button>
   </div>
 </form>
-
+<input style="visibility: hidden" id="dataStorage" value="<%=JSON.stringify(form) %>"></input>
 <% } %>
 
 <script>
@@ -82,6 +82,7 @@
   const removeButton = document.getElementById("remove-item-btn-edit");
   const finishEditButton = document.getElementById("action-edit-btn");
   const deleteFormButton = document.getElementById("action-delete-btn");
+  const xmlButton = document.getElementById("action-excel-btn");
   const infoError = document.getElementById("info-data-error-edit");
   const JOINER = "_^_";
   const dataStore = {
@@ -132,6 +133,7 @@
       inputNew.value = "";
     }
   });
+
 
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
