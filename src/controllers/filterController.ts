@@ -10,7 +10,9 @@ export async function filter_get(req: Request, res: Response, next: NextFunction
 }
 
 export async function filter_find(req: Request, res: Response, next: NextFunction) {
-  // TODO: get all submissions (isSkeleton: true, logged in adminId) based on title
+  const { title } = req.body;
+  const adminId = res.app.locals.auth._id;
+  return await Form.find({ title, adminId, isSkeleton: false });
 }
 
 export async function filter_delete(req: Request, res: Response, next: NextFunction) {

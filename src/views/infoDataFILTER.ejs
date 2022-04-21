@@ -1,22 +1,31 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%> <% if (uniqueTitles) { %>
 <div style="text-align: center; margin: 10px">
+  <div
+    id="info-data-alert"
+    class="info-data error alert alert-primary animate__animated animate__heartBeat"
+    role="alert"
+  >
+    Pick a form title below and choose whether you want to delete all the submissions with that
+    title or export all the answers your clients have submitted into an xml file.
+  </div>
   <a
     id="all-delete-btn"
-    class="btn btn-danger animate__animated animate__backInLeft"
+    class="btn btn-danger"
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >Delete All</a
   >
   <a
     id="all-to-xml-btn"
-    class="btn btn-success animate__animated animate__backInLeft"
+    class="btn btn-success"
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >XML</a
   >
-  <selector class="form-select" style="margin-top: 20px">
-    <% uniqueTitles.forEach(title => {%>
+  <select class="form-select" aria-label="Default select example" style="margin-top: 20px">
+    <option value="default" selected>Title selection...</option>
+    <% uniqueTitles.forEach((title) => {%>
     <option value="<%=title%>"><%=title%></option>
     <% }); %>
-  </selector>
+  </select>
 </div>
 
 <% } else { %>
@@ -27,6 +36,10 @@
   // TODO: selector with on change logic
   const alltoXML = document.getElementById("all-to-xml-btn");
   const allDelete = document.getElementById("all-delete-btn");
+  const alertDiv = document.getElementById("info-data-alert");
+  const errorClass = "info-data alert alert-danger";
+  const infoClass = "info-data alert alert-info";
+  const successClass = "info-data alert alert-success";
 
   if (alltoXML && allDelete) {
     alltoXML.addEventListener("click", e => {
