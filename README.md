@@ -34,4 +34,5 @@ Should this project recieve more team members or go open source...
 
 - Install dependencies with `yarn install`
 - To run locally use `yarn run dev` (note: You may need to install `typescript` and `ts-node` globally)
+  - Ensure you have the email service credentials, local mongodb server, and local redis server running
 - To test locally use `yarn run test`
