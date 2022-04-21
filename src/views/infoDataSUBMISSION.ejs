@@ -41,7 +41,7 @@
       class="btn btn-success"
       style="font-size: x-large; margin-top: 5px"
     >
-      to Excel
+      XML
     </button>
   </div>
 </form>
@@ -61,6 +61,8 @@
     e.preventDefault();
     if (confirm("Are you sure you want to delete this submission? This action cannot be undone..."))
       try {
+        infoError.className = infoClass;
+        infoError.textContent = "Deleting..."
         const code = document.getElementById("auth-code-submission").value;
         const refs = location.href.split("/");
         const formId = refs[refs.length - 1];
@@ -72,7 +74,7 @@
         });
 
         if (data.msg) {
-          infoError.classList = "alert alert-success";
+          infoError.className = "alert alert-success";
           infoError.textContent = `${data.msg} Redirecting you soon...`;
           await new Promise(resolve => setTimeout(resolve, 2000));
           location.assign("/auth/forms/submissions");
@@ -88,25 +90,24 @@
       }
   });
 
-  xmlButton.addEventListener("click", function toXml(e) {
+  xmlButton.addEventListener("click", async function toXml(e) {
     e.preventDefault();
-    target = document.getElementById("dataStorage").value;
-    target_json = JSON.parse(target);
-
-    // remove unecessary values
-    delete target_json["__v"];
-    delete target_json["isSkeleton"];
-    delete target_json["updatedAt"];
-    target_json["createdAt"] = new Date(target_json["createdAt"]).toDateString();
-
-    // format accordingly
-    formattedDataStore = {};
-    Object.entries(target_json).forEach(([key, val]) => formattedDataStore[key.split(JOINER).join(" ")] = val);
-    filename = `submission_report_${formattedDataStore._id}.xlsx`;
-    data = [formattedDataStore];
-    let ws = XLSX.utils.json_to_sheet(data);
-    let wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Submission");
-    XLSX.writeFile(wb, filename);
+    infoError.className = infoClass;
+    infoError.textContent = "Exporting...";
+    jsonStr = document.getElementById("dataStorage").value;
+    const { data: { output } } = await axios.post("/auth/forms/xml/single", { jsonStr })
+    if (!output || !output[0]._id) {
+      infoError.className = errorClass;
+      infoError.textContent = "Export failed!"
+    }
+    else { 
+      filename = `submission_report_${output[0]._id}.xlsx`;
+      let ws = XLSX.utils.json_to_sheet(output);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Submission");
+      XLSX.writeFile(wb, filename);
+      infoError.className = "info-data alert alert-success";
+      infoError.textContent = "Submission successfully exported to XML!";
+    }
   });
 </script>

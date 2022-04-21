@@ -1,0 +1,36 @@
+<%- include('partials/header'); -%> <%- include('partials/navbar'); -%> <% if (uniqueTitles) { %>
+<div style="text-align: center; margin: 10px">
+  <a
+    class="btn btn-danger animate__animated animate__backInLeft"
+    style="text-align: center; margin-top: 4px; font-size: x-large"
+    >Delete All</a
+  >
+  <a
+    id="all-to-xml-btn"
+    class="btn btn-success animate__animated animate__backInLeft"
+    style="text-align: center; margin-top: 4px; font-size: x-large"
+    >XML</a
+  >
+  <selector class="form-select" style="margin-top: 20px">
+    <% uniqueTitles.forEach(title => {%>
+    <option value="<%=title%>"><%=title%></option>
+    <% }); %>
+  </selector>
+</div>
+
+<% } else { %>
+<selector>
+  <option selected>None</option>
+</selector>
+<% } %>
+
+<script>
+  // TODO: selector with on change logic
+  const alltoXML = document.getElementById("all-to-xml-btn");
+
+  if (alltoXML) {
+    alltoXML.addEventListener("click", e => {
+      e.preventDefault();
+    });
+  }
+</script>
