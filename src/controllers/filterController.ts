@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { OK } from "../config/keys.error";
+import { REDIS_CLIENT } from "../config/keys.env";
+import { BAD_REQUEST, OK } from "../config/keys.error";
 import { Form } from "../db/models";
 
 export async function filter_get(req: Request, res: Response, next: NextFunction) {
@@ -16,7 +17,14 @@ export async function filter_find(req: Request, res: Response, next: NextFunctio
 }
 
 export async function filter_delete(req: Request, res: Response, next: NextFunction) {
-  // TODO: delete all submissions with title specified and logged in adminID
+  const { title } = req.body;
+  const adminId = res.app.locals.auth._id;
+  const result = await Form.deleteMany({ title, adminId, isSkeleton: false });
+  if (!result) {
+    return res.status(BAD_REQUEST);
+  }
+  await REDIS_CLIENT.del(`${adminId.toString()}-submissions`);
+  return res.status(OK).json({ msg: `Submissions with title: "${title}" successfully deleted` });
 }
 
 export async function toXmlSingle_post(req: Request, res: Response, next: NextFunction) {
@@ -38,4 +46,39 @@ export async function toXmlSingle_post(req: Request, res: Response, next: NextFu
   return res.status(OK).json({ output: [formattedDataStore] });
 }
 
-export async function toXmlMultiple_post(req: Request, res: Response, next: NextFunction) {}
+export async function toXmlMultiple_post(req: Request, res: Response, next: NextFunction) {
+  const { title } = req.body;
+  const adminId = res.app.locals.auth._id;
+  const submissions = (await Form.find({ title, adminId, isSkeleton: false })) as any;
+  if (!submissions) {
+    return res.status(BAD_REQUEST).json({
+      hawkError: {
+        src: "FilterController",
+        msg: "could not find submissions with this title!",
+        status: BAD_REQUEST
+      }
+    });
+  }
+
+  const output: any[] = [];
+  submissions.forEach((submission: any) => {
+    const formattedSubmission: any = {};
+    const currSubmission = { ...submission._doc };
+
+    // remove unecessary values
+    delete currSubmission["__v"];
+    delete currSubmission["isSkeleton"];
+    delete currSubmission["updatedAt"];
+
+    // make ids into strings
+    currSubmission["_id"] = currSubmission["_id"].toString();
+    currSubmission["adminId"] = currSubmission["adminId"].toString();
+    currSubmission["createdAt"] = new Date(submission["createdAt"]).toDateString();
+
+    Object.entries(currSubmission).forEach(
+      ([key, val]) => (formattedSubmission[key.split("_^_").join(" ")] = val)
+    );
+    output.push(formattedSubmission);
+  });
+  return res.status(OK).json({ output });
+}

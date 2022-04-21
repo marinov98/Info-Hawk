@@ -6,12 +6,7 @@ import { ensureVerified } from "../middleware/infoDataMiddleware";
 const router: Router = Router();
 
 router.get("/auth/forms/filter", authenticateAdmin, ensureVerified, filterController.filter_get);
-router.get(
-  "/auth/forms/filter_find",
-  ensureVerified,
-  authenticateAdmin,
-  filterController.filter_find
-);
+
 router.delete(
   "/auth/forms/filter_delete",
   authenticateAdmin,

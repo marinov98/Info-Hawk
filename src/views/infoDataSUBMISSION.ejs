@@ -101,7 +101,7 @@
       infoError.textContent = "Export failed!"
     }
     else { 
-      filename = `submission_report_${output[0]._id}.xlsx`;
+      filename = `submission_report-${output[0]._id}.xlsx`;
       let ws = XLSX.utils.json_to_sheet(output);
       let wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Submission");

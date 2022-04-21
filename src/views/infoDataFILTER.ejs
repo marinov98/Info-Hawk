@@ -20,8 +20,13 @@
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >XML</a
   >
-  <select class="form-select" aria-label="Default select example" style="margin-top: 20px">
-    <option value="default" selected>Title selection...</option>
+  <select
+    id="form-title-select"
+    class="form-select"
+    aria-label="Default select example"
+    style="margin-top: 20px"
+  >
+    <option value="Default" selected>Title selection...</option>
     <% uniqueTitles.forEach((title) => {%>
     <option value="<%=title%>"><%=title%></option>
     <% }); %>
@@ -33,21 +38,78 @@
 <% } %>
 
 <script>
-  // TODO: selector with on change logic
   const alltoXML = document.getElementById("all-to-xml-btn");
   const allDelete = document.getElementById("all-delete-btn");
   const alertDiv = document.getElementById("info-data-alert");
   const errorClass = "info-data alert alert-danger";
+  const primaryClass = "info-data alert alert-primary";
   const infoClass = "info-data alert alert-info";
   const successClass = "info-data alert alert-success";
 
   if (alltoXML && allDelete) {
-    alltoXML.addEventListener("click", e => {
+    alltoXML.addEventListener("click", async e => {
       e.preventDefault();
+      alertDiv.className = primaryClass;
+      const target = document.getElementById("form-title-select").value;
+      if (target === "Default") {
+        alertDiv.className = errorClass;
+        alertDiv.textContent = "Must be valid title!";
+      } else {
+        alertDiv.className = infoClass;
+        alertDiv.textContent = "Exporting...";
+        try {
+          const {
+            data: { output }
+          } = await axios.post("/auth/forms/xml/multiple", { title: target });
+          if (!output || output === []) {
+            alertDiv.className = errorClass;
+            alertDiv.textContent = "Export encountered an error , try again later...";
+          } else {
+            filename = `${target.split(" ").join("-")}_submissions-${output[0].adminId}.xlsx`;
+            let ws = XLSX.utils.json_to_sheet(output);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Submissions");
+            XLSX.writeFile(wb, filename);
+
+            alertDiv.className = successClass;
+            alertDiv.textContent = "Export to XML Successful!";
+          }
+        } catch (err) {
+          alertDiv.className = errorClass;
+          if (err.response && err.response.data) {
+            alertDiv.textContent =
+              `${err.response.data.hawkError.msg}` || "Unknown error occurred try again later...";
+          }
+        }
+      }
     });
 
-    allDelete.addEventListener("click", e => {
+    allDelete.addEventListener("click", async e => {
       e.preventDefault();
+      alertDiv.className = primaryClass;
+      if (confirm("All Submissions with this title will be deleted, are you sure?")) {
+        const target = document.getElementById("form-title-select").value;
+        if (target === "Default") {
+          alertDiv.className = errorClass;
+          alertDiv.textContent = "Must be valid title!";
+        } else {
+          alertDiv.className = infoClass;
+          alertDiv.textContent = "Deleting...";
+          try {
+            const { data } = await axios.delete("/auth/forms/filter_delete", {
+              data: { title: target }
+            });
+            if (data.msg) {
+              alertDiv.className = successClass;
+              alertDiv.textContent = `${data.msg}`;
+              location.reload();
+            }
+          } catch (err) {
+            alertDiv.className = errorClass;
+            alertDiv.textContent = "Unknown error occurred try again later...";
+          }
+        }
+      }
     });
   }
 </script>

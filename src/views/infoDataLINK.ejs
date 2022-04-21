@@ -17,6 +17,7 @@
     />
   </div>
   <input style="visibility: hidden" value="URL/<%=auth._id%>/<%=formId%>" id="copy-input" />
+  <input style="visibility: hidden" value="<%=auth.code%> " id="copy-input-code" />
   <div style="margin: 5px; text-align: center">
     <button
       style="font-size: x-large; margin-right: 10px; margin-top: 5px"
@@ -62,12 +63,13 @@
 
   copyButton.addEventListener("click", e => {
     e.preventDefault();
+    const code = document.getElementById("copy-input-code").value;
 
     copyText.select();
     copyText.setSelectionRange(0, 99999); /* For mobile devices */
 
     navigator.clipboard.writeText(copyText.value);
 
-    alert("Copied the text: " + copyText.value);
+    alert(`Copied Value: ${copyText.value}. \n Make sure your client uses code ${code}`);
   });
 </script>
