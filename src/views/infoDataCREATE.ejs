@@ -39,7 +39,10 @@
     <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn">Remove Key</button>
   </div>
   <div class="mb-3">
-    <label for="newItem" class="newItem form-label">Key</label>
+    <label for="newItem" class="newItem form-label"
+      >Type what you want to add to your form below then press 'Add Key' to add or 'Remove Key' to
+      delete a previously added key.</label
+    >
     <input
       type="text"
       id="new-item-input"
@@ -55,6 +58,8 @@
 </form>
 
 <script>
+  // CONSTANTS
+
   const form = document.querySelector("form");
   const addButton = document.getElementById("add-item-btn");
   const removeButton = document.getElementById("remove-item-btn");
@@ -72,59 +77,78 @@
     "admin-code",
     "Admin-Code",
     "admin-Code",
-    "Admin-code"
+    "Admin-code",
+    "Admin Code",
+    "Form Title"
   ];
   const inputNew = document.getElementById("new-item-input");
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
   const originalContent = "Please fill out the info below to sign up.";
 
-  addButton.addEventListener("click", function appendRow(e) {
-    e.preventDefault();
-    const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join(JOINER);
+  // UTILITY FUNCTIONS
+  function handleKeyErrors(key) {
     if (!key || key === "") {
       infoError.className = errorClass;
       infoError.textContent = "Key cannot be empty!";
-    } else if (dataStore[key] || restricted.includes(key)) {
+      key = null;
+    } else if (restricted.includes(key)) {
       infoError.className = errorClass;
-      infoError.textContent = "Cannot have duplicate keys!";
-    } else {
+      infoError.textContent = "Cannot add/remove restricted keys!";
+      key = null;
+    }
+
+    return key ? key.split(" ").join(JOINER) : key;
+  }
+
+  function handleInsertionNonMC(key, userInput) {
+    infoError.className = infoClass;
+    infoError.textContent = originalContent;
+    document
+      .getElementById("add_after_me")
+      .insertAdjacentHTML(
+        "beforebegin",
+        `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="Client answer goes here..." readonly/></div>`
+      );
+    dataStore[key] = true;
+    inputNew.value = "";
+  }
+
+  function handleDeletion(key) {
+    const divToDelete = document.getElementById(key);
+    if (divToDelete) {
+      divToDelete.parentNode.removeChild(divToDelete);
+      delete dataStore[key];
       infoError.className = infoClass;
       infoError.textContent = originalContent;
-      document
-        .getElementById("add_after_me")
-        .insertAdjacentHTML(
-          "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="Client answer goes here..." readonly/></div>`
-        );
-      dataStore[key] = true;
       inputNew.value = "";
+    } else {
+      infoError.className = errorClass;
+      infoError.textContent = "Key not found in the form!";
+    }
+  }
+
+  // EVENT LISTENERS
+  addButton.addEventListener("click", function appendRow(e) {
+    e.preventDefault();
+    const userInput = form.newItem.value.trim();
+    const key = handleKeyErrors(userInput);
+    if (key !== null) {
+      if (dataStore[key]) {
+        infoError.className = errorClass;
+        infoError.textContent = "Cannot have duplicate keys!";
+      } else {
+        handleInsertionNonMC(key, userInput);
+      }
     }
   });
 
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join(JOINER);
-    if (!key) {
-      infoError.className = errorClass;
-      infoError.textContent = "Key cannot be empty!";
-    } else if (restricted.includes(key)) {
-      infoError.className = errorClass;
-      infoError.textContent = "Cannot delete restricted attributes!";
-    } else {
-      const divToDelete = document.getElementById(key);
-      if (divToDelete) {
-        divToDelete.parentNode.removeChild(divToDelete);
-        delete dataStore[key];
-        infoError.className = infoClass;
-        infoError.textContent = originalContent;
-        inputNew.value = "";
-      } else {
-        infoError.className = errorClass;
-        infoError.textContent = "Key not found in the form!";
-      }
+    const key = handleKeyErrors(userInput);
+    if (key !== null) {
+      handleDeletion(key);
     }
   });
 
