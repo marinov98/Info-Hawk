@@ -1,6 +1,7 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%> <% if (uniqueTitles) { %>
 <div style="text-align: center; margin: 10px">
   <a
+    id="all-delete-btn"
     class="btn btn-danger animate__animated animate__backInLeft"
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >Delete All</a
@@ -19,17 +20,20 @@
 </div>
 
 <% } else { %>
-<selector>
-  <option selected>None</option>
-</selector>
+<h2 style="text-align: center; margin-top: 30px">Looks like you have no submissions :(</h2>
 <% } %>
 
 <script>
   // TODO: selector with on change logic
   const alltoXML = document.getElementById("all-to-xml-btn");
+  const allDelete = document.getElementById("all-delete-btn");
 
-  if (alltoXML) {
+  if (alltoXML && allDelete) {
     alltoXML.addEventListener("click", e => {
+      e.preventDefault();
+    });
+
+    allDelete.addEventListener("click", e => {
       e.preventDefault();
     });
   }
