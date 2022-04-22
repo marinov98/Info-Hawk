@@ -39,18 +39,19 @@
     />
   </div>
   <% } }); %>
-  <p id="add_after_me"></p>
-  <br />
-  <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
-    <button class="btn btn-info" id="add-item-btn-edit" style="margin-right: 5px; margin-top: 5px">
-      Add Key
-    </button>
-    <button class="btn btn-danger" style="margin-top: 5px" id="remove-item-btn-edit">
-      Remove Key
-    </button>
-  </div>
-  <div class="mb-3">
-    <label for="newItem" class="newItem form-label">Key</label>
+  <p style="display:none" id="add_after_me"></p>
+  <div class="mb-3" style="margin-top: 30px">
+    <label for="newItem" class="newItem form-label">Works the same as when you are creating the form</label>
+    <select
+      onchange="showOptionsText()"
+      class="form-select"
+      id="mc-single-select"
+      style="margin-bottom: 30px"
+    >
+      <option value="single" selected>Single</option>
+      <option value="mc-single">Single Multiple Choice</option>
+      <option value="mc-multi">Multi-Select</option>
+    </select>
     <input
       type="text"
       id="new-item-input"
@@ -58,8 +59,23 @@
       class="form-control"
       placeholder="my-key"
     />
+    <input
+      type="text"
+      style="margin-top: 10px; display: none"
+      id="new-item-input-options"
+      name="newItemOptions"
+      class="form-control"
+      placeholder="option1|option2|option3"
+    />
   </div>
-  <br />
+  <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 16px">
+    <button class="btn btn-info" id="add-item-btn-edit" style="margin-right: 5px; margin-top: 5px">
+      Add Key
+    </button>
+    <button class="btn btn-danger" style="margin-top: 5px" id="remove-item-btn-edit">
+      Remove Key
+    </button>
+  </div>
   <div style="text-align: center">
     <button
       id="action-edit-btn"
@@ -82,20 +98,27 @@
 
 <script>
   const form = document.querySelector("form");
+
   const addButton = document.getElementById("add-item-btn-edit");
   const removeButton = document.getElementById("remove-item-btn-edit");
   const finishEditButton = document.getElementById("action-edit-btn");
   const deleteFormButton = document.getElementById("action-delete-btn");
+
   const infoError = document.getElementById("info-data-error-edit");
+
   const dataStore = {
     isSkeleton: true,
     code: form.adminCode.placeholder.trim(),
     title: document.getElementById("form-data-title").textContent
   };
+
   const inputNew = document.getElementById("new-item-input");
+  const optionsNew = document.getElementById("new-item-input-options");
+
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
   const originalContent = "You can edit, delete, or send a link of this form in this section";
+
   const inputs = document.querySelectorAll(".skeleton-key-item");
   inputs.forEach(input => (dataStore[input.name] = true));
 
@@ -110,7 +133,20 @@
       } else {
         infoError.className = infoClass;
         infoError.textContent = originalContent;
-        handleInsertionNonMC(key, userInput);
+        const currSelectedValue = document.getElementById("mc-single-select").value;
+
+        if (currSelectedValue === "single") {
+          handleInsertionNonMC(key, userInput);
+        } else {
+          const userOptionsInput = form.newItemOptions.value.trim();
+          if (currSelectedValue === "mc-single") {
+            handleInsertionMC(key, userInput, userOptionsInput);
+          }
+
+          if (currSelectedValue === "mc-multi") {
+            handleInsertionMC(key, userInput, userOptionsInput, true);
+          }
+        }
       }
     }
   });
