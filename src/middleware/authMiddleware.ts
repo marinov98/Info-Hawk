@@ -51,7 +51,7 @@ export function fillAuth(req: Request, res: Response, next: NextFunction): void 
   }
 }
 
-export function authenticateAdmin(req: Request, res: Response, next: NextFunction): void {
+export function cookieGuard(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies[JWT_COOKIE_KEY];
 
   if (token) {

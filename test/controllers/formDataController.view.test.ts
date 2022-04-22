@@ -17,7 +17,7 @@ import { FORM_MOCK } from "./formData.mock";
 
 jest.mock("./../../src/middleware/authMiddleware", () => {
   return {
-    authenticateAdmin: function (req: Request, res: Response, next: NextFunction) {
+    cookieGuard: function (req: Request, res: Response, next: NextFunction) {
       next();
     },
     maintainAuth: function (req: Request, res: Response, next: NextFunction) {

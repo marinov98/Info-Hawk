@@ -27,17 +27,49 @@
     <input type="text" name="adminCode" class="form-control" placeholder="code123" readonly /> <% }
     %>
   </div>
-  <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !== "isSkeleton") {%>
-  <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-    <input
-      type="text"
-      name="<%=key%>"
-      class="form-control skeleton-key-item"
-      placeholder="user input goes here"
-      readonly
-    />
-  </div>
+  <% Object.entries(form).forEach(([key, val]) => { if (val.input && val.inputType) {%>
+    <% if (val.inputType === "single) {%> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <input
+          type="text"
+          name="<%=key%>"
+          class="form-control skeleton-key-item"
+          placeholder="user input goes here"
+          readonly
+        />
+      </div>
+    <% } %> 
+    <% if (val.inputType === "mc-single) {%> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <select id="<%=key%>-selector" class="form-select">
+          <% val.input.split("|*|").forEach((option, i) => { %> 
+            <% if (i === 0) {%> 
+              <option value="<%=option%>" selected><%=option%> </option>
+            <% } %> 
+            <% else { %> 
+              <option value="<%=option%>"><%=option%></option>
+            <%  } %> 
+          <% }); %> 
+        </select>
+      </div>
+    <% } %> 
+    <% if (val.inputType === "mc-multiple) {%> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <select id="<%=key%>-selector" class="form-select">
+          <% val.input.split("|*|").forEach((option, i) => { %> 
+            <% if (i === 0) {%> 
+              <option value="<%=option%>" selected><%=option%> </option>
+            <% } %> 
+            <% else { %> 
+              <option value="<%=option%>"><%=option%></option>
+            <%  } %> 
+          <% }); %> 
+        </select>
+      </div>
+    <% } %> 
   <% } }); %>
   <p style="display:none" id="add_after_me"></p>
   <div class="mb-3" style="margin-top: 30px">

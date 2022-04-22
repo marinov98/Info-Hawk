@@ -118,7 +118,7 @@ function handleInsertionMC(key, userInput, options, isMultiSelect = false) {
     targetDiv.appendChild(selectorToInsert);
     targetParent.insertAdjacentHTML("beforebegin", targetDiv.outerHTML);
 
-    const inputType = isMultiSelect ? "mc-multi" : "mc-single";
+    const inputType = isMultiSelect ? "mc-multiple" : "mc-single";
     dataStore[key] = { input: formattedOptions.join(JOINER_MC), inputType };
     inputNew.value = "";
     optionsNew.value = "";

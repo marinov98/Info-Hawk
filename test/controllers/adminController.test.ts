@@ -16,7 +16,7 @@ import { ADMIN_MOCK, REGISTER_CONTROLLER_SUCCESS } from "./adminController.mock"
 
 jest.mock("./../../src/middleware/authMiddleware", () => {
   return {
-    authenticateAdmin: function (req: Request, res: Response, next: NextFunction) {
+    cookieGuard: function (req: Request, res: Response, next: NextFunction) {
       next();
     },
     maintainAuth: function (req: Request, res: Response, next: NextFunction) {

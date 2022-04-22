@@ -8,7 +8,7 @@ import { FORM_MOCK } from "./formData.mock";
 
 jest.mock("./../../src/middleware/authMiddleware", () => {
   return {
-    authenticateAdmin: function (req: Request, res: Response, next: NextFunction) {
+    cookieGuard: function (req: Request, res: Response, next: NextFunction) {
       next();
     },
     maintainAuth: function (req: Request, res: Response, next: NextFunction) {
@@ -143,7 +143,7 @@ describe("Testing Form Controller", () => {
     expect(status).toBe(BAD_REQUEST);
   });
 
-  it("should create form unsuccessfully key not boolean", async () => {
+  it("should create form unsuccessfully key not proper object", async () => {
     const form = { ...FORM_MOCK } as any;
     form.code = code;
     form.SSN = "1234";

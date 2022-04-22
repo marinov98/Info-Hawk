@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { infoDataController } from "../controllers";
-import { authenticateAdmin } from "../middleware/authMiddleware";
+import { cookieGuard } from "../middleware/authMiddleware";
 import { cacheSubmissions } from "../middleware/cacheMiddleware";
 import {
   ensureVerified,
@@ -13,26 +13,26 @@ const router: Router = Router();
 
 router.get(
   "/auth/forms/create",
-  authenticateAdmin,
+  cookieGuard,
   ensureVerified,
   infoDataController.info_data_create_get
 );
 router.post(
   "/auth/forms/create",
-  authenticateAdmin,
+  cookieGuard,
   validateSkeleton,
   infoDataController.info_data_create_post
 );
-router.get("/auth/forms/view/:id", authenticateAdmin, infoDataController.info_data_view_get);
-router.get("/auth/forms/link/:id", authenticateAdmin, infoDataController.info_data_link_get);
+router.get("/auth/forms/view/:id", cookieGuard, infoDataController.info_data_view_get);
+router.get("/auth/forms/link/:id", cookieGuard, infoDataController.info_data_link_get);
 router.post(
   "/auth/forms/link/:adminId/:formId",
-  authenticateAdmin,
+  cookieGuard,
   infoDataController.info_data_link_post
 );
 router.put(
   "/auth/forms/edit",
-  authenticateAdmin,
+  cookieGuard,
   validateSkeleton,
   infoDataController.info_data_edit_put
 );
@@ -44,25 +44,21 @@ router.post(
 );
 router.delete(
   "/auth/forms/delete",
-  authenticateAdmin,
+  cookieGuard,
   validateDeleteVars,
   infoDataController.info_data_edit_delete
 );
 router.get(
   "/auth/forms/submissions",
-  authenticateAdmin,
+  cookieGuard,
   ensureVerified,
   cacheSubmissions,
   infoDataController.info_data_submissions_get
 );
-router.get(
-  "/auth/forms/submission/:id",
-  authenticateAdmin,
-  infoDataController.info_data_submission_get
-);
+router.get("/auth/forms/submission/:id", cookieGuard, infoDataController.info_data_submission_get);
 router.delete(
   "/auth/forms/submissions/delete",
-  authenticateAdmin,
+  cookieGuard,
   infoDataController.info_data_submission_delete
 );
 
