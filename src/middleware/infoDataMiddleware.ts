@@ -8,6 +8,11 @@ const formSchema = Joi.object({
   "Admin Code": Joi.string().length(10).required()
 });
 
+const inputSchema = Joi.object({
+  input: Joi.string().min(1).required(),
+  inputType: Joi.string().valid("single", "mc-single", "mc-multiple")
+});
+
 export function validateSkeleton(req: Request, res: Response, next: NextFunction) {
   const hawkError: IHError = {
     msg: "required data not found!",
@@ -25,7 +30,7 @@ export function validateSkeleton(req: Request, res: Response, next: NextFunction
         }
 
         if (key !== "title" && key !== "code") {
-          err = Joi.boolean().validate(val).error;
+          err = inputSchema.validate(val).error;
         }
       });
     }
@@ -59,7 +64,7 @@ export function validateSubmission(req: Request, res: Response, next: NextFuncti
         }
 
         if (key !== "title" && key !== "code") {
-          err = Joi.string().validate(val).error;
+          err = inputSchema.validate(val).error;
         }
       });
     }

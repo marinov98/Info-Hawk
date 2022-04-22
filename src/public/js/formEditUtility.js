@@ -39,7 +39,7 @@ function handleInsertionNonMC(key, userInput) {
       "beforebegin",
       `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="Client answer goes here..." readonly/></div>`
     );
-  dataStore[key] = true;
+  dataStore[key] = { input: "UNANSWERED", inputType: "single" };
   inputNew.value = "";
 }
 
@@ -108,6 +108,9 @@ function handleInsertionMC(key, userInput, options, isMultiSelect = false) {
   if (!res) {
     infoError.className = errorClass;
     infoError.textContent = "input did not find valid values!";
+  } else if (isMultiSelect && res.formattedOptions.length < 2) {
+    infoError.className = errorClass;
+    infoError.textContent = "Multi select must have at least 2 options!";
   } else {
     const { selectorToInsert, formattedOptions } = res;
     const targetParent = document.getElementById("add_after_me");
@@ -115,7 +118,8 @@ function handleInsertionMC(key, userInput, options, isMultiSelect = false) {
     targetDiv.appendChild(selectorToInsert);
     targetParent.insertAdjacentHTML("beforebegin", targetDiv.outerHTML);
 
-    dataStore[key] = formattedOptions.join(JOINER_MC);
+    const inputType = isMultiSelect ? "mc-multi" : "mc-single";
+    dataStore[key] = { input: formattedOptions.join(JOINER_MC), inputType };
     inputNew.value = "";
     optionsNew.value = "";
   }
@@ -149,6 +153,7 @@ function appendRow(e) {
       }
     }
   }
+  console.log(dataStore);
 }
 
 function removeRow(e) {
@@ -158,4 +163,5 @@ function removeRow(e) {
   if (key !== null) {
     handleDeletion(key);
   }
+  console.log(dataStore);
 }
