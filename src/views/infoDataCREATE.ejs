@@ -35,17 +35,25 @@
     <input type="text" name="adminCode" class="form-control" placeholder="code123" />
     readonly /> <% } %>
   </div>
-  <p id="add_after_me"></p>
-  <br />
-  <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
-    <button class="btn btn-info" id="add-item-btn">Add Key</button>
-    <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn">Remove Key</button>
-  </div>
+  <p style="display: none" id="add_after_me"></p>
   <div class="mb-3">
-    <label for="newItem" class="newItem form-label"
+    <label for="newItem" class="newItem form-label" style="margin-top: 30px"
       >Type what you want to add to your form below then press 'Add Key' to add or 'Remove Key' to
-      delete a previously added key.</label
+      delete a previously added key.<br />
+      <br />
+      For Multiple choice or Multi select enter the options you want separating each one with
+      commas.</label
     >
+    <select
+      onchange="showOptionsText()"
+      class="form-select"
+      id="mc-single-select"
+      style="margin-bottom: 30px"
+    >
+      <option value="single" selected>Single</option>
+      <option value="mc-single">Single Multiple Choice</option>
+      <option value="mc-multi">Multi-Select</option>
+    </select>
     <input
       type="text"
       id="new-item-input"
@@ -53,8 +61,19 @@
       class="form-control"
       placeholder="my-key"
     />
+    <input
+      type="text"
+      style="margin-top: 10px; display: none"
+      id="new-item-input-options"
+      name="newItem-options"
+      class="form-control"
+      placeholder="option1,option2,option2"
+    />
   </div>
-  <br />
+  <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
+    <button class="btn btn-info" id="add-item-btn">Add Key</button>
+    <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn">Remove Key</button>
+  </div>
   <div style="text-align: center">
     <button class="btn btn-primary" style="font-size: x-large">Finish Creating Form</button>
   </div>
@@ -63,14 +82,29 @@
 <script>
   // CONSTANTS
   const form = document.querySelector("form");
+
   const addButton = document.getElementById("add-item-btn");
   const removeButton = document.getElementById("remove-item-btn");
+
   const infoError = document.getElementById("info-data-error");
   const dataStore = {};
+
   const inputNew = document.getElementById("new-item-input");
+  const optionsText = document.getElementById("new-item-input-options");
+
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
   const originalContent = "Please fill out the info below to sign up.";
+
+  // Utility
+  function showOptionsText() {
+    const currSelectedValue = document.getElementById("mc-single-select").value;
+    if (currSelectedValue !== "single") {
+      optionsText.style.display = "block";
+    } else {
+      optionsText.style.display = "none";
+    }
+  }
 
   // EVENT LISTENERS
   addButton.addEventListener("click", function appendRow(e) {
