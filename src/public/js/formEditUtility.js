@@ -15,6 +15,8 @@ const RESTRICTED = [
 ];
 
 const JOINER = "_^_";
+const SPLITTER_MC = "|";
+const JOINER_MC = "|*|";
 
 function handleKeyErrors(key) {
   if (!key || key === "") {
@@ -31,8 +33,6 @@ function handleKeyErrors(key) {
 }
 
 function handleInsertionNonMC(key, userInput) {
-  infoError.className = infoClass;
-  infoError.textContent = originalContent;
   document
     .getElementById("add_after_me")
     .insertAdjacentHTML(
@@ -61,8 +61,62 @@ function handleDeletion(key) {
 function showOptionsText() {
   const currSelectedValue = document.getElementById("mc-single-select").value;
   if (currSelectedValue !== "single") {
-    optionsText.style.display = "block";
+    optionsNew.style.display = "block";
   } else {
-    optionsText.style.display = "none";
+    optionsNew.style.display = "none";
+  }
+}
+
+function createInsertionDivMC(key, userInput) {
+  const targetDiv = document.createElement("div");
+  targetDiv.id = key;
+  targetDiv.className = "new-time mb-3";
+
+  const labelToInsert = document.createElement("label");
+  labelToInsert.className = "new-item form-label";
+  labelToInsert.innerHTML = `${userInput}`;
+  targetDiv.appendChild(labelToInsert);
+  return targetDiv;
+}
+
+function createSelector(key, options, isMultiSelect = false) {
+  const selectorToInsert = document.createElement("select");
+  selectorToInsert.id = `${key}-selector`;
+  selectorToInsert.className = "form-select";
+  if (isMultiSelect) selectorToInsert.multiple = true;
+  let success = false;
+  const formattedOptions = [];
+  options.forEach(userInput => {
+    const optionValue = userInput.trim();
+    if (optionValue && optionValue !== "") {
+      const currOption = document.createElement("option");
+      currOption.value = optionValue;
+      currOption.innerHTML = optionValue;
+      currOption.disabled = true;
+      formattedOptions.push(optionValue);
+      if (!success) success = true;
+      selectorToInsert.appendChild(currOption);
+    }
+  });
+  return success ? { selectorToInsert, formattedOptions } : null;
+}
+
+function handleInsertionMC(key, userInput, options, isMultiSelect = false) {
+  const targetDiv = createInsertionDivMC(key, userInput);
+  const optionsToAppend = options.split(SPLITTER_MC);
+  const res = createSelector(key, optionsToAppend, isMultiSelect);
+  if (!res) {
+    infoError.className = errorClass;
+    infoError.textContent = "input did not find valid values!";
+  } else {
+    const { selectorToInsert, formattedOptions } = res;
+    const targetParent = document.getElementById("add_after_me");
+
+    targetDiv.appendChild(selectorToInsert);
+    targetParent.insertAdjacentHTML("beforebegin", targetDiv.outerHTML);
+
+    dataStore[key] = formattedOptions.join(JOINER_MC);
+    inputNew.value = "";
+    optionsNew.value = "";
   }
 }

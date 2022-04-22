@@ -41,8 +41,8 @@
       >Type what you want to add to your form below then press 'Add Key' to add or 'Remove Key' to
       delete a previously added key.<br />
       <br />
-      For Multiple choice or Multi select enter the options you want separating each one with
-      commas.</label
+      For Multiple choice or Multi select enter the options you want separating each one with the
+      symbol |.</label
     >
     <select
       onchange="showOptionsText()"
@@ -67,7 +67,7 @@
       id="new-item-input-options"
       name="newItemOptions"
       class="form-control"
-      placeholder="option1,option2,option2"
+      placeholder="option1|option2|option3"
     />
   </div>
   <div style="margin-left: 5px; margin-right: 5px; margin-bottom: 8px">
@@ -90,7 +90,7 @@
   const dataStore = {};
 
   const inputNew = document.getElementById("new-item-input");
-  const optionsText = document.getElementById("new-item-input-options");
+  const optionsNew = document.getElementById("new-item-input-options");
 
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
@@ -106,9 +106,21 @@
         infoError.className = errorClass;
         infoError.textContent = "Cannot have duplicate keys!";
       } else {
+        infoError.className = infoClass;
+        infoError.textContent = originalContent;
         const currSelectedValue = document.getElementById("mc-single-select").value;
+
         if (currSelectedValue === "single") {
           handleInsertionNonMC(key, userInput);
+        } else {
+          const userOptionsInput = form.newItemOptions.value.trim();
+          if (currSelectedValue === "mc-single") {
+            handleInsertionMC(key, userInput, userOptionsInput);
+          }
+
+          if (currSelectedValue === "mc-multi") {
+            handleInsertionMC(key, userInput, userOptionsInput, true);
+          }
         }
       }
     }
