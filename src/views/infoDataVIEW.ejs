@@ -1,4 +1,8 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%> <% if (form) {%>
+<head>
+  <script src="/js/formEditUtility.js"></script>
+</head>
+
 <form style="margin-left: 10px; margin-right: 50px" action="/infoData">
   <div
     id="info-data-error-edit"
@@ -82,27 +86,12 @@
   const removeButton = document.getElementById("remove-item-btn-edit");
   const finishEditButton = document.getElementById("action-edit-btn");
   const deleteFormButton = document.getElementById("action-delete-btn");
-  const xmlButton = document.getElementById("action-excel-btn");
   const infoError = document.getElementById("info-data-error-edit");
-  const JOINER = "_^_";
   const dataStore = {
     isSkeleton: true,
     code: form.adminCode.placeholder.trim(),
     title: document.getElementById("form-data-title").textContent
   };
-  const restricted = [
-    "AdminCode",
-    "title",
-    "Admincode",
-    "Title",
-    "admincode",
-    "adminCode",
-    "Admincode",
-    "admin-code",
-    "Admin-Code",
-    "admin-Code",
-    "Admin-code"
-  ];
   const inputNew = document.getElementById("new-item-input");
   const errorClass = "info-data alert alert-danger";
   const infoClass = "info-data alert alert-info";
@@ -113,24 +102,14 @@
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join(JOINER);
-    if (!key || key === "") {
-      infoError.className = errorClass;
-      infoError.textContent = "Key cannot be empty!";
-    } else if (dataStore[key] || restricted.includes(key)) {
-      infoError.className = errorClass;
-      infoError.textContent = "Cannot have duplicate keys!";
-    } else {
-      infoError.className = infoClass;
-      infoError.textContent = originalContent;
-      document
-        .getElementById("add_after_me")
-        .insertAdjacentHTML(
-          "beforebegin",
-          `<div id=${key} class="new-time mb-3"><label for=${key} class="new-item form-label">${userInput}</label><input type="text" name=${key} class="new-time form-control animate__animated animate__backInLeft" placeholder="user input goes here" readonly/></div>`
-        );
-      dataStore[key] = true;
-      inputNew.value = "";
+    const key = handleKeyErrors(userInput);
+    if (key !== null) {
+      if (dataStore[key]) {
+        infoError.className = errorClass;
+        infoError.textContent = "Cannot have duplicate keys!";
+      } else {
+        handleInsertionNonMC(key, userInput);
+      }
     }
   });
 
@@ -138,25 +117,9 @@
   removeButton.addEventListener("click", function removeRow(e) {
     e.preventDefault();
     const userInput = form.newItem.value.trim();
-    const key = userInput.split(" ").join(JOINER);
-    if (!key) {
-      infoError.className = errorClass;
-      infoError.textContent = "Key cannot be empty!";
-    } else if (restricted.includes(key)) {
-      infoError.className = errorClass;
-      infoError.textContent = "Cannot delete restricted attributes!";
-    } else {
-      const divToDelete = document.getElementById(key);
-      if (divToDelete) {
-        divToDelete.parentNode.removeChild(divToDelete);
-        delete dataStore[key];
-        infoError.className = infoClass;
-        infoError.textContent = originalContent;
-        inputNew.value = "";
-      } else {
-        infoError.className = errorClass;
-        infoError.textContent = "Key not found in the form!";
-      }
+    const key = handleKeyErrors(userInput);
+    if (key !== null) {
+      handleDeletion(key);
     }
   });
 
