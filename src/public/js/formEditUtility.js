@@ -56,3 +56,13 @@ function handleDeletion(key) {
     infoError.textContent = "Key not found in the form!";
   }
 }
+
+// Multi
+function showOptionsText() {
+  const currSelectedValue = document.getElementById("mc-single-select").value;
+  if (currSelectedValue !== "single") {
+    optionsText.style.display = "block";
+  } else {
+    optionsText.style.display = "none";
+  }
+}

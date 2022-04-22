@@ -65,7 +65,7 @@
       type="text"
       style="margin-top: 10px; display: none"
       id="new-item-input-options"
-      name="newItem-options"
+      name="newItemOptions"
       class="form-control"
       placeholder="option1,option2,option2"
     />
@@ -96,16 +96,6 @@
   const infoClass = "info-data alert alert-info";
   const originalContent = "Please fill out the info below to sign up.";
 
-  // Utility
-  function showOptionsText() {
-    const currSelectedValue = document.getElementById("mc-single-select").value;
-    if (currSelectedValue !== "single") {
-      optionsText.style.display = "block";
-    } else {
-      optionsText.style.display = "none";
-    }
-  }
-
   // EVENT LISTENERS
   addButton.addEventListener("click", function appendRow(e) {
     e.preventDefault();
@@ -116,7 +106,10 @@
         infoError.className = errorClass;
         infoError.textContent = "Cannot have duplicate keys!";
       } else {
-        handleInsertionNonMC(key, userInput);
+        const currSelectedValue = document.getElementById("mc-single-select").value;
+        if (currSelectedValue === "single") {
+          handleInsertionNonMC(key, userInput);
+        }
       }
     }
   });
