@@ -120,3 +120,42 @@ function handleInsertionMC(key, userInput, options, isMultiSelect = false) {
     optionsNew.value = "";
   }
 }
+
+// EVENT LISTENERS
+function appendRow(e) {
+  e.preventDefault();
+  const userInput = form.newItem.value.trim();
+  const key = handleKeyErrors(userInput);
+  if (key !== null) {
+    if (dataStore[key]) {
+      infoError.className = errorClass;
+      infoError.textContent = "Cannot have duplicate keys!";
+    } else {
+      infoError.className = infoClass;
+      infoError.textContent = originalContent;
+      const currSelectedValue = document.getElementById("mc-single-select").value;
+
+      if (currSelectedValue === "single") {
+        handleInsertionNonMC(key, userInput);
+      } else {
+        const userOptionsInput = form.newItemOptions.value.trim();
+        if (currSelectedValue === "mc-single") {
+          handleInsertionMC(key, userInput, userOptionsInput);
+        }
+
+        if (currSelectedValue === "mc-multi") {
+          handleInsertionMC(key, userInput, userOptionsInput, true);
+        }
+      }
+    }
+  }
+}
+
+function removeRow(e) {
+  e.preventDefault();
+  const userInput = form.newItem.value.trim();
+  const key = handleKeyErrors(userInput);
+  if (key !== null) {
+    handleDeletion(key);
+  }
+}

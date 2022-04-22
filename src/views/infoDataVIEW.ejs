@@ -122,44 +122,9 @@
   const inputs = document.querySelectorAll(".skeleton-key-item");
   inputs.forEach(input => (dataStore[input.name] = true));
 
-  addButton.addEventListener("click", function appendRow(e) {
-    e.preventDefault();
-    const userInput = form.newItem.value.trim();
-    const key = handleKeyErrors(userInput);
-    if (key !== null) {
-      if (dataStore[key]) {
-        infoError.className = errorClass;
-        infoError.textContent = "Cannot have duplicate keys!";
-      } else {
-        infoError.className = infoClass;
-        infoError.textContent = originalContent;
-        const currSelectedValue = document.getElementById("mc-single-select").value;
+  addButton.addEventListener("click", appendRow);
 
-        if (currSelectedValue === "single") {
-          handleInsertionNonMC(key, userInput);
-        } else {
-          const userOptionsInput = form.newItemOptions.value.trim();
-          if (currSelectedValue === "mc-single") {
-            handleInsertionMC(key, userInput, userOptionsInput);
-          }
-
-          if (currSelectedValue === "mc-multi") {
-            handleInsertionMC(key, userInput, userOptionsInput, true);
-          }
-        }
-      }
-    }
-  });
-
-
-  removeButton.addEventListener("click", function removeRow(e) {
-    e.preventDefault();
-    const userInput = form.newItem.value.trim();
-    const key = handleKeyErrors(userInput);
-    if (key !== null) {
-      handleDeletion(key);
-    }
-  });
+  removeButton.addEventListener("click", removeRow);
 
   finishEditButton.addEventListener("click", async e => {
     e.preventDefault();
