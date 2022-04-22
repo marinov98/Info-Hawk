@@ -1,10 +1,20 @@
 <%- include('partials/header'); -%> <%- include('partials/navbar'); -%>
 
 <form style="margin-left: 10px; margin-right: 50px" action="/infoData">
-  <h2 style="margin-top: 5px">Send Link to Client</h2>
-  <div id="info-data-error-link" class="info-data error alert alert-info" role="alert">
-    Please input the person's email for whom you wish to send a link to or click the copy button to
-    copy the link
+  <div
+    id="info-data-error-link"
+    class="info-data error alert alert-info"
+    style="margin-top: 10px"
+    role="alert"
+  >
+    Please input the person's email for whom you wish to send a link to or click the "Copy Link"
+    button to copy the link
+  </div>
+  <div style="text-align: center">
+    <button id="reveal-code-btn" style="margin-top: 5px; margin-bottom: 5px" class="btn btn-info">
+      Reveal Admin Code
+    </button>
+    <h3 id="admin-code-reveal" style="margin-top: 5px; display: none"><%=auth.code%></h3>
   </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
@@ -16,8 +26,8 @@
       required
     />
   </div>
-  <input style="visibility: hidden" value="URL/<%=auth._id%>/<%=formId%>" id="copy-input" />
-  <input style="visibility: hidden" value="<%=auth.code%> " id="copy-input-code" />
+  <input style="display: none" value="URL/<%=auth._id%>/<%=formId%>" id="copy-input" />
+  <input style="display: none" value="<%=auth.code%> " id="copy-input-code" />
   <div style="margin: 5px; text-align: center">
     <button
       style="font-size: x-large; margin-right: 10px; margin-top: 5px"
@@ -40,9 +50,14 @@
   copyText.value = `${refs[0]}/${refs[1]}/${refs[2]}/client/form-submission/${adminId}/${formId}`;
   const infoError = document.getElementById("info-data-error-link");
   const copyButton = document.getElementById("copy-btn");
+  const revealAdminCodebtn = document.getElementById("reveal-code-btn");
+
   form.addEventListener("submit", async e => {
     e.preventDefault();
     try {
+      infoError.className = "info-data error alert alert-info";
+      infoError.textContent = "Sending email to client...";
+
       const userEmail = form.email.value;
       const { data } = await axios.post(`/auth/forms/link/${adminId}/${formId}`, { userEmail });
       if (data.message) {
@@ -58,6 +73,17 @@
       } else {
         infoError.textContent = err.message || "Something went wrong try again later...";
       }
+    }
+  });
+
+  revealAdminCodebtn.addEventListener("click", e => {
+    e.preventDefault();
+    const codeReveal = document.getElementById("admin-code-reveal");
+
+    if (codeReveal.style.display === "none") {
+      codeReveal.style.display = "block";
+    } else {
+      codeReveal.style.display = "none";
     }
   });
 

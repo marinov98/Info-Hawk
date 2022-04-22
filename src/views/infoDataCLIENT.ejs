@@ -48,7 +48,7 @@
   <% } }); %>
 
   <div style="text-align: center">
-    <button id="submit-btn" class="btn btn-primary" style="font-size: xx-large">Submit</button>
+    <button id="submit-btn" class="btn btn-primary" style="font-size: x-large">Submit</button>
   </div>
 </form>
 
@@ -65,10 +65,11 @@
       const adminCode = form.adminCode.value;
       const title = document.getElementById("form-data-client-title").textContent;
       const submission = { title, code: adminCode };
-      for (const input of inputs) {
-        submission[input.name] = input.value;
-      }
+      inputs.forEach(input => (submission[input.name] = input.value));
       try {
+        infoError.className = "info-data alert alert-info";
+        infoError.textContent = "Saving Submission...";
+
         const { data } = await axios.post("/client/form-submission", { form: submission });
         if (data.msg) {
           infoError.className = "alert alert-success";
