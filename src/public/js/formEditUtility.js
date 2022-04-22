@@ -70,7 +70,7 @@ function showOptionsText() {
 function createInsertionDivMC(key, userInput) {
   const targetDiv = document.createElement("div");
   targetDiv.id = key;
-  targetDiv.className = "new-time mb-3";
+  targetDiv.className = "new-time mb-3 ";
 
   const labelToInsert = document.createElement("label");
   labelToInsert.className = "new-item form-label";
@@ -82,7 +82,7 @@ function createInsertionDivMC(key, userInput) {
 function createSelector(key, options, isMultiSelect = false) {
   const selectorToInsert = document.createElement("select");
   selectorToInsert.id = `${key}-selector`;
-  selectorToInsert.className = "form-select";
+  selectorToInsert.className = "form-select animate__animated animate__backInLeft";
   if (isMultiSelect) selectorToInsert.multiple = true;
   let success = false;
   const formattedOptions = [];
