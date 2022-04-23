@@ -1,7 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 import { JWT_COOKIE_KEY } from "../config/keys.constants";
-import { APP_EMAIL, audience, issuer, JWT_SECRET, PROTOCAL, TRANSPORTER } from "../config/keys.env";
+import {
+  APP_EMAIL,
+  audience,
+  issuer,
+  JWT_SECRET,
+  PROTOCAL,
+  REDIS_CLIENT,
+  TRANSPORTER
+} from "../config/keys.env";
 import { Admin, Form, Token } from "../db/models";
 import { TokenType } from "../db/schemas/tokenSchema";
 import { ResetDecodedToken } from "../interfaces/index";
@@ -133,7 +141,10 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
   }
 }
 
-export function logout_get(_: Request, res: Response, __: NextFunction) {
+export async function logout_get(_: Request, res: Response, __: NextFunction) {
+  const adminId = res.app.locals.auth._id;
+  await REDIS_CLIENT.del(`${adminId.toString()}-home`);
+  await REDIS_CLIENT.del(`${adminId.toString()}-submissions`);
   removeCookies(res);
   return res.redirect("/");
 }
