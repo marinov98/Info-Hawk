@@ -11,7 +11,9 @@ const RESTRICTED = new Set([
   "admin-Code",
   "Admin-code",
   "Admin Code",
-  "Form Title"
+  "Form Title",
+  "isSkeleton",
+  "code"
 ]);
 
 const JOINER = "_^_";

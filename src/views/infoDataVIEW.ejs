@@ -50,9 +50,9 @@
           <% } %> 
           <% val.input.split("|*|").forEach((option, i) => { %> 
             <% if (i === 0) {%> 
-              <option value="<%=option%>" selected><%=option%> </option>
+              <option value="<%=option%>" selected disabled><%=option%> </option>
             <% }  else { %> 
-              <option value="<%=option%>"><%=option%></option>
+              <option value="<%=option%>" disabled><%=option%></option>
             <%  } %> 
           <% }); %> 
         </select>
