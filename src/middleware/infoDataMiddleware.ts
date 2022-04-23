@@ -29,7 +29,7 @@ export function validateSkeleton(req: Request, res: Response, next: NextFunction
           return;
         }
 
-        if (key !== "title" && key !== "code") {
+        if (!["isSkeleton", "code", "title"].includes(key)) {
           err = inputSchema.validate(val).error;
         }
       });

@@ -1,4 +1,4 @@
-const RESTRICTED = [
+const RESTRICTED = new Set([
   "AdminCode",
   "title",
   "Admincode",
@@ -12,7 +12,7 @@ const RESTRICTED = [
   "Admin-code",
   "Admin Code",
   "Form Title"
-];
+]);
 
 const JOINER = "_^_";
 const SPLITTER_MC = "|";
@@ -23,7 +23,7 @@ function handleKeyErrors(key) {
     infoError.className = errorClass;
     infoError.textContent = "Key cannoe be empty!";
     key = null;
-  } else if (RESTRICTED.includes(key)) {
+  } else if (RESTRICTED.has(key)) {
     infoError.className = errorClass;
     infoError.textContent = "Cannot add/remove restricted keys!";
     key = null;
@@ -153,7 +153,6 @@ function appendRow(e) {
       }
     }
   }
-  console.log(dataStore);
 }
 
 function removeRow(e) {
@@ -163,5 +162,4 @@ function removeRow(e) {
   if (key !== null) {
     handleDeletion(key);
   }
-  console.log(dataStore);
 }

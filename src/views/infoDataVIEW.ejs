@@ -28,7 +28,7 @@
     %>
   </div>
   <% Object.entries(form).forEach(([key, val]) => { if (val.input && val.inputType) {%>
-    <% if (val.inputType === "single) {%> 
+      <% if (val.inputType === "single") { %> 
       <div id="<%=key%>" class="mb-3">
         <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
         <input
@@ -39,31 +39,19 @@
           readonly
         />
       </div>
-    <% } %> 
-    <% if (val.inputType === "mc-single) {%> 
+    <% } else  {%> 
       <div id="<%=key%>" class="mb-3">
         <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-        <select id="<%=key%>-selector" class="form-select">
+        <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
+        <% if (isMulti) {%> 
+          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option" multiple>
+        <% } else { %> 
+          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option" >
+          <% } %> 
           <% val.input.split("|*|").forEach((option, i) => { %> 
             <% if (i === 0) {%> 
               <option value="<%=option%>" selected><%=option%> </option>
-            <% } %> 
-            <% else { %> 
-              <option value="<%=option%>"><%=option%></option>
-            <%  } %> 
-          <% }); %> 
-        </select>
-      </div>
-    <% } %> 
-    <% if (val.inputType === "mc-multiple) {%> 
-      <div id="<%=key%>" class="mb-3">
-        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-        <select id="<%=key%>-selector" class="form-select">
-          <% val.input.split("|*|").forEach((option, i) => { %> 
-            <% if (i === 0) {%> 
-              <option value="<%=option%>" selected><%=option%> </option>
-            <% } %> 
-            <% else { %> 
+            <% }  else { %> 
               <option value="<%=option%>"><%=option%></option>
             <%  } %> 
           <% }); %> 
@@ -152,7 +140,16 @@
   const originalContent = "You can edit, delete, or send a link of this form in this section";
 
   const inputs = document.querySelectorAll(".skeleton-key-item");
-  inputs.forEach(input => (dataStore[input.name] = true));
+  const inputOptions = document.querySelectorAll(".skeleton-key-option")
+  inputs.forEach(input => (dataStore[input.name] = {input: "UNANSWERED", inputType: "single"}));
+  inputOptions.forEach(singleOptions => { 
+    const target = singleOptions.id.split("-");
+    const key = target[0]
+    const input = target[1]
+    const inputType = target[2] === "multi" ? "mc-multiple" : "mc-single"
+    dataStore[key] = {input, inputType}
+  });
+  
 
   addButton.addEventListener("click", appendRow);
 
