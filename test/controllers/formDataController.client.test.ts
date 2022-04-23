@@ -111,9 +111,9 @@ describe("Testing Form Controller", () => {
   it("should allow client to submit form successfully", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -125,9 +125,9 @@ describe("Testing Form Controller", () => {
   it("should allow client to submit form unsuccessfully wrong code", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = "badcode123";
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -139,9 +139,9 @@ describe("Testing Form Controller", () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.title = "wrong title";
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -178,9 +178,9 @@ describe("Testing Form Controller", () => {
   it("should delete submissions successfully", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -203,9 +203,9 @@ describe("Testing Form Controller", () => {
   it("should delete submissions unsuccessfully wrong code", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -227,9 +227,9 @@ describe("Testing Form Controller", () => {
   it("should delete submissions unsuccessfully wrong form", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });
@@ -251,9 +251,9 @@ describe("Testing Form Controller", () => {
   it("should delete user account with skeletons and submissions successfully", async () => {
     const client_submission = { ...FORM_MOCK } as any;
     client_submission.code = code;
-    client_submission.SSN = "123";
-    client_submission.address = "testing address";
-    client_submission.lastName = "faker";
+    client_submission.SSN = { input: "123", inputType: "single" };
+    client_submission.address = { input: "testing address", inputType: "single" };
+    client_submission.lastName = { input: "faker", inputType: "single" };
     const { body, status } = await request(app)
       .post("/client/form-submission")
       .send({ form: client_submission });

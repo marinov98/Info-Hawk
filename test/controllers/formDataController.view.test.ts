@@ -120,7 +120,7 @@ describe("Testing Form Controller", () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = code;
     delete newForm.SSN;
-    newForm.newAttribute = true;
+    newForm.newAttribute = { input: "true", inputType: "single" };
     const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(body.msg).toBe("Form successfully updated!");
     expect(status).toBe(OK);
@@ -130,7 +130,7 @@ describe("Testing Form Controller", () => {
     expect(updatedForm.SSN).toBe(undefined);
   });
 
-  it("should edit form unsuccessfully new value not boolean", async () => {
+  it("should edit form unsuccessfully new value not correct object", async () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = code;
     newForm.newAttribute = "new";
@@ -142,7 +142,7 @@ describe("Testing Form Controller", () => {
   it("should edit form unsuccessfully wrong code", async () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = "badcode123";
-    newForm.newAttribute = true;
+    newForm.newAttribute = { input: "true", inputType: "single" };
     const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(status).toBe(NOT_FOUND);
     expect(body.hawkError.msg).toBe(FORM_EDIT_CODE_ERR);
@@ -152,7 +152,7 @@ describe("Testing Form Controller", () => {
     const newForm = { ...FORM_MOCK } as any;
     newForm.code = code;
     newForm.title = "wrong title";
-    newForm.newAttribute = true;
+    newForm.newAttribute = { input: "true", inputType: "single" };
     const { body, status } = await request(app).put("/auth/forms/edit").send({ form: newForm });
     expect(status).toBe(NOT_FOUND);
     expect(body.hawkError.msg).toBe(FORM_EDIT_DOC_ERR);

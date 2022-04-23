@@ -7,7 +7,7 @@
     style="margin: 5px"
     role="alert"
   >
-    Please fill out this form for your service provider
+    Please fill out this form for your service provider. Use CTR + click for multiple selections.
   </div>
   <h2 id="form-data-client-title" style="text-align: center; margin-top: 10px"><%=form.title%></h2>
   <% if (auth) {%>
@@ -33,18 +33,38 @@
       required
     />
   </div>
-  <% } %> <% Object.entries(form).forEach(([key, val]) => { if (val === true && key !==
-  "isSkeleton") {%>
-  <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-    <input
-      type="text"
-      name="<%=key%>"
-      class="form-control skeleton-key-item"
-      placeholder="your answer goes here..."
-      required
-    />
-  </div>
+  <% } %> 
+  <% Object.entries(form).forEach(([key, val]) => { if (val.input && val.inputType) {%>
+      <% if (val.inputType === "single") { %> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <input
+          type="text"
+          name="<%=key%>"
+          class="form-control skeleton-key-item"
+          placeholder="Your answer goes here..."
+          required
+        />
+      </div>
+    <% } else  {%> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
+        <% if (isMulti) {%> 
+          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option mc-multiple" multiple>
+        <% } else { %> 
+          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option mc-single" >
+          <% } %> 
+          <% val.input.split("|*|").forEach((option, i) => { %> 
+            <% if (i === 0) {%> 
+              <option value="<%=option%>" selected><%=option%> </option>
+            <% }  else { %> 
+              <option value="<%=option%>"><%=option%></option>
+            <%  } %> 
+          <% }); %> 
+        </select>
+      </div>
+    <% } %> 
   <% } }); %>
 
   <div style="text-align: center">
@@ -58,19 +78,42 @@
   const submitButton = document.getElementById("submit-btn");
   const infoError = document.getElementById("info-data-error-client");
 
+  function grabInputs() {
+    const inputs = document.querySelectorAll(".skeleton-key-item");
+    const singleMC = document.querySelectorAll(".mc-single")
+    const multiMC = document.querySelectorAll(".mc-multiple")
+    return { inputs, singleMC, multiMC }
+  }
+
+  function fillSubmission() {
+    const adminCode = form.adminCode.value;
+    const title = document.getElementById("form-data-client-title").textContent;
+    const clientSubmission = { title, code: adminCode };
+    const { inputs, singleMC, multiMC } = grabInputs();
+    inputs.forEach(input => clientSubmission[input.name] = { input: input.value, inputType: "single" })
+    singleMC.forEach(mc => {
+      const key = mc.id.split("-")[0]
+      const input = mc.value
+      clientSubmission[key] = {input, inputType: "mc-single"}
+    })
+    multiMC.forEach(mc => { 
+      const key = mc.id.split("-")[0]
+      const selected = [...mc.options].filter(opt => opt.selected).map(opt => opt.value)
+      clientSubmission[key] = { input: selected.join(","), inputType: "mc-multiple" }
+    })
+
+    return clientSubmission
+  }
+
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (confirm("Are you sure you are ready to submit?")) {
-      const inputs = document.querySelectorAll(".skeleton-key-item");
-      const adminCode = form.adminCode.value;
-      const title = document.getElementById("form-data-client-title").textContent;
-      const submission = { title, code: adminCode };
-      inputs.forEach(input => (submission[input.name] = input.value));
+      const clientSubmission = fillSubmission()
       try {
         infoError.className = "info-data alert alert-info";
         infoError.textContent = "Saving Submission...";
 
-        const { data } = await axios.post("/client/form-submission", { form: submission });
+        const { data } = await axios.post("/client/form-submission", { form: clientSubmission });
         if (data.msg) {
           infoError.className = "alert alert-success";
           infoError.textContent = `${data.msg} Redirecting you to home...`;

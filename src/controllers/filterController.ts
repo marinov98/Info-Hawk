@@ -39,9 +39,15 @@ export async function toXmlSingle_post(req: Request, res: Response, next: NextFu
 
   // format accordingly
   let formattedDataStore: any = {};
-  Object.entries(target_json).forEach(
-    ([key, val]) => (formattedDataStore[key.split("_^_").join(" ")] = val)
-  );
+  Object.entries(target_json).forEach(([key, val]) => {
+    const decryptedVal = val as any;
+    const decryptedKey: any = key.split("_^_").join(" ");
+    if (decryptedVal.input) {
+      formattedDataStore[decryptedKey] = decryptedVal.input;
+    } else {
+      formattedDataStore[decryptedKey] = decryptedVal;
+    }
+  });
 
   return res.status(OK).json({ output: [formattedDataStore] });
 }
@@ -75,9 +81,15 @@ export async function toXmlMultiple_post(req: Request, res: Response, next: Next
     currSubmission["adminId"] = currSubmission["adminId"].toString();
     currSubmission["createdAt"] = new Date(submission["createdAt"]).toDateString();
 
-    Object.entries(currSubmission).forEach(
-      ([key, val]) => (formattedSubmission[key.split("_^_").join(" ")] = val)
-    );
+    Object.entries(currSubmission).forEach(([key, val]) => {
+      const decryptedVal = val as any;
+      const decryptedKey: any = key.split("_^_").join(" ");
+      if (decryptedVal.input) {
+        formattedSubmission[decryptedKey] = decryptedVal.input;
+      } else {
+        formattedSubmission[decryptedKey] = decryptedVal;
+      }
+    });
     output.push(formattedSubmission);
   });
   return res.status(OK).json({ output });

@@ -21,18 +21,33 @@
       readonly
     />
   </div>
-  <% Object.entries(submission).forEach(([key, val]) => { if (key !== submission.title && typeof val
-  === "string") {%>
-  <div id="<%=key%>" class="mb-3">
-    <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-    <input
-      type="text"
-      value="<%=val%>"
-      name="<%=key%>"
-      class="form-control skeleton-key-item"
-      readonly
-    />
-  </div>
+  <% Object.entries(submission).forEach(([key, val]) => { if (val.input && val.inputType) {%>
+    <% if (val.inputType === "single") { %> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <input
+          type="text"
+          value="<%=val.input%>"
+          name="<%=key%>"
+          class="form-control skeleton-key-item"
+          readonly
+        />
+      </div>
+    <% } else  {%> 
+      <div id="<%=key%>" class="mb-3">
+        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
+        <% if (isMulti) {%> 
+          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option mc-multiple" multiple>
+        <% } else { %> 
+          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option mc-single" >
+          <% } %> 
+          <% val.input.split(",").forEach((option, i) => { %> 
+              <option value="<%=option%>" selected disabled><%=option%> </option>
+          <% }); %> 
+        </select>
+      </div>
+    <% } %> 
   <% } }); %>
   <div style="text-align: center">
     <button id="delete-submission-btn" style="font-size: x-large; margin-top: 5px" class="btn btn-danger">Delete</button>
@@ -96,6 +111,7 @@
     infoError.textContent = "Exporting...";
     jsonStr = document.getElementById("dataStorage").value;
     const { data: { output } } = await axios.post("/auth/forms/xml/single", { jsonStr })
+    console.log(output)
     if (!output || !output[0]._id) {
       infoError.className = errorClass;
       infoError.textContent = "Export failed!"
