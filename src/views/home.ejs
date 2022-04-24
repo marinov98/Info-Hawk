@@ -3,9 +3,6 @@
 <header>
   <div class="headings" style="margin: 5px; text-align: center">
     <% if (auth) { %> <% if (auth.code !== "NA") {%>
-    <h2 class="animate__animated animate__bounceIn" style="text-align: center">
-      Any Forms you have made will be displayed below
-    </h2>
     <a
       class="btn btn-primary animate__animated animate__backInLeft"
       href="/auth/forms/create"
@@ -18,7 +15,7 @@
       style="text-align: center; margin-top: 4px; --animate_duration: 3s"
       >View Submissions</a
     >
-    <% if (skeletons) { %> <% skeletons.forEach(skeleton => { %>
+    <% if (skeletons && skeletons.length !== 0) { %> <% skeletons.forEach(skeleton => { %>
     <div
       class="card animate__animated animate__fadeIn"
       style="
@@ -46,7 +43,12 @@
         >
       </div>
     </div>
-    <% })} %> <% } else { %>
+    <% })} else { %>
+    <h2 class="animate__animated animate__bounceIn" style="text-align: center; margin-top: 10px">
+      Looks like you don't haven't made any forms
+    </h2>
+
+    <% } %> <% } else { %>
     <div id="register-error" class="register error alert alert-info" role="alert">
       It looks like you are not verified...
     </div>
