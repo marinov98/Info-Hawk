@@ -8,17 +8,17 @@ import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
   await connectToDB();
 
   // Redis
-  REDIS_CLIENT.on("error", err => console.error("Redis Client Error", err));
+  REDIS_CLIENT.on("error", err => console.error("Cache Error", err));
   await REDIS_CLIENT.connect();
-  console.log("Redis Client finished trying to connect");
+  console.log("Cache connected!");
 
   // Application configuration
-  const app: Application = bootstrap();
+  const app: Application = bootstrap("prod");
 
   // Email
   TRANSPORTER.verify(err => {
     if (err) console.error(err);
-    else console.log("Email service up and running!");
+    else console.log("Email service verified!");
   });
 
   // Launch server
@@ -26,7 +26,7 @@ import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
     if (process.env.NODE_ENV !== "production") {
       console.log(`📡 Local server up! 📡 Listening on http://localhost:${PORT}`);
     } else {
-      console.log("📡📡📡 Production server up and running! 📡📡📡");
+      console.log("📡📡📡 Production server is live! 📡📡📡");
     }
   });
 })();

@@ -13,7 +13,7 @@ declare module "express-session" {
   }
 }
 
-export default function bootstrap(): Application {
+export default function bootstrap(env: string = "dev"): Application {
   // Initialization
   const server: Application = express();
   server.set("port", PORT);
@@ -24,15 +24,18 @@ export default function bootstrap(): Application {
   server.use(cookieParser(COOKIE_SECRET));
 
   // Session
-  server.use(
-    session({
-      secret: COOKIE_SECRET,
-      resave: true,
-      saveUninitialized: true,
-      store: MongoStore.create({ mongoUrl: DB_URL }),
-      cookie: { maxAge: 60 * 1000 * 60 * 3 }
-    })
-  );
+  if (env === "prod") {
+    server.use(
+      session({
+        secret: COOKIE_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({ mongoUrl: DB_URL }),
+        cookie: { maxAge: 60 * 1000 * 60 * 3 }
+      })
+    );
+    console.log("Sessions configured!");
+  }
 
   // View Engine
   server.set("views", resolve(__dirname, "../views"));
