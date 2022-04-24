@@ -4,7 +4,7 @@
 </head>
 
 <form style="margin-left: 10px; margin-right: 50px" action="/infoData">
-  <h2 style="margin-top: 5px">Create Data Form</h2>
+  <h2 style="margin-top: 5px"></h2>
   <div
     id="info-data-disclaimer"
     class="info-data error alert alert-primary animate__animated animate__heartBeat"
@@ -13,6 +13,10 @@
     Disclaimer! The inputs are shown for you to see how the form will look like to the client, this
     is why you cannot fill them in (except title and admin code), focus on ensuring the right key
     values are present!
+    <br />
+    <br />
+    If the form you are making is long just ensure you put in a title, at least one key, and click
+    'Create Form' as you can edit it later and save it as much as you like.
   </div>
   <div id="info-data-error" class="info-data error alert alert-info" role="alert">
     Please fill out the info below to create your document
@@ -42,8 +46,11 @@
       delete a previously added key.<br />
       <br />
       For Multiple choice or Multi select enter the options you want separating each one with the
-      symbol |.</label
-    >
+      symbol |.
+      <br />
+      <br />
+      Caution! The delete key depends only on the key name not on the input type!
+    </label>
     <select
       onchange="showOptionsText()"
       class="form-select"
@@ -75,7 +82,7 @@
     <button class="btn btn-danger" style="margin-left: 5px" id="remove-item-btn">Remove Key</button>
   </div>
   <div style="text-align: center">
-    <button class="btn btn-primary" style="font-size: x-large">Finish Creating Form</button>
+    <button class="btn btn-primary" style="font-size: x-large">Create Form</button>
   </div>
 </form>
 

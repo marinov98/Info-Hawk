@@ -10,7 +10,7 @@
     style="margin: 5px"
     role="alert"
   >
-    You can edit, delete, or send a link of this form in this section
+    You can edit or delete the below form in this section
   </div>
   <h2 id="form-data-title" style="text-align: center"><%=form.title%></h2>
   <div class="mb-3">
@@ -49,11 +49,7 @@
           <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option" >
           <% } %> 
           <% val.input.split("|*|").forEach((option, i) => { %> 
-            <% if (i === 0) {%> 
-              <option value="<%=option%>" selected disabled><%=option%> </option>
-            <% }  else { %> 
-              <option value="<%=option%>" disabled><%=option%></option>
-            <%  } %> 
+            <option value="<%=option%>" disabled><%=option%></option>
           <% }); %> 
         </select>
       </div>
@@ -102,7 +98,7 @@
       class="btn btn-primary"
       style="font-size: x-large; margin-top: 5px"
     >
-      Finish Editing Form
+      Save Form
     </button>
     <button
       id="action-delete-btn"
