@@ -17,7 +17,7 @@ import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 
 export function reset_password_mail_get(req: Request, res: Response, next: NextFunction) {
-  return res.render("passwordMail");
+  return res.render("auth/passwordMail");
 }
 
 export function token_expire_get(req: Request, res: Response, next: NextFunction) {
@@ -40,7 +40,7 @@ export async function reset_password_form_get(req: Request, res: Response, next:
         return res.status(NOT_FOUND).redirect("/error/token");
       }
 
-      return res.render("passwordReset");
+      return res.render("auth/passwordReset");
     });
   } catch (err) {
     if (err instanceof Error) {

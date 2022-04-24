@@ -16,7 +16,7 @@ import { IHError } from "../types/errors";
 import { cleanSession, updateSession } from "../utils/session";
 
 export function info_data_create_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("infoDataCREATE");
+  return res.render("forms/infoDataCREATE");
 }
 
 export async function info_data_link_get(req: Request, res: Response, _: NextFunction) {
@@ -24,8 +24,9 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
     const adminId = res.app.locals.auth._id;
     const form = await Form.findOne({ _id: req.params.id, adminId });
     if (!form) return res.redirect("/");
+    cleanSession(req);
 
-    return res.render("infoDataLINK", { formId: form._id });
+    return res.render("forms/infoDataLINK", { formId: form._id });
   } catch (err) {
     console.error(err);
   }
@@ -39,7 +40,7 @@ export async function info_data_submissions_get(req: Request, res: Response, _: 
     if (forms) {
       REDIS_CLIENT.setEx(`${auth._id.toString()}-submissions`, 3600, JSON.stringify(forms));
     }
-    return res.render("infoDataSUBMISSIONS", { submissions: forms });
+    return res.render("submissions/infoDataSUBMISSIONS", { submissions: forms });
   } catch (err) {
     console.error(err);
   }
@@ -50,7 +51,8 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
     const id = req.params.id;
     const adminId = res.app.locals.auth._id;
     const form = await Form.findOne({ _id: id, adminId });
-    return res.render("infoDataSUBMISSION", { submission: form });
+    if (!form) return res.redirect("/");
+    return res.render("submissions/infoDataSUBMISSION", { submission: form });
   } catch (err) {
     console.error(err);
   }
@@ -59,7 +61,7 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
 export async function info_data_client_get(req: Request, res: Response, _: NextFunction) {
   try {
     if (req.session.submission) {
-      return res.render("infoDataClient", { form: req.session.submission });
+      return res.render("submissions/infoDataClient", { form: req.session.submission });
     }
     const { adminId, formId } = req.params;
     let [admin, form] = await Promise.all([
@@ -67,7 +69,7 @@ export async function info_data_client_get(req: Request, res: Response, _: NextF
       Form.findOne({ _id: formId, adminId, isSkeleton: true })
     ]);
     if (!admin || !form) return res.redirect("/");
-    return res.render("infoDataCLIENT", { form });
+    return res.render("submissions/infoDataCLIENT", { form });
   } catch (err) {
     console.error(err);
   }
@@ -83,7 +85,7 @@ export async function info_data_view_get(req: Request, res: Response, _: NextFun
       res.redirect("/");
     }
 
-    return res.render("infoDataVIEW", { form });
+    return res.render("forms/infoDataVIEW", { form });
   } catch (err) {
     console.error(err);
   }

@@ -1,4 +1,4 @@
-<%- include('partials/header'); -%> <%- include('partials/navbar'); -%> <% if (form) {%>
+<%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%> <% if (form) {%>
 <head>
   <script src="/js/formEditUtility.js"></script>
 </head>
@@ -44,9 +44,9 @@
         <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
         <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
         <% if (isMulti) {%> 
-          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option" multiple>
+          <select id="<%=key%>~<%=val.input%>~multi" class="form-select skeleton-key-option" multiple>
         <% } else { %> 
-          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option" >
+          <select id="<%=key%>~<%=val.input%>~single" class="form-select skeleton-key-option" >
           <% } %> 
           <% val.input.split("|*|").forEach((option, i) => { %> 
             <option value="<%=option%>" disabled><%=option%></option>
@@ -139,10 +139,10 @@
   const inputOptions = document.querySelectorAll(".skeleton-key-option")
   inputs.forEach(input => (dataStore[input.name] = {input: "UNANSWERED", inputType: "single"}));
   inputOptions.forEach(singleOptions => { 
-    const target = singleOptions.id.split("-");
+    const target = singleOptions.id.split("~");
     const key = target[0]
     const input = target[1]
-    const inputType = target[2] === "multi" ? "mc-multiple" : "mc-single"
+    const inputType = target[target.length - 1] === "multi" ? "mc-multiple" : "mc-single"
     dataStore[key] = {input, inputType}
   });
   

@@ -28,19 +28,19 @@ import {
 } from "./../config/keys.error";
 
 export function register_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("register");
+  return res.render("auth/register");
 }
 
 export function login_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("login");
+  return res.render("auth/login");
 }
 
 export function settings_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("settings");
+  return res.render("auth/settings");
 }
 
 export function deleteAcc_get(_: Request, res: Response, __: NextFunction) {
-  return res.render("account");
+  return res.render("auth/account");
 }
 
 export async function register_post(req: Request, res: Response, _: NextFunction) {

@@ -7,7 +7,7 @@ export async function filter_get(req: Request, res: Response, next: NextFunction
   const adminId = res.app.locals.auth._id;
   const uniqueTitles = await Form.distinct("title", { isSkeleton: false, adminId });
 
-  return res.render("infoDataFILTER", { uniqueTitles });
+  return res.render("submissions/infoDataFILTER", { uniqueTitles });
 }
 
 export async function filter_find(req: Request, res: Response, next: NextFunction) {

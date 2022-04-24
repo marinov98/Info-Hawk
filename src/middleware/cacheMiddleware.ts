@@ -21,7 +21,7 @@ export async function cacheSubmissions(req: Request, res: Response, next: NextFu
   const key = `${auth._id.toString()}-submissions`;
   const data = await REDIS_CLIENT.get(key);
   if (data !== null) {
-    return res.render("infoDataSUBMISSIONS", { submissions: JSON.parse(data) });
+    return res.render("submissions/infoDataSUBMISSIONS", { submissions: JSON.parse(data) });
   } else {
     next();
   }
