@@ -1,5 +1,5 @@
-<%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%> <% if (uniqueTitles) {
-%>
+<%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%> <% if (uniqueTitles &&
+uniqueTitles !== []) { %>
 
 <div style="text-align: center; margin: 10px">
   <div
@@ -21,6 +21,7 @@
     class="btn btn-success"
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >XML</a
+  >
   >
   <select
     id="form-title-select"
