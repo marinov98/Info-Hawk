@@ -4,6 +4,9 @@ import connectToDB from "./config/db";
 import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
 
 (async () => {
+  // Database
+  await connectToDB();
+
   // Redis
   REDIS_CLIENT.on("error", err => console.error("Redis Client Error", err));
   await REDIS_CLIENT.connect();
@@ -11,9 +14,6 @@ import { PORT, REDIS_CLIENT, TRANSPORTER } from "./config/keys.env";
 
   // Application configuration
   const app: Application = bootstrap();
-
-  // Database
-  await connectToDB();
 
   // Email
   TRANSPORTER.verify(err => {

@@ -37,6 +37,7 @@ router.put(
   infoDataController.info_data_edit_put
 );
 router.get("/client/form-submission/:adminId/:formId", infoDataController.info_data_client_get);
+router.post("/client/forms/session", cookieGuard, infoDataController.info_data_session_post);
 router.post(
   "/client/form-submission",
   validateSubmission,

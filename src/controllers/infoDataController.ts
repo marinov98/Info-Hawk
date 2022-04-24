@@ -13,6 +13,7 @@ import {
 } from "../config/keys.error";
 import { Admin, Form } from "../db/models";
 import { IHError } from "../types/errors";
+import { cleanSession, updateSession } from "../utils/session";
 
 export function info_data_create_get(_: Request, res: Response, __: NextFunction) {
   return res.render("infoDataCREATE");
@@ -32,6 +33,7 @@ export async function info_data_link_get(req: Request, res: Response, _: NextFun
 
 export async function info_data_submissions_get(req: Request, res: Response, _: NextFunction) {
   try {
+    cleanSession(req);
     const auth = res.app.locals.auth;
     const forms = await Form.find({ adminId: auth._id, isSkeleton: false }).sort({ createdAt: -1 });
     if (forms) {
@@ -56,10 +58,15 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
 
 export async function info_data_client_get(req: Request, res: Response, _: NextFunction) {
   try {
+    if (req.session.submission) {
+      return res.render("infoDataClient", { form: req.session.submission });
+    }
     const { adminId, formId } = req.params;
-    const form = await Form.findOne({ _id: formId, adminId, isSkeleton: true });
-    if (!(await Admin.findById(adminId)) || !form) return res.redirect("/");
-
+    let [admin, form] = await Promise.all([
+      Admin.findById(adminId),
+      Form.findOne({ _id: formId, adminId, isSkeleton: true })
+    ]);
+    if (!admin || !form) return res.redirect("/");
     return res.render("infoDataCLIENT", { form });
   } catch (err) {
     console.error(err);
@@ -261,6 +268,7 @@ export async function info_data_client_post(req: Request, res: Response, _: Next
       text: `Submission with id: ${formId} has been added to your account. You can view the submission at ${PROTOCAL}://${req.headers.host}/auth/forms/submission/${formId}`
     });
     await REDIS_CLIENT.del(`${admin._id.toString()}-submissions`);
+    cleanSession(req);
     return res.status(CREATED).json({ msg: "Submission successful!", messageId });
   } catch (err) {
     if (err instanceof Error) {
@@ -298,4 +306,10 @@ export async function info_data_submission_delete(req: Request, res: Response, _
 
     return res.status(hawkError.status).json({ hawkError });
   }
+}
+
+export async function info_data_session_post(req: Request, res: Response, _: NextFunction) {
+  const { submission = {} } = req.body;
+  updateSession(req, submission);
+  return res.status(OK).json({ msg: "Submission saved!" });
 }

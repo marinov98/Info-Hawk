@@ -1,6 +1,6 @@
 <%- include('partials/header'); -%>
 
-<form style="margin-left: 10px; margin-right: 50px" action="/infoData">
+<form onchange="handleChange()"  style="margin-left: 10px; margin-right: 50px" action="/infoData">
   <div
     id="info-data-error-client"
     class="info-data error alert alert-info"
@@ -34,29 +34,43 @@
     />
   </div>
   <% } %> 
-  <% Object.entries(form).forEach(([key, val]) => { if (val.input && val.inputType) {%>
+  <% Object.entries(form).forEach(([key, val]) => { if (val.inputType) {%>
       <% if (val.inputType === "single") { %> 
       <div id="<%=key%>" class="mb-3">
         <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
-        <input
-          type="text"
-          name="<%=key%>"
-          class="form-control skeleton-key-item"
-          placeholder="Your answer goes here..."
-          required
-        />
+        <% if (val.input !== "UNANSWERED" && val.input !== "") {%> 
+          <input
+            type="text"
+            name="<%=key%>"
+            value="<%=val.input%>"
+            class="form-control skeleton-key-item"
+            placeholder="Your answer goes here..."
+            required
+          />
+        <% } else {%> 
+          <input
+            type="text"
+            name="<%=key%>"
+            class="form-control skeleton-key-item"
+            placeholder="Your answer goes here..."
+            required
+          />
+        <% } %> 
       </div>
     <% } else  {%> 
       <div id="<%=key%>" class="mb-3">
         <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
         <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
         <% if (isMulti) {%> 
-          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option mc-multiple" multiple>
+          <select id="<%=key%>-<%=val.input%>-multi" class="form-select skeleton-key-option mc-multiple" multiple required>
         <% } else { %> 
-          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option mc-single" >
+          <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option mc-single" required>
           <% } %> 
-          <% val.input.split("|*|").forEach((option, i) => { %> 
-            <% if (i === 0) {%> 
+          <% const hasSession = val.originalOptions ? true : false %> 
+          <% const selections = hasSession ? val.originalOptions : val.input %> 
+          <% const savedInput = hasSession ? new Set(val.input.split(",")) : null %> 
+          <% selections.split("|*|").forEach((option, i) => { %> 
+            <% if ((hasSession && savedInput.has(option)) || i === 0) {%> 
               <option value="<%=option%>" selected><%=option%> </option>
             <% }  else { %> 
               <option value="<%=option%>"><%=option%></option>
@@ -73,10 +87,26 @@
 </form>
 
 <script>
+  let changes = 0;
   const form = document.querySelector("form");
   const errorClass = "info-data alert alert-danger";
   const submitButton = document.getElementById("submit-btn");
   const infoError = document.getElementById("info-data-error-client");
+  
+  async function handleChange() {
+    if (++changes % 5 === 0) {
+      infoError.className = "info-data alert alert-info";
+      infoError.textContent = "Saving Submission...";
+      const { data } = await axios.post("/client/forms/session", { submission: fillSubmission() })
+      if (data.msg) {
+        infoError.textContent = "Submission saved!";
+      }
+      else { 
+        infoError.textContent = "Submission could not be saved"
+      }
+      changes = 0
+    }
+  }
 
   function grabInputs() {
     const inputs = document.querySelectorAll(".skeleton-key-item");
@@ -93,13 +123,21 @@
     inputs.forEach(input => clientSubmission[input.name] = { input: input.value, inputType: "single" })
     singleMC.forEach(mc => {
       const key = mc.id.split("-")[0]
-      const input = mc.value
-      clientSubmission[key] = {input, inputType: "mc-single"}
+      clientSubmission[key] = {
+        input: mc.value, 
+        originalOptions: [...mc.options].map(opt => opt.value).join("|*|"),
+        inputType: "mc-single"
+      }
     })
     multiMC.forEach(mc => { 
       const key = mc.id.split("-")[0]
-      const selected = [...mc.options].filter(opt => opt.selected).map(opt => opt.value)
-      clientSubmission[key] = { input: selected.join(","), inputType: "mc-multiple" }
+      const options = [...mc.options]
+      const selected = options.filter(opt => opt.selected).map(opt => opt.value)
+      clientSubmission[key] = { 
+        input: selected.join(","),
+        originalOptions: options.map(opt => opt.value).join("|*|"),
+        inputType: "mc-multiple" 
+      }
     })
 
     return clientSubmission
@@ -111,7 +149,7 @@
       const clientSubmission = fillSubmission()
       try {
         infoError.className = "info-data alert alert-info";
-        infoError.textContent = "Saving Submission...";
+        infoError.textContent = "Submitting Submission...";
 
         const { data } = await axios.post("/client/form-submission", { form: clientSubmission });
         if (data.msg) {

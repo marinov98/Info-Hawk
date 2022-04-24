@@ -10,7 +10,8 @@ const formSchema = Joi.object({
 
 const inputSchema = Joi.object({
   input: Joi.string().min(1).required(),
-  inputType: Joi.string().valid("single", "mc-single", "mc-multiple")
+  originalOptions: Joi.string(),
+  inputType: Joi.string().valid("single", "mc-single", "mc-multiple").required()
 });
 
 export function validateSkeleton(req: Request, res: Response, next: NextFunction) {
@@ -63,7 +64,7 @@ export function validateSubmission(req: Request, res: Response, next: NextFuncti
           return;
         }
 
-        if (key !== "title" && key !== "code") {
+        if (!["isSkeleton", "title", "code"].includes(key)) {
           err = inputSchema.validate(val).error;
         }
       });

@@ -145,13 +145,8 @@ function appendRow(e) {
         handleInsertionNonMC(key, userInput);
       } else {
         const userOptionsInput = form.newItemOptions.value.trim();
-        if (currSelectedValue === "mc-single") {
-          handleInsertionMC(key, userInput, userOptionsInput);
-        }
-
-        if (currSelectedValue === "mc-multi") {
-          handleInsertionMC(key, userInput, userOptionsInput, true);
-        }
+        const isMulti = currSelectedValue === "mc-multi" ? true : false;
+        handleInsertionMC(key, userInput, userOptionsInput, isMulti);
       }
     }
   }
