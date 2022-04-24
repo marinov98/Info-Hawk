@@ -1,14 +1,15 @@
 <%- include('../partials/header'); -%> <%- include('../partials/navbar'); -%>
 
 <div class="headings" style="margin: 5px; text-align: center">
-  <% if (auth) { %>
+  <% if (auth) { %> <% if (submissions && submissions.length !== 0) { %>
   <a
     class="btn btn-secondary animate__animated animate__backInLeft"
     href="/auth/forms/filter"
     style="text-align: center; margin-top: 4px; font-size: x-large"
     >Filter</a
   >
-  <% if (submissions && submissions.length !== 0) { %> <% submissions.forEach(submission => { %>
+
+  <% submissions.forEach(submission => { %>
   <div
     class="card text-white bg-success animate__animated animate__fadeIn"
     style="
