@@ -61,7 +61,7 @@ export async function info_data_submission_get(req: Request, res: Response, _: N
 export async function info_data_client_get(req: Request, res: Response, _: NextFunction) {
   try {
     if (req.session.submission) {
-      return res.render("submissions/infoDataClient", { form: req.session.submission });
+      return res.render("submissions/infoDataCLIENT", { form: req.session.submission });
     }
     const { adminId, formId } = req.params;
     let [admin, form] = await Promise.all([
