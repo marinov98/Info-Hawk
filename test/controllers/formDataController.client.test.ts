@@ -286,4 +286,11 @@ describe("Testing Form Controller", () => {
     expect(user).toBe(null);
     expect(anyForm).toBe(null);
   });
+
+  it("should update submission session correctly", async () => {
+    const submission = { ...FORM_MOCK };
+    const { body, status } = await request(app).post("/client/forms/session").send({ submission });
+    expect(status).toBe(OK);
+    expect(body.msg).toBe("Submission saved!");
+  });
 });

@@ -23,10 +23,12 @@
     />
   </div>
   <% } else { %>
+  <% const adminCodeVal = form.code || "" %> 
   <div class="mb-3">
     <label for="adminCode" class="form-label">Admin Code</label>
     <input
       type="text"
+      value="<%=adminCodeVal%>"
       name="adminCode"
       class="form-control"
       placeholder="admin code goes here..."
