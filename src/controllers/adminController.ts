@@ -15,6 +15,7 @@ import { TokenType } from "../db/schemas/tokenSchema";
 import { ResetDecodedToken } from "../interfaces/index";
 import { IHError } from "../types/errors";
 import { generateAdminCode } from "../utils/code";
+import { cleanSession } from "../utils/session";
 import { createTokens, removeCookies, setCookies } from "../utils/token";
 import {
   BAD_REQUEST,
@@ -141,10 +142,11 @@ export async function login_post(req: Request, res: Response, _: NextFunction) {
   }
 }
 
-export async function logout_get(_: Request, res: Response, __: NextFunction) {
+export async function logout_get(req: Request, res: Response, __: NextFunction) {
   const adminId = res.app.locals.auth._id;
   await REDIS_CLIENT.del(`${adminId.toString()}-home`);
   await REDIS_CLIENT.del(`${adminId.toString()}-submissions`);
+  cleanSession(req);
   removeCookies(res);
   return res.redirect("/");
 }
