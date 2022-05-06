@@ -70,7 +70,7 @@
           <% } %> 
           <% const hasSession = val.originalOptions ? true : false %> 
           <% const selections = hasSession ? val.originalOptions : val.input %> 
-          <% const savedInput = hasSession ? new Set(val.input.split(",")) : null %> 
+          <% const savedInput = hasSession ? new Set(val.input.split("|*|")) : null %> 
           <% selections.split("|*|").forEach((option, i) => { %> 
             <% if ((hasSession && savedInput.has(option)) || i === 0) {%> 
               <option value="<%=option%>" selected><%=option%> </option>
@@ -136,7 +136,7 @@
       const options = [...mc.options]
       const selected = options.filter(opt => opt.selected).map(opt => opt.value)
       clientSubmission[key] = { 
-        input: selected.join(","),
+        input: selected.join("|*|"),
         originalOptions: options.map(opt => opt.value).join("|*|"),
         inputType: "mc-multiple" 
       }

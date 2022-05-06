@@ -43,7 +43,11 @@ export async function toXmlSingle_post(req: Request, res: Response, next: NextFu
     const decryptedVal = val as any;
     const decryptedKey: any = key.split("_^_").join(" ");
     if (decryptedVal.input) {
-      formattedDataStore[decryptedKey] = decryptedVal.input;
+      if (decryptedVal.inputType && decryptedVal.inputType === "mc-multiple")
+        formattedDataStore[decryptedKey] = decryptedVal.input.replace(/\|\*\|/g, ",");
+      else {
+        formattedDataStore[decryptedKey] = decryptedVal.input;
+      }
     } else {
       formattedDataStore[decryptedKey] = decryptedVal;
     }
@@ -85,7 +89,11 @@ export async function toXmlMultiple_post(req: Request, res: Response, next: Next
       const decryptedVal = val as any;
       const decryptedKey: any = key.split("_^_").join(" ");
       if (decryptedVal.input) {
-        formattedSubmission[decryptedKey] = decryptedVal.input;
+        if (decryptedVal.inputType && decryptedVal.inputType === "mc-multiple")
+          formattedSubmission[decryptedKey] = decryptedVal.input.replace(/\|\*\|/g, ",");
+        else {
+          formattedSubmission[decryptedKey] = decryptedVal.input;
+        }
       } else {
         formattedSubmission[decryptedKey] = decryptedVal;
       }

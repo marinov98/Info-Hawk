@@ -42,7 +42,7 @@
         <% } else { %> 
           <select id="<%=key%>-<%=val.input%>-single" class="form-select skeleton-key-option mc-single" >
           <% } %> 
-          <% const selected = new Set(val.input.split(",")) %> 
+          <% const selected = new Set(val.input.split("|*|")) %> 
           <% val.originalOptions.split("|*|").forEach((option, i) => { %> 
               <% if (selected.has(option)) {%> 
                 <option value="<%=option%>" selected disabled><%=option%> </option>
