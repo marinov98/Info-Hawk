@@ -31,7 +31,7 @@ function handleKeyErrors(key) {
     key = null;
   }
 
-  return key ? key.split(" ").join(JOINER) : key;
+  return key ? key.split(" ").join(JOINER).replace(/\./g, "&&") : key;
 }
 
 function handleInsertionNonMC(key, userInput) {

@@ -41,7 +41,7 @@ export async function toXmlSingle_post(req: Request, res: Response, next: NextFu
   let formattedDataStore: any = {};
   Object.entries(target_json).forEach(([key, val]) => {
     const decryptedVal = val as any;
-    const decryptedKey: any = key.split("_^_").join(" ");
+    const decryptedKey: any = key.split("_^_").join(" ").replace(/&&/g, ".");
     if (decryptedVal.input) {
       if (decryptedVal.inputType && decryptedVal.inputType === "mc-multiple")
         formattedDataStore[decryptedKey] = decryptedVal.input.replace(/\|\*\|/g, ",");
@@ -87,7 +87,7 @@ export async function toXmlMultiple_post(req: Request, res: Response, next: Next
 
     Object.entries(currSubmission).forEach(([key, val]) => {
       const decryptedVal = val as any;
-      const decryptedKey: any = key.split("_^_").join(" ");
+      const decryptedKey: any = key.split("_^_").join(" ").replace(/&&/g, ".");
       if (decryptedVal.input) {
         if (decryptedVal.inputType && decryptedVal.inputType === "mc-multiple")
           formattedSubmission[decryptedKey] = decryptedVal.input.replace(/\|\*\|/g, ",");

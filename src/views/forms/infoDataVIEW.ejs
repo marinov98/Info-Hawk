@@ -28,9 +28,10 @@
     %>
   </div>
   <% Object.entries(form).forEach(([key, val]) => { if (val.input && val.inputType) {%>
+      <% const decryptedKey = key.split("_^_").join(" ").replace(/&&/g, ".") %> 
       <% if (val.inputType === "single") { %> 
       <div id="<%=key%>" class="mb-3">
-        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <label for="<%=key%>" class="form-label"><%=decryptedKey%> </label>
         <input
           type="text"
           name="<%=key%>"
@@ -41,7 +42,7 @@
       </div>
     <% } else  {%> 
       <div id="<%=key%>" class="mb-3">
-        <label for="<%=key%>" class="form-label"><%=key.split("_^_").join(" ")%> </label>
+        <label for="<%=key%>" class="form-label"><%=decryptedKey%> </label>
         <% const isMulti = val.inputType === "mc-multiple" ? true : false%> 
         <% if (isMulti) {%> 
           <select id="<%=key%>~<%=val.input%>~multi" class="form-select skeleton-key-option" multiple>
