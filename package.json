@@ -7,8 +7,8 @@
   "author": "Marin Pavlinov Marinov <marin.marinov@macaulay.cuny.edu>",
   "license": "SEE LICENSE IN LICENSE.md",
   "engines": {
-    "node": ">=14.0.0",
-    "yarn": ">= 1.22.0"
+    "node": ">=16.0.0",
+    "yarn": ">= 1.22.19"
   },
   "scripts": {
     "copy-assets": "ts-node tools/copyAssets",
