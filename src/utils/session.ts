@@ -2,7 +2,7 @@ import { Request } from "express";
 
 export function updateSession(req: Request, data: any): void {
   if (req.session) {
-    if (data && data !== {}) {
+    if (data) {
       req.session.submission = data;
       req.session.save(err => {
         if (err) console.error("error saving:", err);
